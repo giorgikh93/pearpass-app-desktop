@@ -50,7 +50,6 @@
     "prepare": "husky",
     "watch:packages": "nodemon --watch packages --ext js,json --exec \"echo 'Packages changed'\"",
     "dev": "concurrently -n \"TypeScript,Packages,Pear\" -c \"blue,cyan,green\" \"tsc --watch\" \"npm run watch:packages\" \"pear run -d .\""
-
   },
   "devDependencies": {
     "nodemon": "^3.0.0",

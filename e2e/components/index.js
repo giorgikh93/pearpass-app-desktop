@@ -1,8 +1,19 @@
 'use strict'
 
-const { CreateLoginPage } = require('./CreateLoginPage')
+const { CreateOrEditPage } = require('./CreateOrEditPage')
+const { DetailsPage } = require('./DetailsPage')
 const { LoginPage } = require('./LoginPage')
-const { MainView } = require('./MainView')
+const { MainPage } = require('./MainPage')
+const { SideMenuPage } = require('./SideMenuPage')
+const { Utilities } = require('./Utilities')
 const { VaultSelectPage } = require('./VaultSelectPage')
 
-module.exports = { LoginPage, VaultSelectPage, MainView, CreateLoginPage }
+module.exports = {
+  LoginPage,
+  VaultSelectPage,
+  CreateOrEditPage,
+  DetailsPage,
+  MainPage,
+  SideMenuPage,
+  Utilities
+}
