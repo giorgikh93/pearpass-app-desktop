@@ -64,15 +64,11 @@ export class EncryptionHandlers {
       hashedPassword: params.hashedPassword
     })
 
-    if (!result) {
-      logger.info('ENCRYPTION-HANDLER', `Decryption failed, recording attempt`)
-      await this.client.recordFailedMasterPassword()
-    }
-
     return result
   }
 
   async recordFailedMasterPassword() {
+    logger.info('ENCRYPTION-HANDLER', `Recording failed attempt`)
     return await this.client.recordFailedMasterPassword()
   }
 
