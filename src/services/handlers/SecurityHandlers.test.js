@@ -109,7 +109,8 @@ describe('SecurityHandlers', () => {
 
       expect(appIdentity.setClientIdentityPublicKey).toHaveBeenCalledWith(
         client,
-        'clientPub'
+        'clientPub',
+        'PENDING'
       )
       expect(result).toEqual({
         ed25519PublicKey: 'pubKey',
@@ -127,6 +128,7 @@ describe('SecurityHandlers', () => {
       appIdentity.getClientIdentityPublicKey.mockResolvedValue(
         'existingClientPub'
       )
+      appIdentity.getClientPairingState.mockResolvedValue('CONFIRMED')
 
       await expect(
         handlers.nmGetAppIdentity({
@@ -153,10 +155,7 @@ describe('SecurityHandlers', () => {
         clientEd25519PublicKeyB64: 'sameClientPub'
       })
 
-      expect(appIdentity.setClientIdentityPublicKey).toHaveBeenCalledWith(
-        client,
-        'sameClientPub'
-      )
+      expect(appIdentity.setClientIdentityPublicKey).not.toHaveBeenCalled()
       expect(result).toEqual({
         ed25519PublicKey: 'pubKey',
         x25519PublicKey: 'xPubKey',
@@ -200,7 +199,9 @@ describe('SecurityHandlers', () => {
       const result = await handlers.nmBeginHandshake({
         extEphemeralPubB64: 'abc'
       })
-      expect(appIdentity.getClientIdentityPublicKey).toHaveBeenCalledWith()
+      expect(appIdentity.getClientIdentityPublicKey).toHaveBeenCalledWith(
+        client
+      )
       expect(sessionManager.beginHandshake).toHaveBeenCalledWith(client, 'abc')
       expect(result).toBe('handshake-result')
     })
@@ -288,7 +289,7 @@ describe('SecurityHandlers', () => {
     })
 
     it('returns paired=true when client key matches', async () => {
-      appIdentity.getClientIdentityPublicKey.mockResolvedValue(
+      appIdentity.getCachedClientIdentityPublicKey.mockReturnValue(
         'clientPubKey123'
       )
       const result = await handlers.checkExtensionPairingStatus({
@@ -298,7 +299,9 @@ describe('SecurityHandlers', () => {
     })
 
     it('returns paired=false when key does not match', async () => {
-      appIdentity.getClientIdentityPublicKey.mockResolvedValue('differentKey')
+      appIdentity.getCachedClientIdentityPublicKey.mockReturnValue(
+        'differentKey'
+      )
       const result = await handlers.checkExtensionPairingStatus({
         clientEd25519PublicKeyB64: 'clientPubKey123'
       })
@@ -306,7 +309,7 @@ describe('SecurityHandlers', () => {
     })
 
     it('returns paired=false when no client key is stored', async () => {
-      appIdentity.getClientIdentityPublicKey.mockResolvedValue(null)
+      appIdentity.getCachedClientIdentityPublicKey.mockReturnValue(null)
       const result = await handlers.checkExtensionPairingStatus({
         clientEd25519PublicKeyB64: 'clientPubKey123'
       })

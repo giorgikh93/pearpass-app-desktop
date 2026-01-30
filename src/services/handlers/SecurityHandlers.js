@@ -1,5 +1,6 @@
 import sodium from 'sodium-native'
 
+import { PAIRING_STATES } from '../../constants/pairing.js'
 import { SecurityErrorCodes } from '../../constants/securityErrors.js'
 import {
   getAutoLockTimeoutMs,
@@ -17,7 +18,10 @@ import {
   verifyPairingToken,
   resetIdentity,
   setClientIdentityPublicKey,
-  getClientIdentityPublicKey
+  getClientIdentityPublicKey,
+  getCachedClientIdentityPublicKey,
+  getClientPairingState,
+  confirmClientPairing
 } from '../security/appIdentity.js'
 import { PROTOCOL_TAGS } from '../security/protocolConstants.js'
 import { beginHandshake } from '../security/sessionManager.js'
@@ -79,11 +83,15 @@ export class SecurityHandlers {
     }
 
     // Check if a different client is already paired
-    const existingClientPubB64 = await getClientIdentityPublicKey()
+    const existingClientPubB64 = await getClientIdentityPublicKey(this.client)
+    const pairingState = await getClientPairingState(this.client)
+
     if (
       existingClientPubB64 &&
-      existingClientPubB64 !== clientEd25519PublicKeyB64
+      existingClientPubB64 !== clientEd25519PublicKeyB64 &&
+      pairingState === PAIRING_STATES.CONFIRMED
     ) {
+      // Existing pairing is confirmed - reject new client
       throw new Error(
         createErrorWithCode(
           SecurityErrorCodes.CLIENT_ALREADY_PAIRED,
@@ -92,14 +100,42 @@ export class SecurityHandlers {
       )
     }
 
-    // Store the client's public key for mutual auth in future handshakes
-    await setClientIdentityPublicKey(this.client, clientEd25519PublicKeyB64)
+    // If there is no existing client or pairing with existing client is pending
+    // save/overwrite with new client
+    if (existingClientPubB64 !== clientEd25519PublicKeyB64) {
+      await setClientIdentityPublicKey(
+        this.client,
+        clientEd25519PublicKeyB64,
+        PAIRING_STATES.PENDING
+      )
+    }
 
     return {
       ed25519PublicKey: id.ed25519PublicKey,
       x25519PublicKey: id.x25519PublicKey,
       fingerprint: getFingerprint(id.ed25519PublicKey)
     }
+  }
+
+  /**
+   * Confirm pairing after extension successfully encrypted its keypair
+   */
+  async nmConfirmPairing(params) {
+    const { clientEd25519PublicKeyB64 } = params || {}
+
+    if (!clientEd25519PublicKeyB64) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.CLIENT_PUBLIC_KEY_REQUIRED,
+          'Extension must provide its Ed25519 public key'
+        )
+      )
+    }
+
+    // Verify this matches our pending pairing
+    await confirmClientPairing(this.client, clientEd25519PublicKeyB64)
+
+    return { confirmed: true }
   }
 
   /**
@@ -117,8 +153,8 @@ export class SecurityHandlers {
       )
     }
 
-    // Require a pinned client public key (set during pairing via nmGetAppIdentity)
-    const clientPubB64 = await getClientIdentityPublicKey()
+    // Require a pinned client public key in secure vault (set during pairing via nmGetAppIdentity)
+    const clientPubB64 = await getClientIdentityPublicKey(this.client)
     if (!clientPubB64) {
       throw new Error(
         createErrorWithCode(
@@ -174,7 +210,7 @@ export class SecurityHandlers {
     if (session.clientVerified) return { ok: true }
 
     // Load pinned client identity
-    const clientPubB64 = await getClientIdentityPublicKey()
+    const clientPubB64 = await getClientIdentityPublicKey(this.client)
     if (!clientPubB64) {
       throw new Error(
         createErrorWithCode(
@@ -287,7 +323,7 @@ export class SecurityHandlers {
       )
     }
 
-    const storedClientPubB64 = await getClientIdentityPublicKey()
+    const storedClientPubB64 = getCachedClientIdentityPublicKey()
     const paired = storedClientPubB64 === clientEd25519PublicKeyB64
 
     return {
