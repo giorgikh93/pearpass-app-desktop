@@ -82,7 +82,18 @@ export class MethodRegistry {
       'nmCloseSession',
       'checkExtensionPairingStatus'
     ]
-    const exemptMethods = [...authMethods, ...statusMethods, ...pairingMethods]
+    const autoLockMethods = [
+      'getAutoLockSettings',
+      'setAutoLockTimeout',
+      'setAutoLockEnabled',
+      'resetTimer'
+    ]
+    const exemptMethods = [
+      ...authMethods,
+      ...statusMethods,
+      ...pairingMethods,
+      ...autoLockMethods
+    ]
     const shouldCheckAuth = !exemptMethods.includes(methodName)
 
     if (shouldCheckAuth) {

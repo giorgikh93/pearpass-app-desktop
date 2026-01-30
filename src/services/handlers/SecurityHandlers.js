@@ -1,6 +1,14 @@
 import sodium from 'sodium-native'
 
 import { SecurityErrorCodes } from '../../constants/securityErrors.js'
+import {
+  getAutoLockTimeoutMs,
+  isAutoLockEnabled
+} from '../../hooks/useAutoLockPreferences.js'
+import {
+  applyAutoLockEnabled,
+  applyAutoLockTimeout
+} from '../../utils/autoLock.js'
 import { createErrorWithCode } from '../../utils/createErrorWithCode.js'
 import { getNativeMessagingEnabled } from '../nativeMessagingPreferences.js'
 import {
@@ -19,7 +27,6 @@ import {
   clearAllSessions,
   concatBytes
 } from '../security/sessionStore.js'
-
 /**
  * Handles security-related IPC operations for native messaging
  */
@@ -286,6 +293,80 @@ export class SecurityHandlers {
     return {
       paired
     }
+  }
+
+  async getAutoLockSettings() {
+    if (!getNativeMessagingEnabled()) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.NATIVE_MESSAGING_DISABLED,
+          'Extension connection is disabled'
+        )
+      )
+    }
+    return {
+      autoLockEnabled: isAutoLockEnabled(),
+      autoLockTimeoutMs: getAutoLockTimeoutMs()
+    }
+  }
+
+  async setAutoLockTimeout(params) {
+    const { autoLockTimeoutMs } = params || {}
+    if (!getNativeMessagingEnabled()) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.NATIVE_MESSAGING_DISABLED,
+          'Extension connection is disabled'
+        )
+      )
+    }
+    //autoLockTimeoutMs can be null when selected "never"
+    if (!autoLockTimeoutMs && autoLockTimeoutMs !== null) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.MISSING_AUTO_LOCK_TIMEOUT_MS,
+          'autoLockTimeoutMs is required'
+        )
+      )
+    }
+    applyAutoLockTimeout(autoLockTimeoutMs)
+    return { ok: true }
+  }
+
+  async setAutoLockEnabled(params) {
+    const { autoLockEnabled } = params || {}
+    if (!getNativeMessagingEnabled()) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.NATIVE_MESSAGING_DISABLED,
+          'Extension connection is disabled'
+        )
+      )
+    }
+    if (typeof autoLockEnabled !== 'boolean') {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.INVALID_AUTO_LOCK_ENABLED,
+          'autoLockEnabled must be a boolean'
+        )
+      )
+    }
+    applyAutoLockEnabled(autoLockEnabled)
+    return { ok: true }
+  }
+
+  async resetTimer() {
+    if (!getNativeMessagingEnabled()) {
+      throw new Error(
+        createErrorWithCode(
+          SecurityErrorCodes.NATIVE_MESSAGING_DISABLED,
+          'Extension connection is disabled'
+        )
+      )
+    }
+
+    window.dispatchEvent(new Event('reset-timer'))
+    return { ok: true }
   }
 
   /**

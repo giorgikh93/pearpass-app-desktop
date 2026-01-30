@@ -8,11 +8,14 @@ import { useModal } from '../../../context/ModalContext'
 import { useRouter } from '../../../context/RouterContext'
 import { getAutoLockTimeoutMs } from '../../../hooks/useAutoLockPreferences'
 import { logger } from '../../../utils/logger'
+const DEDUPE_WINDOW_MS = 50
 
 /**
  * @returns {void}
  */
 export function useInactivity() {
+  const lastResetAtRef = useRef(0)
+
   const { setIsLoading } = useLoadingContext()
   const { navigate } = useRouter()
   const { refetch: refetchUser } = useUserData()
@@ -22,6 +25,13 @@ export function useInactivity() {
   const timerRef = useRef(null)
 
   const resetTimer = () => {
+    const now = Date.now()
+
+    if (now - lastResetAtRef.current < DEDUPE_WINDOW_MS) {
+      return
+    }
+    lastResetAtRef.current = now
+
     if (timerRef.current) {
       clearTimeout(timerRef.current)
     }
@@ -61,6 +71,13 @@ export function useInactivity() {
     'touchstart',
     'scroll'
   ]
+
+  useEffect(() => {
+    window.addEventListener('reset-timer', resetTimer)
+    return () => {
+      window.removeEventListener('reset-timer', resetTimer)
+    }
+  }, [])
 
   useEffect(() => {
     // Handler for IPC activity
