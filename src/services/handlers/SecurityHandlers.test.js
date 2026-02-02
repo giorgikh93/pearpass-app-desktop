@@ -382,6 +382,14 @@ describe('SecurityHandlers', () => {
         await handlers.setAutoLockTimeout({ autoLockTimeoutMs: 1234 })
         expect(applyAutoLockTimeout).toHaveBeenCalledWith(1234)
       })
+
+      it('accepts null timeout (never) when provided', async () => {
+        const result = await handlers.setAutoLockTimeout({
+          autoLockTimeoutMs: null
+        })
+        expect(applyAutoLockTimeout).toHaveBeenCalledWith(null)
+        expect(result).toEqual({ ok: true })
+      })
     })
 
     describe('setAutoLockEnabled', () => {

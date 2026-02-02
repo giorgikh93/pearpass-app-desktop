@@ -18,7 +18,7 @@ export function applyAutoLockEnabled(enabled) {
 export function applyAutoLockTimeout(ms) {
   if (!AUTO_LOCK_ENABLED) return
 
-  const value = ms === null ? ms : String(ms)
+  const value = ms === null ? 'null' : String(ms)
   localStorage.setItem(LOCAL_STORAGE_KEYS.AUTO_LOCK_TIMEOUT_MS, value)
 
   window.dispatchEvent(new Event('auto-lock-settings-changed'))
