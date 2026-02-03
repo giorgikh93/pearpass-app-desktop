@@ -356,12 +356,18 @@ export class SecurityHandlers {
         )
       )
     }
-    //autoLockTimeoutMs can be null when selected "never"
-    if (!autoLockTimeoutMs && autoLockTimeoutMs !== null) {
+    // `autoLockTimeoutMs` can be null when user selects "never"
+    const isNever = autoLockTimeoutMs === null
+    const isValidTimeoutMs =
+      typeof autoLockTimeoutMs === 'number' &&
+      Number.isFinite(autoLockTimeoutMs) &&
+      autoLockTimeoutMs > 0
+
+    if (!isNever && !isValidTimeoutMs) {
       throw new Error(
         createErrorWithCode(
           SecurityErrorCodes.MISSING_AUTO_LOCK_TIMEOUT_MS,
-          'autoLockTimeoutMs is required'
+          'autoLockTimeoutMs must be a number > 0 or null'
         )
       )
     }
