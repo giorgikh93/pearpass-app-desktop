@@ -20,11 +20,11 @@ export function useInactivity() {
   const { navigate } = useRouter()
   const { refetch: refetchUser } = useUserData()
   const { closeModal } = useModal()
-
+  const resetTimerRef = useRef(() => {})
   const { resetState } = useVaults()
   const timerRef = useRef(null)
 
-  const resetTimer = () => {
+  resetTimerRef.current = () => {
     const now = Date.now()
 
     if (now - lastResetAtRef.current < DEDUPE_WINDOW_MS) {
@@ -63,6 +63,7 @@ export function useInactivity() {
       logger.info('INACTIVITY-TIMER', 'Inactivity timer reset')
     }, timeoutMs)
   }
+  const resetTimer = () => resetTimerRef.current()
 
   const activityEvents = [
     'mousemove',
