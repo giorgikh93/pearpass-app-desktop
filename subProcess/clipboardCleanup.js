@@ -5,6 +5,7 @@ import os from 'bare-os'
 import path from 'bare-path'
 import { spawn, spawnSync } from 'bare-subprocess'
 import { CLIPBOARD_CLEAR_TIMEOUT } from 'pearpass-lib-constants'
+
 import { readLinuxClipboard, writeLinuxClipboard } from './linuxClipboard.js'
 
 function collectOutput(child, resolve, onError, opts = {}) {
@@ -56,7 +57,7 @@ function collectOutput(child, resolve, onError, opts = {}) {
       data += s.slice(0, Math.max(0, maxBytes - data.length))
       try {
         child.kill?.()
-      } catch { }
+      } catch {}
       settle(data)
       return
     }
@@ -92,7 +93,7 @@ function collectOutput(child, resolve, onError, opts = {}) {
       if (settled) return
       try {
         child.kill?.()
-      } catch { }
+      } catch {}
       fail({ type: 'timeout' })
     }, timeoutMs)
   }
@@ -123,13 +124,11 @@ function clearClipboard() {
       try {
         const child = await writeLinuxClipboard()
         child.on('exit', resolve)
-        child.on('error', (err) => {
-          console.warn('Failed to clear clipboard:', err)
+        child.on('error', () => {
           resolve()
         })
         child.stdin.end('')
-      } catch (err) {
-        console.warn('Error clearing clipboard:', err.message)
+      } catch {
         resolve()
       }
     } else {
@@ -162,14 +161,12 @@ export async function getClipboardContent() {
           collectOutput(
             child,
             resolve,
-            (err) => {
-              console.warn('Failed to get clipboard content:', err)
+            () => {
               resolve('')
             },
             { timeoutMs: 2000, maxBytes: 1024 * 1024 }
           )
-        } catch (err) {
-          console.warn('Error getting clipboard content:', err.message)
+        } catch {
           resolve('')
         }
         break
@@ -183,7 +180,7 @@ export async function getClipboardContent() {
 // Only run worker code when executed as a Pear subprocess, not when imported for testing
 // Check for Pear.exit to ensure we're in the actual Pear runtime (not Jest)
 if (typeof Pear !== 'undefined' && typeof Pear.exit === 'function') {
-  ; (async () => {
+  ;(async () => {
     // Get the text to monitor from command line args (passed by useCopyToClipboard)
     const copiedValue = await getClipboardContent()
 

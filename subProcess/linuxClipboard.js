@@ -1,8 +1,8 @@
 /* global Pear */
-import { spawn } from 'bare-subprocess'
-import path from 'bare-path'
-import fs from 'bare-fs/promises'
 import bareFs from 'bare-fs'
+import fs from 'bare-fs/promises'
+import path from 'bare-path'
+import { spawn } from 'bare-subprocess'
 import AppDrive from 'pear-appdrive'
 
 const STDIO = { stdio: ['pipe', 'pipe', 'pipe'] }
@@ -25,7 +25,7 @@ function checkBinaryAtPath(binaryPath) {
       const stat = bareFs.statSync(binaryPath)
       const isExec = !!(stat.mode & 0o111)
       resolve(isExec)
-    } catch (err) {
+    } catch {
       resolve(false)
     }
   })
@@ -52,7 +52,7 @@ async function getBinStoragePath(binaryName) {
     await drive.close()
     throw new Error(
       `drive.get('${packagedBinPath}') returned empty/null.\n` +
-      `Ensure 'resources' is in pear.stage.includes and re-run 'pear stage dev'.`
+        `Ensure 'resources' is in pear.stage.includes and re-run 'pear stage dev'.`
     )
   }
 
