@@ -13,11 +13,14 @@ import { logger } from '../utils/logger'
  * @returns {{ isCopied: boolean, copyToClipboard: (text: string) => boolean, isCopyToClipboardDisabled: boolean }}
  */
 export const useCopyToClipboard = ({ onCopy } = {}) => {
-  const [isCopyToClipboardDisabled, setIsCopyToClipboardDisabled] = useState(true)
+  const [isCopyToClipboardDisabled, setIsCopyToClipboardDisabled] =
+    useState(true)
   const [isCopied, setIsCopied] = useState(false)
 
   useEffect(() => {
-    const disabled = localStorage.getItem(LOCAL_STORAGE_KEYS.COPY_TO_CLIPBOARD_DISABLED)
+    const disabled = localStorage.getItem(
+      LOCAL_STORAGE_KEYS.COPY_TO_CLIPBOARD_DISABLED
+    )
     setIsCopyToClipboardDisabled(disabled === 'true')
   }, [])
 
@@ -38,7 +41,11 @@ export const useCopyToClipboard = ({ onCopy } = {}) => {
         // Clear-after-delay could be added via electronAPI.clearClipboardAfter(delayMs) in main
       },
       (err) => {
-        logger.error('useCopyToClipboard', 'Failed to copy text to clipboard', err)
+        logger.error(
+          'useCopyToClipboard',
+          'Failed to copy text to clipboard',
+          err
+        )
       }
     )
     return true

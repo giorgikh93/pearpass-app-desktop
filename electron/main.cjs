@@ -9,7 +9,8 @@ const fs = require('fs')
 const os = require('os')
 const path = require('path')
 
-const { app, BrowserWindow, ipcMain, nativeImage } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeImage, dialog } = require('electron')
+const { autoUpdater } = require('electron-updater')
 const getPearRuntimeLegacyStorage = require('pear-runtime-legacy-storage')
 
 const runtimeConfig = require('./runtime-config.cjs')
@@ -65,6 +66,101 @@ let workletSidecar = null
 
 /** @type {import('pearpass-lib-vault-core').PearpassVaultClient | null} */
 let vaultClient = null
+
+let autoUpdaterInitialized = false
+
+function initAutoUpdater() {
+  if (!app.isPackaged) {
+    logger.info('[MAIN]', 'Auto-updater: skipping in development mode')
+    return
+  }
+
+  if (autoUpdaterInitialized) return
+  autoUpdaterInitialized = true
+
+  autoUpdater.allowPrerelease = true
+  autoUpdater.autoDownload = true
+  autoUpdater.autoInstallOnAppQuit = true
+
+  autoUpdater.on('checking-for-update', () => {
+    logger.info('[MAIN]', 'Auto-updater: checking for update')
+  })
+
+  autoUpdater.on('update-available', (info) => {
+    logger.info(
+      '[MAIN]',
+      'Auto-updater: update available',
+      info && info.version
+    )
+  })
+
+  autoUpdater.on('update-not-available', (info) => {
+    logger.info(
+      '[MAIN]',
+      'Auto-updater: no update available',
+      info && info.version
+    )
+  })
+
+  autoUpdater.on('error', (err) => {
+    logger.error(
+      'MAIN',
+      'Auto-updater error:',
+      err && err.message ? err.message : err
+    )
+  })
+
+  autoUpdater.on('download-progress', (progress) => {
+    logger.info(
+      '[MAIN]',
+      'Auto-updater: download progress',
+      Math.round(progress.percent),
+      '%'
+    )
+  })
+
+  autoUpdater.on('update-downloaded', async (info) => {
+    logger.info(
+      '[MAIN]',
+      'Auto-updater: update downloaded',
+      info && info.version
+    )
+
+    try {
+      const result = await dialog.showMessageBox({
+        type: 'question',
+        buttons: ['Restart', 'Later'],
+        defaultId: 0,
+        cancelId: 1,
+        title: 'Update ready',
+        message: 'A new version of PearPass has been downloaded.',
+        detail:
+          'Restart now to apply the update, or later to keep using the current version.'
+      })
+
+      if (result.response === 0) {
+        autoUpdater.quitAndInstall()
+      }
+    } catch (err) {
+      logger.error(
+        'MAIN',
+        'Auto-updater: failed to show restart dialog:',
+        err && err.message ? err.message : err
+      )
+    }
+  })
+
+  try {
+    logger.info('[MAIN]', 'Auto-updater: checking for updates (startup)')
+    autoUpdater.checkForUpdates()
+  } catch (err) {
+    logger.error(
+      'MAIN',
+      'Auto-updater: failed to start update check:',
+      err && err.message ? err.message : err
+    )
+  }
+}
 
 function getAppPath() {
   // Packaged app: app is inside .app or executable folder; return path to app root for runtime.
@@ -271,13 +367,13 @@ async function startRuntime() {
     }
   })
 
-  pearRuntime.on('updating', () => {
+  pearRuntime.updater.on('updating', () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('runtime:updating')
     }
   })
 
-  pearRuntime.on('updated', () => {
+  pearRuntime.updater.on('updated', () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('runtime:updated')
     }
@@ -513,6 +609,7 @@ app.whenReady().then(async () => {
   app.setName('PearPass')
   logger.setLogPath(app.getPath('userData'))
   patchSpawnForPackagedApp()
+  initAutoUpdater()
   registerIPC()
   try {
     await startRuntime()

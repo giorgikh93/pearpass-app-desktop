@@ -154,7 +154,7 @@ const generateAndPersistIdentity = async (client) => {
   try {
     // Preferred path when running against sodium-native in a Node-like env.
     sodium.crypto_sign_keypair(ed25519PublicKeyBytes, ed25519PrivateKeyBytes)
-  } catch (err) {
+  } catch {
     // Fallback: some sodium builds (or shims) expect plain Uint8Array
     const edSk = new Uint8Array(ED25519_SECRETKEY_BYTES)
     const edPk = new Uint8Array(ED25519_PUBLICKEY_BYTES)
@@ -168,7 +168,7 @@ const generateAndPersistIdentity = async (client) => {
   let x25519PublicKeyBytes = Buffer.alloc(X25519_PUBLICKEY_BYTES)
   try {
     sodium.crypto_box_keypair(x25519PublicKeyBytes, x25519PrivateKeyBytes)
-  } catch (err) {
+  } catch {
     const xSk = new Uint8Array(X25519_SECRETKEY_BYTES)
     const xPk = new Uint8Array(X25519_PUBLICKEY_BYTES)
     sodium.crypto_box_keypair(xPk, xSk)
