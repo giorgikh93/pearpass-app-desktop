@@ -1,11 +1,12 @@
 {
   "name": "pearpass-app-desktop",
-  "version": "1.6.0-beta.1",
+  "version": "1.6.0-beta.23",
   "description": "PearPass password manager",
   "author": "PearPass",
   "main": "electron/main.cjs",
+  "upgrade": "pear://mwni83pzx5575qf8gpqqjqpogafz37egr6uzxruqpsb4rc169fdo",
   "pearRuntime": {
-    "upgrade": "pear://8k5z91c8u7nycsjow5m9ppmw75jznm66oe13mwt94cbohuyksdeo"
+    "upgrade": "pear://mwni83pzx5575qf8gpqqjqpogafz37egr6uzxruqpsb4rc169fdo"
   },
   "build": {
     "productName": "PearPass",
@@ -58,7 +59,6 @@
   },
   "pear": {
     "name": "pearpass-app-desktop",
-    "pre": "pear-electron/pre",
     "routes": ".",
     "unrouted": [
       "/packages/pearpass-lib-vault-core/src/worklet/app.js",
@@ -75,9 +75,7 @@
     ],
     "stage": {
       "entrypoints": [
-        "packages/pearpass-lib-vault-core/src/worklet/app.cjs",
-        "subProcess/clipboardCleanup.js",
-        "/index.js"
+
       ],
       "prefetch": [
         "assets"
@@ -121,10 +119,12 @@
     "dev:reset": "PEARPASS_DEV_RESET=1 npm run dev",
     "pack": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --dir && npm install",
     "dist": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder && npm install",
+    "dist:mac": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --mac && mkdir -p out/darwin-arm64/pearpass-app-desktop/app && cp -R dist/mac-arm64/PearPass.app out/darwin-arm64/pearpass-app-desktop/app/ && npm install && npm run pear:build:darwin",
     "dist:win": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --win && npm install",
     "dist:linux": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux && npm install",
     "dist:snap": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux snap && npm install",
-    "dist:flatpak": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux flatpak && npm install"
+    "dist:flatpak": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux flatpak && npm install",
+    "pear:build:darwin": "pear-build --package=./package.json --darwin-arm64-app ./out/darwin-arm64/pearpass-app-desktop --target ../pearpass-app-desktop-$npm_package_version"
   },
   "devDependencies": {
     "@babel/core": "7.26.10",
