@@ -163,11 +163,25 @@ function initAutoUpdater() {
 }
 
 function getAppPath() {
-  // Packaged app: app is inside .app or executable folder; return path to app root for runtime.
+  // Packaged app: app is inside .app or executable folder; return path to app root for renderer/worklet.
   if (app.isPackaged) {
     return path.join(process.resourcesPath, 'app.asar')
   }
   return app.getAppPath()
+}
+function getExecPath() {
+  // Path to the current app executable for pear-runtime-updater.
+  if (!app.isPackaged) return null
+
+  logger.info('[MAIN]', 'process.resourcesPath: ', process.resourcesPath)
+  if (process.platform === 'darwin') {
+    // process.resourcesPath -> <App>.app/Contents/Resources
+    // App bundle root       -> <App>.app
+    return path.join(process.resourcesPath, '..', '..')
+  }
+
+  // For other platforms we can extend this later when needed
+  return null
 }
 
 function getWorkletPath() {
@@ -319,7 +333,10 @@ async function startRuntime() {
     dir: runtimeDir,
     upgrade,
     version: runtimeConfig.version,
-    app: app.isPackaged ? getAppPath() : null,
+    // For pear-runtime-updater: point at the installed .app bundle on macOS
+    app: app.isPackaged ? getExecPath() : null,
+    // pear-build layout is now: /by-arch/<host>/app/PearPass.app
+    // so default name ("PearPass.app") matches without override.
     bundled: !!app.isPackaged
   })
 
@@ -368,12 +385,24 @@ async function startRuntime() {
   })
 
   pearRuntime.updater.on('updating', () => {
+    logger.info(
+      '[MAIN]',
+      'runtime:updating',
+      mainWindow,
+      mainWindow.isDestroyed()
+    )
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('runtime:updating')
     }
   })
 
   pearRuntime.updater.on('updated', () => {
+    logger.info(
+      '[MAIN]',
+      'runtime:updated',
+      mainWindow,
+      mainWindow.isDestroyed()
+    )
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('runtime:updated')
     }
@@ -515,6 +544,8 @@ function registerIPC() {
     e.returnValue = app.getAppPath()
   })
 
+  ipcMain.handle('app:getVersion', () => app.getVersion())
+
   ipcMain.handle('runtime:getConfig', async () => {
     const upgrade = runtimeConfig.upgrade
     let storage = getStorageDir()
@@ -559,12 +590,20 @@ function registerIPC() {
   })
 
   ipcMain.handle('runtime:applyUpdate', async () => {
+    logger.info(
+      '[MAIN]',
+      'runtime:applyUpdate',
+      pearRuntime,
+      typeof pearRuntime.applyUpdate === 'function'
+    )
     if (pearRuntime && typeof pearRuntime.applyUpdate === 'function') {
-      await pearRuntime.applyUpdate()
+      logger.info('[MAIN]', 'runtime:applyUpdate')
+      return await pearRuntime?.updater?.applyUpdate()
     }
   })
 
-  ipcMain.handle('runtime:restart', () => {
+  ipcMain.handle('runtime:restart', async () => {
+    logger.info('[MAIN]', 'runtime:restart')
     app.relaunch()
     app.exit(0)
   })
@@ -609,7 +648,7 @@ app.whenReady().then(async () => {
   app.setName('PearPass')
   logger.setLogPath(app.getPath('userData'))
   patchSpawnForPackagedApp()
-  initAutoUpdater()
+  // initAutoUpdater() //electron
   registerIPC()
   try {
     await startRuntime()

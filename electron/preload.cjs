@@ -20,6 +20,7 @@ global.__filename = path.join(fsNativeExtDir, 'binding.js')
 global.global = global
 
 window.electronAPI = {
+  getAppVersion: () => ipcRenderer.invoke('app:getVersion'),
   getConfig: () => ipcRenderer.invoke('runtime:getConfig'),
   onRuntimeUpdating: (cb) => {
     const sub = () => cb()
