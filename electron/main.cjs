@@ -12,6 +12,7 @@ const path = require('path')
 const { app, BrowserWindow, ipcMain, nativeImage, dialog } = require('electron')
 const { autoUpdater } = require('electron-updater')
 const getPearRuntimeLegacyStorage = require('pear-runtime-legacy-storage')
+const { isLinux, isWindows } = require('which-runtime')
 
 const runtimeConfig = require('./runtime-config.cjs')
 const {
@@ -170,18 +171,10 @@ function getAppPath() {
   return app.getAppPath()
 }
 function getExecPath() {
-  // Path to the current app executable for pear-runtime-updater.
-  if (!app.isPackaged) return null
-
-  logger.info('[MAIN]', 'process.resourcesPath: ', process.resourcesPath)
-  if (process.platform === 'darwin') {
-    // process.resourcesPath -> <App>.app/Contents/Resources
-    // App bundle root       -> <App>.app
-    return path.join(process.resourcesPath, '..', '..')
-  }
-
-  // For other platforms we can extend this later when needed
-  return null
+  // if (!app.isPackaged) return null
+  if (isLinux && process.env.APPIMAGE) return process.env.APPIMAGE
+  if (isWindows) return process.execPath
+  return path.join(process.resourcesPath, '..', '..')
 }
 
 function getWorkletPath() {
@@ -276,6 +269,7 @@ function waitForWorkletReady(sidecar) {
  */
 async function startRuntime() {
   const upgrade = runtimeConfig.upgrade
+  console.log(getExecPath(), 'execp atchj')
 
   if (!upgrade) {
     logger.warn(
@@ -319,7 +313,7 @@ async function startRuntime() {
     )
   }
 
-  const runtimeDir = path.join(storageDir, 'pear-runtime')
+  // const runtimeDir = path.join(storageDir, 'pear-runtime')
 
   // to clear local vault/encryption data so the app starts from scratch.
   clearVaultStorageForDevReset(storageDir)
@@ -328,16 +322,14 @@ async function startRuntime() {
 
   const PearRuntime = require('pear-runtime')
   const { PearpassVaultClient } = await import('pearpass-lib-vault-core')
-
+  logger.info('[MAIN]', 'getExecPath', getExecPath())
   pearRuntime = new PearRuntime({
-    dir: runtimeDir,
+    dir: storageDir,
     upgrade,
     version: runtimeConfig.version,
-    // For pear-runtime-updater: point at the installed .app bundle on macOS
     app: app.isPackaged ? getExecPath() : null,
-    // pear-build layout is now: /by-arch/<host>/app/PearPass.app
-    // so default name ("PearPass.app") matches without override.
-    bundled: !!app.isPackaged
+    bundled: !!app.isPackaged,
+    name: 'pearpass-app-desktop/app/PearPass.app'
   })
 
   await pearRuntime.ready()

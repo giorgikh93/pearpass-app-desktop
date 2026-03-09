@@ -1,6 +1,6 @@
 {
   "name": "pearpass-app-desktop",
-  "version": "1.6.0-beta.23",
+  "version": "1.6.0-beta.4",
   "description": "PearPass password manager",
   "author": "PearPass",
   "main": "electron/main.cjs",
@@ -74,9 +74,7 @@
       "https://docs.google.com/forms/d/e/1FAIpQLScLltvRe64VzMDRzOVjGtHWZ3KafLC2zzvkEoJfTzJkFd67OA/*"
     ],
     "stage": {
-      "entrypoints": [
-
-      ],
+      "entrypoints": [],
       "prefetch": [
         "assets"
       ],
@@ -119,8 +117,7 @@
     "dev:reset": "PEARPASS_DEV_RESET=1 npm run dev",
     "pack": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --dir && npm install",
     "dist": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder && npm install",
-    "dist:mac": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --mac && mkdir -p out/darwin-arm64/pearpass-app-desktop/app && cp -R dist/mac-arm64/PearPass.app out/darwin-arm64/pearpass-app-desktop/app/ && npm install && npm run pear:build:darwin",
-    "dist:win": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --win && npm install",
+    "dist:mac": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --mac && mkdir -p out/darwin-arm64/pearpass-app-desktop/app && cp -R dist/mac-arm64/PearPass.app out/darwin-arm64/pearpass-app-desktop/app/ && npm install && npm run pear:build:darwin",    "dist:win": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --win && npm install",
     "dist:linux": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux && npm install",
     "dist:snap": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux snap && npm install",
     "dist:flatpak": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux flatpak && npm install",
@@ -153,7 +150,8 @@
     "pear-interface": "1.0.0",
     "tether-dev-docs": "file:packages/tether-dev-docs",
     "typescript": "5.9.3",
-    "wait-on": "^8.0.0"
+    "wait-on": "^8.0.0",
+    "which-runtime": "^1.3.2"
   },
   "dependencies": {
     "@lingui/core": "5.1.2",
