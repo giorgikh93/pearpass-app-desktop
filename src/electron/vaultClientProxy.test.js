@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-env jest */
 
 import { createElectronVaultClientProxy } from './vaultClientProxy'

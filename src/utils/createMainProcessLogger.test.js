@@ -17,21 +17,27 @@ const os = require('os')
 const { createMainProcessLogger } = require('./createMainProcessLogger.cjs')
 
 describe('createMainProcessLogger', () => {
-  let infoSpy
-  let warnSpy
-  let errorSpy
+  let originalConsole
+  let infoMock
+  let warnMock
+  let errorMock
 
   beforeEach(() => {
     jest.clearAllMocks()
-    infoSpy = jest.spyOn(console, 'info').mockImplementation(() => {})
-    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
-    errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    originalConsole = global.console
+    infoMock = jest.fn()
+    warnMock = jest.fn()
+    errorMock = jest.fn()
+    global.console = {
+      ...originalConsole,
+      info: infoMock,
+      warn: warnMock,
+      error: errorMock
+    }
   })
 
   afterEach(() => {
-    infoSpy.mockRestore()
-    warnSpy.mockRestore()
-    errorSpy.mockRestore()
+    global.console = originalConsole
   })
 
   describe('when debugMode is false', () => {
@@ -50,9 +56,10 @@ describe('createMainProcessLogger', () => {
 
       expect(fs.mkdirSync).not.toHaveBeenCalled()
       expect(fs.appendFileSync).not.toHaveBeenCalled()
-      expect(console.info).not.toHaveBeenCalled()
-      expect(console.warn).not.toHaveBeenCalled()
-      expect(console.error).not.toHaveBeenCalled()
+
+      expect(infoMock).not.toHaveBeenCalled()
+      expect(warnMock).not.toHaveBeenCalled()
+      expect(errorMock).not.toHaveBeenCalled()
     })
   })
 
@@ -75,17 +82,11 @@ describe('createMainProcessLogger', () => {
       expect(fs.mkdirSync).not.toHaveBeenCalled()
       expect(fs.appendFileSync).not.toHaveBeenCalled()
 
-      expect(console.info).toHaveBeenCalledWith('[MAIN]', 'log message')
-      expect(console.info).toHaveBeenCalledWith('[MAIN][INFO]', 'info message')
-      expect(console.info).toHaveBeenCalledWith(
-        '[MAIN][DEBUG]',
-        'debug message'
-      )
-      expect(console.warn).toHaveBeenCalledWith('[MAIN][WARN]', 'warn message')
-      expect(console.error).toHaveBeenCalledWith(
-        '[MAIN][ERROR]',
-        'error message'
-      )
+      expect(infoMock).toHaveBeenCalledWith('[MAIN]', 'log message')
+      expect(infoMock).toHaveBeenCalledWith('[MAIN][INFO]', 'info message')
+      expect(infoMock).toHaveBeenCalledWith('[MAIN][DEBUG]', 'debug message')
+      expect(warnMock).toHaveBeenCalledWith('[MAIN][WARN]', 'warn message')
+      expect(errorMock).toHaveBeenCalledWith('[MAIN][ERROR]', 'error message')
     })
   })
 
@@ -110,10 +111,7 @@ describe('createMainProcessLogger', () => {
       expect(firstLine).toContain('Main process log file:')
       expect(firstLine).toContain('[INFO]')
 
-      expect(console.info).toHaveBeenCalledWith(
-        '[MAIN] Log file:',
-        expectedLogFile
-      )
+      expect(infoMock).toHaveBeenCalledWith('[MAIN] Log file:', expectedLogFile)
 
       // After setLogPath, log methods should also append to the same file
       fs.appendFileSync.mockClear()
@@ -145,7 +143,7 @@ describe('createMainProcessLogger', () => {
 
       logger.setLogPath(userDataDir)
 
-      expect(console.error).toHaveBeenCalledWith(
+      expect(errorMock).toHaveBeenCalledWith(
         '[MAIN] Failed to create log dir:',
         mkdirError.message,
         path.join(userDataDir, 'logs')
@@ -155,7 +153,7 @@ describe('createMainProcessLogger', () => {
       expect(filePath).toBe(expectedFallback)
       expect(line).toContain('Main process log file (fallback):')
 
-      expect(console.info).toHaveBeenCalledWith(
+      expect(infoMock).toHaveBeenCalledWith(
         '[MAIN] Log file (fallback):',
         expectedFallback
       )
