@@ -5,11 +5,9 @@
  */
 const pkg = require('../package.json')
 
-const pearRuntime = pkg.pearRuntime || {}
-
 module.exports = {
   /** Upgrade link for P2P updates (required for OTA). Get from pear link or pear.json. */
-  upgrade: pearRuntime.upgrade || process.env.PEARPASS_UPGRADE_LINK || null,
+  upgrade: pkg.upgrade || process.env.PEARPASS_UPGRADE_LINK || null,
   /** Current app version; runtime fetches package.json from drive and compares. */
   version: pkg.version ?? 0
 }

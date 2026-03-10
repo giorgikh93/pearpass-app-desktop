@@ -1,18 +1,15 @@
 {
   "name": "pearpass-app-desktop",
-  "version": "1.6.0-beta.4",
+  "version": "1.41.0",
   "description": "PearPass password manager",
   "author": "PearPass",
   "main": "electron/main.cjs",
-  "upgrade": "pear://mwni83pzx5575qf8gpqqjqpogafz37egr6uzxruqpsb4rc169fdo",
-  "pearRuntime": {
-    "upgrade": "pear://mwni83pzx5575qf8gpqqjqpogafz37egr6uzxruqpsb4rc169fdo"
-  },
+  "upgrade": "pear://gsy4ddfwxu63ntda1amxapzrr5c55ocmtsbhgfufx4saynrngxho",
   "build": {
     "productName": "PearPass",
     "appId": "com.pears.pass",
     "icon": "assets/darwin/icon.png",
-    "asar": true,
+    "asar": false,
     "files": [
       "electron/**/*",
       "dist/**/*",
@@ -21,13 +18,6 @@
       "packages/**/*",
       "assets/**/*",
       "src/utils/**/*"
-    ],
-    "asarUnpack": [
-      "packages/pearpass-lib-vault-core/src/**",
-      "packages/pearpass-lib-vault-core/node_modules/**",
-      "packages/pearpass-utils-password-check/**",
-      "packages/pear-apps-utils-validator/**",
-      "node_modules/**"
     ],
     "extraResources": [
       {
@@ -117,7 +107,8 @@
     "dev:reset": "PEARPASS_DEV_RESET=1 npm run dev",
     "pack": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --dir && npm install",
     "dist": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder && npm install",
-    "dist:mac": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --mac && mkdir -p out/darwin-arm64/pearpass-app-desktop/app && cp -R dist/mac-arm64/PearPass.app out/darwin-arm64/pearpass-app-desktop/app/ && npm install && npm run pear:build:darwin",    "dist:win": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --win && npm install",
+    "dist:mac": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --mac && mkdir -p out/darwin-arm64/pearpass-app-desktop/app && cp -R dist/mac-arm64/PearPass.app out/darwin-arm64/pearpass-app-desktop/app/ && npm install && npm run pear:build:darwin",
+    "dist:win": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --win && npm install",
     "dist:linux": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux && npm install",
     "dist:snap": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux snap && npm install",
     "dist:flatpak": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux flatpak && npm install",
@@ -140,7 +131,7 @@
     "cmake-pear": "2.0.0",
     "concurrently": "9.2.1",
     "electron": "^33.0.0",
-    "electron-builder": "^25.0.0",
+    "electron-builder": "23.6.0",
     "electron-reload": "^2.0.0-alpha.1",
     "esbuild": "^0.24.2",
     "husky": "9.1.7",
@@ -164,7 +155,6 @@
     "buffer": "6.0.3",
     "compact-encoding": "2.18.0",
     "dotenv": "17.2.1",
-    "electron-updater": "^6.8.3",
     "htm": "3.1.1",
     "jszip": "3.10.1",
     "pear-apps-lib-feedback": "file:packages/pear-apps-lib-feedback",
