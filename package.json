@@ -90,11 +90,11 @@
   "license": "Apache-2.0",
   "scripts": {
     "test": "jest",
-    "build:pear": "lingui extract && lingui compile && tsc",
+    "build:app": "lingui extract && lingui compile && tsc",
     "lint:fix": "eslint --fix ./src",
     "lint": "eslint ./src",
     "build:worklet": "node scripts/build.worklet.mjs",
-    "build": "node scripts/build.worklet.mjs && tsc && node scripts/bundle-renderer.mjs",
+    "build": "node scripts/build.worklet.mjs && npm run build:app && node scripts/bundle-renderer.mjs",
     "bundle:renderer": "node scripts/bundle-renderer.mjs",
     "lingui:extract": "lingui extract",
     "lingui:compile": "lingui compile",
