@@ -117,6 +117,7 @@ jobs:
       - name: Build application
         env:
           MAC_CODESIGN_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+          CSC_NAME: ${{ secrets.MACOS_SIGNING_IDENTITY }}
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
