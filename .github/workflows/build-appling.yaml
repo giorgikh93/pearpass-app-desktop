@@ -118,6 +118,7 @@ jobs:
         env:
           MAC_CODESIGN_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
           PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           npm run dist:mac
 
@@ -174,6 +175,7 @@ jobs:
         env:
           WIN_SUBJECT: ${{ secrets.WIN_SUBJECT }}
           WIN_THUMBPRINT: ${{ secrets.WIN_THUMBPRINT }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           npm run dist:win
 
