@@ -1,10 +1,10 @@
 {
   "name": "pearpass-app-desktop",
-  "version": "1.41.0",
+  "version": "1.6.0",
   "description": "PearPass password manager",
   "author": "PearPass",
   "main": "electron/main.cjs",
-  "upgrade": "pear://gsy4ddfwxu63ntda1amxapzrr5c55ocmtsbhgfufx4saynrngxho",
+  "upgrade": "pear://yyh31iisz8633g9qykhaf547188kpgjihfh55ppe3q6fgj3brnpo",
   "build": {
     "productName": "PearPass",
     "appId": "com.pears.pass",
@@ -148,6 +148,7 @@
     "nodemon": "^3.0.0",
     "pear-interface": "1.0.0",
     "prettier": "3.4.2",
+    "patch-package": "^8.0.0",
     "tether-dev-docs": "git+https://github.com/tetherto/tether-dev-docs.git",
     "typescript": "5.9.3",
     "wait-on": "^8.0.0",

@@ -76,7 +76,7 @@ function getExecPath() {
 
 function getWorkletPath() {
   const workletDir = path.join(
-    'packages',
+    'node_modules',
     'pearpass-lib-vault-core',
     'src',
     'worklet'
@@ -89,14 +89,7 @@ function getWorkletPath() {
 
   // Dev: ESM app.js so Bare's loader can resolve fs -> bare-fs etc.
   const appPath = app.getAppPath()
-  return path.join(
-    appPath,
-    'node_modules',
-    'pearpass-lib-vault-core',
-    'src',
-    'worklet',
-    'app.js'
-  )
+  return path.join(appPath, workletDir, 'app.js')
 }
 
 function getStorageDir() {
