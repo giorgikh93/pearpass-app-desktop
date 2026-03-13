@@ -5,14 +5,14 @@
   "description": "PearPass password manager",
   "author": "PearPass",
   "main": "electron/main.cjs",
-  "upgrade": "pear://8exxrkiy53gd8naq3dc4j1s1h8dtbmmck7u5aqnb8zun6g8di9qy",
+  "upgrade": "pear://38pdt8rgbm89zz3q34awewegx3eig86d5quoirj46fpxadyn7miy",
   "build": {
     "appId": "com.pears.pass",
     "icon": "assets/darwin/icon.png",
     "asar": false,
     "files": [
       "electron/**/*",
-      "dist/**/*",
+    "dist/**/*",
       "index.html",
       "index.js",
       "packages/**/*",
@@ -34,11 +34,6 @@
     },
     "afterSign": "scripts/notarize.cjs",
     "dmg": {},
-    "win": {
-      "icon": "assets/win32/icon.png",
-      "signAndEditExecutable": false,
-      "target": "nsis"
-    },
     "linux": {
       "icon": "assets/linux/icon.png",
       "target": "AppImage"
@@ -112,18 +107,22 @@
     "dist": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder && npm install",
     "dist:mac": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && SKIP_NOTARIZE=true npx electron-builder --mac && mkdir -p out/darwin-arm64 && cp -R dist/mac-arm64/PearPass.app out/darwin-arm64/ && npm install && npm run pear:build:darwin",
     "dist:mac:ci": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --mac && mkdir -p out/darwin-arm64 && cp -R dist/mac-arm64/PearPass.app out/darwin-arm64/ && npm install && npm run pear:build:darwin",
-    "dist:win": "node scripts/dist.win.mjs",
+    "dist:win": "npm run build && electron-forge make --platform=win32 --arch=x64 && npm run pear:build:win",
     "dist:linux": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux && npm install",
     "dist:snap": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux snap && npm install",
     "dist:flatpak": "npm install && npm run build && npm prune --omit=dev && npm install electron --no-save && npx electron-builder --linux flatpak && npm install",
     "pear:build:darwin": "npx pear-build --package=./package.json --darwin-arm64-app ./out/darwin-arm64/PearPass.app --target ../pearpass-app-desktop-$npm_package_version",
-    "pear:build:win": "npx pear-build --package=./package.json --win32-x64-app ./out/win32-x64/PearPass.app --target ../pearpass-app-desktop-%npm_package_version%"
+    "pear:build:win": "npx pear-build --package=./package.json --win32-x64-app ./out/PearPass/PearPass.msix --target ../pearpass-app-desktop-%npm_package_version%"
   },
   "devDependencies": {
     "@babel/core": "7.26.10",
     "@babel/preset-env": "7.26.9",
     "@babel/preset-react": "7.26.3",
     "@babel/preset-typescript": "^7.28.5",
+    "@electron-forge/cli": "^7.6.0",
+    "@electron-forge/maker-dmg": "^7.6.0",
+    "@electron-forge/maker-msix": "^7.6.0",
+    "@electron/notarize": "^2.2.1",
     "@lingui/cli": "5.1.2",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "6.6.3",
@@ -137,9 +136,10 @@
     "bare-pack": "1.4.8",
     "cmake-pear": "2.0.0",
     "concurrently": "9.2.1",
-    "@electron/notarize": "^2.2.1",
     "electron": "^33.0.0",
     "electron-builder": "23.6.0",
+    "electron-forge-plugin-prune-prebuilds": "^1.0.0",
+    "electron-forge-plugin-universal-prebuilds": "^1.0.0",
     "electron-reload": "^2.0.0-alpha.1",
     "esbuild": "^0.24.2",
     "eslint": "^9.39.3",
@@ -153,8 +153,10 @@
     "jest": "29.7.0",
     "jest-environment-jsdom": "29.7.0",
     "nodemon": "^3.0.0",
+    "patch-package": "^8.0.1",
     "pear-build": "^0.2.0",
     "pear-interface": "1.0.0",
+    "pear-runtime-updater": "^2.0.2",
     "prettier": "3.4.2",
     "tether-dev-docs": "git+https://github.com/tetherto/tether-dev-docs.git",
     "typescript": "5.9.3",
@@ -204,6 +206,7 @@
   "overrides": {
     "@xmldom/xmldom": "^0.8.10",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "electron-windows-msix": "git+https://github.com/chetasr/electron-windows-msix.git"
   }
 }

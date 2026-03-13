@@ -197,7 +197,7 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
             
-      - name: "Upload folders as artifacts"
+      - name: "Upload Windows MSIX artifact"
         id: upload-artifacts
         env:
           NODE_PATH: ${{ env.NODE_PATH }}
@@ -206,27 +206,17 @@ jobs:
           const path = require('path');
           const { DefaultArtifactClient } = require('@actions/artifact');
 
-          const artifact = new DefaultArtifactClient()
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const productName = pkg.productName || pkg.name;
 
-          function listFilesRecursive (dir) {
-            let results = []
-            const list = fs.readdirSync(dir)
-            list.forEach(function (file) {
-              const filePath = path.join(dir, file)
-              const stat = fs.statSync(filePath)
-              if (stat && stat.isDirectory()) {
-                results = results.concat(listFilesRecursive(filePath))
-              } else if (stat && stat.isFile()) {
-                results.push(filePath)
-              }
-            })
-            return results
+          const msixName = `${productName}.msix`;
+          const msixPath = path.join('out', productName, msixName);
+
+          if (!fs.existsSync(msixPath)) {
+            throw new Error(`Expected MSIX not found at ${msixPath}`);
           }
 
-          const files = listFilesRecursive('out/make')
-          files.forEach(file => {
-            const artifactName = path.basename(file)
-            console.log(`Uploading artifact: ${artifactName} from ${file}`)
-            artifact.uploadArtifact(artifactName, [file], './out/make')
-          })
+          const artifact = new DefaultArtifactClient();
+          console.log(`Uploading Windows MSIX: ${msixName} from ${msixPath}`);
+          artifact.uploadArtifact(msixName, [msixPath], path.dirname(msixPath));
         shell: node {0}

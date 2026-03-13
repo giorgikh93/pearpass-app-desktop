@@ -245,9 +245,10 @@ async function startRuntime() {
     }
   })
 
-  pearRuntime.updater.on('updated', () => {
+  pearRuntime.updater.on('updated', async () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       logger.info('runtime:updated', 'sending updated event')
+      await pearRuntime.updater.applyUpdate()
       mainWindow.webContents.send('runtime:updated')
     }
   })
