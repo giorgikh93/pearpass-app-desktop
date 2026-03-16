@@ -36,21 +36,21 @@ const importOptions = [
     type: 'bitwarden',
     testId: 'settings-import-bitwarden',
     accepts: ['.json', '.csv'],
-    imgSrc: '/assets/images/BitWarden.png'
+    imgSrc: 'assets/images/BitWarden.png'
   },
   {
     title: 'KeePass',
     type: 'keepass',
     testId: 'settings-import-keepass',
     accepts: ['.kdbx', '.csv', '.xml'],
-    imgSrc: '/assets/images/KeePass.png'
+    imgSrc: 'assets/images/KeePass.png'
   },
   {
     title: 'KeePassXC',
     type: 'keepass',
     testId: 'settings-import-keepassxc',
     accepts: ['.csv', '.xml'],
-    imgSrc: '/assets/images/KeePassXC.png'
+    imgSrc: 'assets/images/KeePassXC.png'
   },
   {
     title: 'LastPass',
@@ -77,7 +77,7 @@ const importOptions = [
     title: 'Encrypted file',
     type: 'encrypted',
     accepts: ['.json'],
-    imgSrc: '/assets/images/pearpass_logo.png'
+    imgSrc: 'assets/images/pearpass_logo.png'
   },
   {
     title: 'Unencrypted file',
