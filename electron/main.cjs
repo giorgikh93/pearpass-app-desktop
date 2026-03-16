@@ -11,6 +11,7 @@ const { app, BrowserWindow, ipcMain, nativeImage } = require('electron')
 const PearRuntime = require('pear-runtime')
 const getPearRuntimeLegacyStorage = require('pear-runtime-legacy-storage')
 const { isLinux, isWindows, isMac } = require('which-runtime')
+const debugMode = false
 
 const pkg = require('../package.json')
 const runtimeConfig = require('./runtime-config.cjs')
@@ -18,8 +19,7 @@ const {
   createMainProcessLogger
 } = require('../src/utils/createMainProcessLogger.cjs')
 
-const logger = createMainProcessLogger({ app, debugMode: true })
-
+const logger = createMainProcessLogger({ app, debugMode })
 // Enable auto-reload during development for main + renderer code
 if (!app.isPackaged) {
   try {
@@ -229,7 +229,7 @@ async function startRuntime() {
   })
   await waitForWorkletReady(workletSidecar)
   vaultClient = new PearpassVaultClient(workletSidecar, storageDir, {
-    debugMode: true
+    debugMode
   })
 
   vaultClient.on('update', () => {
@@ -319,7 +319,7 @@ async function startWorkletOnly() {
   })
   await waitForWorkletReady(workletSidecar)
   vaultClient = new PearpassVaultClient(workletSidecar, getStorageDir(), {
-    debugMode: true
+    debugMode
   })
 
   vaultClient.on('update', () => {
