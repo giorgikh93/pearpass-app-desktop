@@ -36,7 +36,7 @@ const importOptions = [
     type: 'bitwarden',
     testId: 'settings-import-bitwarden',
     accepts: ['.json', '.csv'],
-    imgSrc: 'assets/images/BitWarden.png'
+    imgSrc: '/assets/images/BitWarden.png'
   },
   {
     title: 'KeePass',
@@ -76,7 +76,7 @@ const importOptions = [
   {
     title: 'Encrypted file',
     type: 'encrypted',
-    accepts: ['.pearpass'],
+    accepts: ['.json'],
     imgSrc: '/assets/images/pearpass_logo.png'
   },
   {
