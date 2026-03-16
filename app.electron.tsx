@@ -14,15 +14,13 @@ import { ModalProvider } from './src/context/ModalContext'
 import { RouterProvider } from './src/context/RouterContext'
 import { ToastProvider } from './src/context/ToastContext'
 import { messages } from './src/locales/en/messages.mjs'
-import {
-  getElectronConfig,
-  getElectronVaultClient
-} from './src/electron'
+import { getElectronConfig, getElectronVaultClient } from './src/electron'
 import { createOrGetPearpassClient } from './src/services/createOrGetPearpassClient'
 import { getNativeMessagingEnabled } from './src/services/nativeMessagingPreferences'
 import { startNativeMessagingIPC } from './src/services/nativeMessagingIPCServer'
 import { logger } from './src/utils/logger'
 import { setFontsAndResetCSS } from './styles'
+import { AutoLockProvider } from './src/hooks/useAutoLockPreferences'
 
 setFontsAndResetCSS()
 i18n.load('en', messages)
@@ -39,9 +37,11 @@ function renderApp(client: Parameters<typeof setPearpassVaultClient>[0]) {
           <I18nProvider i18n={i18n}>
             <ToastProvider>
               <RouterProvider>
-                <ModalProvider>
-                  <App />
-                </ModalProvider>
+                <AutoLockProvider>
+                  <ModalProvider>
+                    <App />
+                  </ModalProvider>
+                </AutoLockProvider>
               </RouterProvider>
             </ToastProvider>
           </I18nProvider>
@@ -54,7 +54,8 @@ function renderApp(client: Parameters<typeof setPearpassVaultClient>[0]) {
 async function init() {
   const config = await getElectronConfig()
   const client = await getElectronVaultClient()
-  if (!config || !client) throw new Error('Electron config or vault client missing')
+  if (!config || !client)
+    throw new Error('Electron config or vault client missing')
 
   const api = window.electronAPI!
   ;(window as unknown as { Pear: object }).Pear = {
