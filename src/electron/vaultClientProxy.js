@@ -95,7 +95,11 @@ const VAULT_METHODS = [
   'activeVaultAddFile',
   'activeVaultGetFile',
   'beginBackground',
-  'endBackground'
+  'endBackground',
+  'generateOtpCodesByIds',
+  'generateHotpNext',
+  'addOtpToRecord',
+  'removeOtpFromRecord'
 ]
 
 /**

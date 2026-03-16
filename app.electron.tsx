@@ -26,7 +26,7 @@ setFontsAndResetCSS()
 i18n.load('en', messages)
 i18n.activate('en')
 
-function renderApp(client: Parameters<typeof setPearpassVaultClient>[0]) {
+function renderApp() {
   const container = document.querySelector('#root')
   if (!container) throw new Error('Failed to find the root element')
   const root = createRoot(container)
@@ -90,7 +90,7 @@ async function init() {
     })
   }
 
-  renderApp(client)
+  renderApp()
 }
 
 init()

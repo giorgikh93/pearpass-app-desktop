@@ -48,7 +48,7 @@ export const ExportTab = () => {
       handleExportJsonPerVaultTest(vaultsToExport, encryptionPassword)
     }
     if (exportType === 'csv') {
-      handleExportCSVPerVault(vaultsToExport, encryptionPassword)
+      handleExportCSVPerVault(vaultsToExport)
     }
   }
 
