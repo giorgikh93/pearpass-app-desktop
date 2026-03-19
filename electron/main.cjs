@@ -7,10 +7,12 @@
 const fs = require('fs')
 const path = require('path')
 
-const { app, BrowserWindow, ipcMain, nativeImage, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeImage, shell, clipboard } = require('electron')
 const PearRuntime = require('pear-runtime')
+
 const getPearRuntimeLegacyStorage = require('pear-runtime-legacy-storage')
 const { isLinux, isWindows, isMac } = require('which-runtime')
+const { scheduleClipboardCleanup } = require('./clipboardCleanup.cjs')
 let debugMode = false
 
 ;(async () => {
@@ -539,6 +541,17 @@ function registerIPC() {
         code: err.code
       }
     }
+  })
+
+  ipcMain.handle('clipboard:clearAfter', async (_event, { text, delayMs }) => {
+    return scheduleClipboardCleanup({
+      app,
+      clipboard,
+      logger,
+      isWindows,
+      text,
+      delayMs
+    })
   })
 }
 
