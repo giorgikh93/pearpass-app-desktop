@@ -33,7 +33,7 @@ export const CardUnlockPearPass = () => {
           ? error
           : remainingAttempts !== undefined
             ? t(
-              `Incorrect password. You have ${remainingAttempts} attempts before the app locks for 5 minutes.`
+              `Incorrect password. You have ${remainingAttempts} ${remainingAttempts === 1 ? 'attempt' : 'attempts'} before the app will be temporarily locked`
             )
             : t('Invalid password')
     })

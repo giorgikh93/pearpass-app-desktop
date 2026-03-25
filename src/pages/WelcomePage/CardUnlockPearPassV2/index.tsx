@@ -106,7 +106,7 @@ export const CardUnlockPearPassV2 = (): React.ReactElement => {
           ? submitError
           : attemptsLeft !== null
             ? t(
-              `Incorrect Master Password. ${attemptsLeft} ${attemptsLeft === 1 ? 'try' : 'tries'} left.`
+              `Incorrect password. You have ${attemptsLeft} ${attemptsLeft === 1 ? 'attempt' : 'attempts'} before the app will be temporarily locked`
             )
             : t('Invalid password')
       )
