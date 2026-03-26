@@ -47,6 +47,8 @@ const client = createOrGetPearpassClient(pipe, storage, {
 
 setPearpassVaultClient(client)
 
+
+
 // Start IPC server on startup if native messaging is enabled
 if (getNativeMessagingEnabled()) {
   startNativeMessagingIPC(client).catch((err: unknown) => {
