@@ -5,7 +5,7 @@
   "description": "PearPass password manager",
   "author": "PearPass",
   "main": "electron/main.cjs",
-  "upgrade": "pear://9hpqa7h94mf69uhpf4zec1gutxkx1q1f59riz8i6cpanw76d8eiy",
+  "upgrade": "pear://r9s8cr544s61t5ati3kde3fh3g5g5ksqhjwytqmcht65fhdzm9iy",
   "build": {
     "appId": "com.pears.pass",
     "icon": "assets/darwin/icon.png",
