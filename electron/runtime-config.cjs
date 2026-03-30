@@ -5,6 +5,7 @@ const fs = require('fs')
 const path = require('path')
 
 const pkg = require('../package.json')
+const bakedRuntimeEnv = require('./runtime-env.cjs')
 
 function readDesignVersion() {
   try {
@@ -26,7 +27,11 @@ function readDesignVersion() {
 }
 
 module.exports = {
-  upgrade: process.env.PEARPASS_UPGRADE_LINK || pkg.upgrade || null,
+  upgrade:
+    process.env.PEARPASS_UPGRADE_LINK ||
+    bakedRuntimeEnv.PEARPASS_UPGRADE_LINK ||
+    pkg.upgrade ||
+    null,
   version: pkg.version ?? 0,
   designVersion: readDesignVersion()
 }

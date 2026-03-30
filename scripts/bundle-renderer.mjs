@@ -29,7 +29,9 @@ const strictDomRuntimePaths = [
 ]
 
 function shouldTransformStrictDomRuntime(filePath) {
-  return strictDomRuntimePaths.some((runtimePath) => filePath.includes(runtimePath))
+  return strictDomRuntimePaths.some((runtimePath) =>
+    filePath.includes(runtimePath)
+  )
 }
 
 function getLoader(filePath) {
@@ -106,6 +108,9 @@ const ctx = await esbuild.context({
   define: {
     'process.env.NODE_ENV': JSON.stringify(
       process.env.NODE_ENV || 'development'
+    ),
+    'process.env.PEARPASS_UPGRADE_LINK': JSON.stringify(
+      process.env.PEARPASS_UPGRADE_LINK || ''
     )
   },
   loader: {

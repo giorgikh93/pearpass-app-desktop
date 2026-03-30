@@ -122,6 +122,8 @@
   "license": "Apache-2.0",
   "scripts": {
     "test": "jest",
+    "bake:runtime-env": "node scripts/bake-runtime-env.cjs",
+    "prebuild": "npm run bake:runtime-env",
     "build:app": "lingui extract && lingui compile && tsc",
     "lint:fix": "eslint --fix ./src",
     "lint": "eslint ./src",

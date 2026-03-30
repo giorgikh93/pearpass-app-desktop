@@ -10,6 +10,9 @@ on:
         required: true
         type: string
 
+env:
+  PEARPASS_UPGRADE_LINK: ${{ github.ref_name == 'main' && vars.PEARPASS_UPGRADE_LINK_PROD || github.ref_name == 'staging' && vars.PEARPASS_UPGRADE_LINK_STAGING || vars.PEARPASS_UPGRADE_LINK_DEV }}
+
 jobs:
   build-linux:
     permissions:
@@ -39,9 +42,10 @@ jobs:
           npm install electron --no-save
           npm install electron-builder --no-save
           npm install pear-build --no-save
+      - name: Bake runtime env
+        run: npm run bake:runtime-env
       - name: Build application
         env:
-          PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           npm run dist:linux:${{ matrix.arch }}
@@ -127,9 +131,11 @@ jobs:
         run: |
           npm install electron --no-save
 
+      - name: Bake runtime env
+        run: npm run bake:runtime-env
+
       - name: Build snap
         env:
-          PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
           SNAPCRAFT_BUILD_ENVIRONMENT: host
         run: npm run dist:snap:${{ matrix.arch }}
@@ -219,9 +225,10 @@ jobs:
         run: |
           npm ci
 
+      - name: Bake runtime env
+        run: npm run bake:runtime-env
+
       - name: Build application
-        env:
-          PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
         run: |
           npm run dist:linux:${{ matrix.arch }}
 
@@ -346,11 +353,12 @@ jobs:
           npm install -g electron-builder@23.6.0
           npm install -g pear-build
           npm install @electron/notarize --no-save
+      - name: Bake runtime env
+        run: npm run bake:runtime-env
       - name: Build application
         env:
           MAC_CODESIGN_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
           CSC_NAME: ${{ secrets.MACOS_SIGNING_IDENTITY }}
-          PEARPASS_UPGRADE_LINK: ${{ vars.PEARPASS_UPGRADE_LINK }}
         run: |
           npm run dist:mac:${{ matrix.arch }}
 
@@ -405,6 +413,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
+      - name: Bake runtime env
+        run: npm run bake:runtime-env
       - uses: holepunchto/make-pear-app@main
         id: build
         with:
