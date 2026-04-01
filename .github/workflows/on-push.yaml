@@ -6,7 +6,7 @@ on:
       - main
       - dev
       - staging
-      - feat/updater
+      - qa/feat/updater
 
 jobs:
   build:
