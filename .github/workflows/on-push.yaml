@@ -6,8 +6,13 @@ on:
       - main
       - dev
       - staging
-      - feat/updater
-
+      - qa/feat/updater
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag'
+        required: true
+        type: string
 jobs:
   build:
     runs-on: ubuntu-latest
