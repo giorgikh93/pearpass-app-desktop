@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { useLingui } from '@lingui/react'
-import { LANGUAGES } from 'pearpass-lib-constants'
+import { LANGUAGES } from '@tetherto/pearpass-lib-constants'
 
 export const useLanguageOptions = () => {
   const { i18n } = useLingui()
@@ -16,7 +16,8 @@ export const useLanguageOptions = () => {
 
     return LANGUAGES.map((lang) => ({
       label: languageLabelByValue[lang.value],
-      value: lang.value
+      value: lang.value,
+      testId: `settings-language-${lang.value}`
     }))
   }, [LANGUAGES, i18n])
 

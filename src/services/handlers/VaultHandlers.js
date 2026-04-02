@@ -210,4 +210,26 @@ export class VaultHandlers {
     await this.client.activeVaultRemoveFile(params.key)
     return { success: true }
   }
+
+  async fetchFavicon(params) {
+    return await this.client.fetchFavicon(params.url)
+  }
+
+  async generateOtpCodesByIds(params) {
+    return await this.client.generateOtpCodesByIds(params.recordIds)
+  }
+
+  async generateHotpNext(params) {
+    return await this.client.generateHotpNext(params.recordId)
+  }
+
+  async addOtpToRecord(params) {
+    await this.client.addOtpToRecord(params.recordId, params.otpInput)
+    return { success: true }
+  }
+
+  async removeOtpFromRecord(params) {
+    await this.client.removeOtpFromRecord(params.recordId)
+    return { success: true }
+  }
 }

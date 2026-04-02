@@ -8,7 +8,7 @@ jest.mock('@lingui/react', () => ({
   })
 }))
 
-jest.mock('pearpass-lib-constants', () => ({
+jest.mock('@tetherto/pearpass-lib-constants', () => ({
   LANGUAGES: [
     { value: 'en' },
     { value: 'it' },
@@ -25,10 +25,10 @@ describe('useLanguageOptions', () => {
     const { result } = renderHook(() => useLanguageOptions())
 
     expect(result.current.languageOptions).toEqual([
-      { label: 'English', value: 'en' },
-      { label: 'Italian', value: 'it' },
-      { label: 'Spanish', value: 'es' },
-      { label: 'French', value: 'fr' }
+      { label: 'English', value: 'en', testId: 'settings-language-en' },
+      { label: 'Italian', value: 'it', testId: 'settings-language-it' },
+      { label: 'Spanish', value: 'es', testId: 'settings-language-es' },
+      { label: 'French', value: 'fr', testId: 'settings-language-fr' }
     ])
   })
 

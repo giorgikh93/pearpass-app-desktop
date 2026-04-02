@@ -17,7 +17,17 @@ import { logger } from '../utils/logger.js'
 jest.mock('os', () => ({
   ...jest.requireActual('os'),
   platform: jest.fn(),
-  tmpdir: jest.fn(() => '/tmp')
+  tmpdir: jest.fn(() => '/tmp'),
+  homedir: jest.fn(() => '/home/testuser')
+}))
+
+jest.mock('fs', () => ({
+  ...jest.requireActual('fs'),
+  promises: {
+    ...jest.requireActual('fs').promises,
+    mkdir: jest.fn().mockResolvedValue(undefined),
+    unlink: jest.fn().mockResolvedValue(undefined)
+  }
 }))
 
 // Mock Pear.config.storage and pearDir (used by SocketManager for socket paths)
@@ -141,6 +151,11 @@ jest.mock('./handlers/VaultHandlers', () => ({
     this.closeAllInstances = jest.fn().mockResolvedValue({ success: true })
     this.cancelPairActiveVault = jest.fn().mockResolvedValue({ success: true })
     this.activeVaultRemoveFile = jest.fn().mockResolvedValue({ success: true })
+    this.fetchFavicon = jest.fn().mockResolvedValue({ favicon: 'mock-favicon' })
+    this.generateOtpCodesByIds = jest.fn().mockResolvedValue({ codes: [] })
+    this.generateHotpNext = jest.fn().mockResolvedValue({ code: '123456' })
+    this.addOtpToRecord = jest.fn().mockResolvedValue({ success: true })
+    this.removeOtpFromRecord = jest.fn().mockResolvedValue({ success: true })
   })
 }))
 
@@ -212,7 +227,7 @@ describe('nativeMessagingIPCServer', () => {
       platform.mockReturnValue('linux')
       const socketName = 'test-socket'
       expect(getIpcPath(socketName)).toBe(
-        join('/tmp', 'pearpass', `${socketName}.sock`)
+        join('/home/testuser', '.pearpass', `${socketName}.sock`)
       )
     })
   })
@@ -230,7 +245,7 @@ describe('nativeMessagingIPCServer', () => {
       expect(serverInstance.server).toBeNull()
       expect(serverInstance.isRunning).toBe(false)
       expect(serverInstance.socketPath).toBe(
-        join('/tmp', 'pearpass', 'pearpass-native-messaging.sock')
+        join('/home/testuser', '.pearpass', 'pearpass-native-messaging.sock')
       )
     })
 
@@ -453,7 +468,7 @@ describe('nativeMessagingIPCServer', () => {
     it('getIPCSocketPath should return a default path when not running', () => {
       platform.mockReturnValue('linux')
       expect(getIPCSocketPath()).toBe(
-        join('/tmp', 'pearpass', 'pearpass-native-messaging.sock')
+        join('/home/testuser', '.pearpass', 'pearpass-native-messaging.sock')
       )
     })
   })

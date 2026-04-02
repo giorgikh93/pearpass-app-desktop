@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 
+import {
+  BLIND_PEER_TYPE,
+  BLIND_PEERS_LEARN_MORE
+} from '@tetherto/pearpass-lib-constants'
+import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { useBlindMirrors } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
-import { BLIND_PEER_TYPE, BLIND_PEERS_LEARN_MORE } from 'pearpass-lib-constants'
-import { colors } from 'pearpass-lib-ui-theme-provider'
-import { useBlindMirrors } from 'pearpass-lib-vault'
 
 import {
   ActiveDot,
@@ -161,6 +164,7 @@ export const SettingsBlindPeersSection = () => {
 
   return html`
     <${CardSingleSetting}
+      testId="settings-card-blind-peering"
       title=${t('Blind Peering')}
       additionalHeaderContent=${html`
         <${PopupMenu}
