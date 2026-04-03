@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 
+import { AUTO_LOCK_ENABLED } from '@tetherto/pearpass-lib-constants'
 import { html } from 'htm/react'
-import { AUTO_LOCK_ENABLED } from 'pearpass-lib-constants'
 
 import { AutoLockConfiguration } from './SettingsAutoLockConfiguration'
 import { SettingsBlindPeersSection } from './SettingsBlindPeersSection'
@@ -80,7 +80,10 @@ export const SettingsAdvancedTab = () => {
   }
 
   return html`
-    <${CardSingleSetting} title=${t('Custom settings')}>
+    <${CardSingleSetting}
+      testId="settings-card-custom-settings"
+      title=${t('Custom settings')}
+    >
       <${Description}>
         ${t(
           'Here you can choose your privacy settings and personalize your experience'

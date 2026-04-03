@@ -17,10 +17,10 @@ export { getIpcPath }
  */
 export class NativeMessagingIPCServer {
   /**
-   * @param {import('pearpass-lib-vault-core').PearpassVaultClient} pearpassClient
+   * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} pearpassClient
    */
   constructor(pearpassClient) {
-    /** @type {import('pearpass-lib-vault-core').PearpassVaultClient} */
+    /** @type {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} */
     this.client = pearpassClient
     /** @type {import('pear-ipc').Server|null} */
     this.server = null
@@ -289,6 +289,39 @@ export class NativeMessagingIPCServer {
       'activeVaultRemoveFile',
       vaultHandlers.activeVaultRemoveFile.bind(vaultHandlers)
     )
+    this.secureMethodRegistry.register(
+      'fetchFavicon',
+      vaultHandlers.fetchFavicon.bind(vaultHandlers),
+      {
+        requiresStatus: ['encryption', 'vaults', 'activeVault'],
+        logLevel: 'DEBUG'
+      }
+    )
+
+    // OTP methods
+    this.secureMethodRegistry.register(
+      'generateOtpCodesByIds',
+      vaultHandlers.generateOtpCodesByIds.bind(vaultHandlers),
+      {
+        requiresStatus: ['encryption', 'vaults', 'activeVault'],
+        logLevel: 'DEBUG'
+      }
+    )
+    this.secureMethodRegistry.register(
+      'generateHotpNext',
+      vaultHandlers.generateHotpNext.bind(vaultHandlers),
+      { requiresStatus: ['encryption', 'vaults', 'activeVault'] }
+    )
+    this.secureMethodRegistry.register(
+      'addOtpToRecord',
+      vaultHandlers.addOtpToRecord.bind(vaultHandlers),
+      { requiresStatus: ['encryption', 'vaults', 'activeVault'] }
+    )
+    this.secureMethodRegistry.register(
+      'removeOtpFromRecord',
+      vaultHandlers.removeOtpFromRecord.bind(vaultHandlers),
+      { requiresStatus: ['encryption', 'vaults', 'activeVault'] }
+    )
   }
 
   /**
@@ -395,7 +428,7 @@ let ipcServerInstance = null
 let startPromise = null
 
 /**
- * @param {import('pearpass-lib-vault-core').PearpassVaultClient} pearpassClient
+ * @param {import('@tetherto/pearpass-lib-vault-core').PearpassVaultClient} pearpassClient
  * @returns {Promise<NativeMessagingIPCServer>}
  */
 export const startNativeMessagingIPC = async (pearpassClient) => {

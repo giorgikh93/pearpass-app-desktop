@@ -6,23 +6,14 @@ import { html } from 'htm/react'
 
 import { UpdateRequiredModalContent } from '../containers/Modal/UpdateRequiredModalContent'
 import { useModal } from '../context/ModalContext'
-import { PEAR_RUNTIME_UPDATED_MESSAGE } from '../updater'
 
 export const usePearUpdate = () => {
   const { setModal } = useModal()
   const modalShownRef = useRef(false)
+  const electronAPI = window.electronAPI
 
   const showUpdateRequiredModal = () => {
-    if (modalShownRef.current) {
-      // eslint-disable-next-line no-console
-      console.log('usePearUpdate: modal already shown, skipping')
-      return
-    }
-    if (!Pear.config.key) {
-      // eslint-disable-next-line no-console
-      console.log('usePearUpdate: Pear.config.key missing, skipping modal')
-      return
-    }
+    if (modalShownRef.current || !Pear.config.key) return
 
     setModal(
       html`<${UpdateRequiredModalContent} onUpdate=${handleUpdateApp} />`,
@@ -32,17 +23,47 @@ export const usePearUpdate = () => {
     modalShownRef.current = true
   }
 
+  const onPearEvent = (name, listener) => {
+    if (!electronAPI) return () => {}
+
+    if (name === 'updated') {
+      return electronAPI.onRuntimeUpdated(() => listener('updated'))
+    }
+
+    return () => {}
+  }
+
   useEffect(() => {
-    if (typeof Pear?.messages === 'function') {
-      Pear.messages(PEAR_RUNTIME_UPDATED_MESSAGE, (msg) => {
-        const type = typeof msg === 'string' ? msg : msg?.type
-        if (type !== PEAR_RUNTIME_UPDATED_MESSAGE.type) return
+    // DEV: preserve hot-reload behaviour driven by Pear core.
+    const checkUpdated = async () => {
+      const isUpdated = await electronAPI.checkUpdated()
+      if (isUpdated) {
         showUpdateRequiredModal()
-      })
+      }
+    }
+    checkUpdated()
+    if (!Pear.config.key) {
+      const onPearUpdate = () => {
+        Pear.reload()
+      }
+      Pear.updates(onPearUpdate)
+      return () => {
+        Pear.updates(() => {})
+      }
+    }
+
+    const offUpdated = onPearEvent('updated', async () => {
+      showUpdateRequiredModal()
+    })
+
+    return () => {
+      offUpdated?.()
     }
   }, [])
 }
 
-function handleUpdateApp() {
-  Pear.restart({ platform: false })
+async function handleUpdateApp() {
+  const electronAPI = window.electronAPI
+  if (!electronAPI) return
+  electronAPI.restart()
 }

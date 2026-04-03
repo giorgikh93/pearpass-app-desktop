@@ -1,17 +1,21 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 
+import { useTheme } from '@tetherto/pearpass-lib-ui-kit'
 import { html } from 'htm/react'
 
-import { useSimulatedLoading } from '../../hooks/useSimulatedLoading'
-import { Routes } from '../Routes'
 import { useInactivity } from './hooks/useInactivity'
 import { useOnExtensionExit } from './hooks/useOnExtensionExit'
 import { useOnExtensionLockOut } from './hooks/useOnExtensionLockOut'
 import { useRedirect } from './hooks/useRedirect'
+import { TitleBar } from '../../components/TitleBar'
 import { usePearUpdate } from '../../hooks/usePearUpdate'
-import startUpdater from '../../updater'
+import { useSimulatedLoading } from '../../hooks/useSimulatedLoading'
+import { Routes } from '../Routes'
+import { ContentFrame, WindowBackground } from './styles'
+import { isV2 } from '../../utils/designVersion'
 
 export const App = () => {
+  const { theme } = useTheme()
   usePearUpdate()
   const isSimulatedLoading = useSimulatedLoading()
   const [isLoadingPageComplete, setIsLoadingPageComplete] = useState(false)
@@ -26,15 +30,27 @@ export const App = () => {
     setIsLoadingPageComplete(true)
   }, [])
 
-  // Show LoadingPage during data loading and until the loading animation completes
-  const showLoadingPage =
-    !isSimulatedLoading && (isDataLoading || !isLoadingPageComplete)
+  const showLoadingPage = isV2()
+    ? isDataLoading || !isLoadingPageComplete
+    : !isSimulatedLoading && (isDataLoading || !isLoadingPageComplete)
 
-  useEffect(() => {
-    startUpdater().catch((err) => {
-      console.log('INDEX', 'Failed to start updater:', err)
-    })
-  }, [])
+  if (isV2()) {
+    return html`
+      <${WindowBackground} $backgroundColor=${theme.colors.colorBackground}>
+        <${TitleBar} />
+        <${ContentFrame}
+          $backgroundColor=${theme.colors.colorBackground}
+          $borderColor=${theme.colors.colorBorderPrimary}
+        >
+          <${Routes}
+            isSplashScreenShown=${false}
+            isDataLoading=${showLoadingPage}
+            onLoadingComplete=${handleLoadingComplete}
+          />
+        <//>
+      <//>
+    `
+  }
 
   return html`
     <${Routes}

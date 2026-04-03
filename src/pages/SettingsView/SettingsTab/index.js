@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 
 import { useLingui } from '@lingui/react'
-import { html } from 'htm/react'
 import {
   sendGoogleFormFeedback,
   sendSlackFeedback
-} from 'pear-apps-lib-feedback'
+} from '@tetherto/pear-apps-lib-feedback'
+import { html } from 'htm/react'
 
 import { SettingsDevicesSection } from './SettingsDevicesSection'
 import { SettingsLanguageSection } from './SettingsLanguageSection'
@@ -124,7 +124,10 @@ export const SettingsTab = () => {
 
     <${SettingsPasswordsSection} />
 
-    <${CardSingleSetting} title=${i18n._('Version')}>
+    <${CardSingleSetting}
+      testId="settings-card-version"
+      title=${i18n._('Version')}
+    >
       <${VersionWrapper}> ${currentVersion} <//>
     <//>
   `

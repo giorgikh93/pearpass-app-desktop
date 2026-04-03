@@ -1,12 +1,12 @@
-import { html } from 'htm/react'
-import { useForm } from 'pear-apps-lib-ui-react-hooks'
-import { Validator } from 'pear-apps-utils-validator'
-import { useUserData } from 'pearpass-lib-vault'
+import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
+import { Validator } from '@tetherto/pear-apps-utils-validator'
+import { useUserData } from '@tetherto/pearpass-lib-vault'
 import {
   stringToBuffer,
   clearBuffer
-} from 'pearpass-lib-vault/src/utils/buffer'
-import { validatePasswordChange } from 'pearpass-utils-password-check'
+} from '@tetherto/pearpass-lib-vault/src/utils/buffer'
+import { validatePasswordChange } from '@tetherto/pearpass-utils-password-check'
+import { html } from 'htm/react'
 
 import {
   Content,
@@ -117,19 +117,38 @@ export const ModifyMasterVaultModalContent = () => {
       <${Content}>
         <${InputWrapper}>
           <${InputLabel}> ${t('Insert old password')} <//>
-          <${PearPassPasswordField} ...${register('currentPassword')} />
+          <${PearPassPasswordField}
+            ...${register('currentPassword')}
+            testId="master-password-current-input"
+          />
         <//>
         <${InputWrapper}>
           <${InputLabel}> ${t('Create new password')} <//>
-          <${PearPassPasswordField} ...${register('newPassword')} />
+          <${PearPassPasswordField}
+            ...${register('newPassword')}
+            testId="master-password-new-input"
+          />
         <//>
         <${InputWrapper}>
           <${InputLabel}> ${t('Repeat new password')} <//>
-          <${PearPassPasswordField} ...${register('repeatPassword')} />
+          <${PearPassPasswordField}
+            ...${register('repeatPassword')}
+            testId="master-password-repeat-input"
+          />
         <//>
         <${ModalActions}>
-          <${ButtonPrimary} onClick=${handleSubmit(onSubmit)}> ${t('Save')} <//>
-          <${ButtonSecondary} onClick=${closeModal}> ${t('Cancel')} <//>
+          <${ButtonPrimary}
+            testId="master-password-save-button"
+            onClick=${handleSubmit(onSubmit)}
+          >
+            ${t('Save')}
+          <//>
+          <${ButtonSecondary}
+            testId="master-password-cancel-button"
+            onClick=${closeModal}
+          >
+            ${t('Cancel')}
+          <//>
         <//>
       <//>
     <//>
