@@ -118,8 +118,6 @@
     "hyperdrive": "^13.3.2",
     "jszip": "3.10.1",
     "mirror-drive": "^1.14.1",
-    "os": "^0.1.2",
-    "path": "^0.12.7",
     "pear-apps-lib-feedback": "git+https://github.com/tetherto/pear-apps-lib-feedback.git",
     "pear-apps-lib-ui-react-hooks": "git+https://github.com/tetherto/pear-apps-lib-ui-react-hooks.git",
     "pear-apps-utils-avatar-initials": "git+https://github.com/tetherto/pear-apps-utils-avatar-initials.git",
