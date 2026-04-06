@@ -243,6 +243,7 @@
     "electron-updater": "^6.8.3",
     "htm": "3.1.1",
     "jszip": "3.10.1",
+    "pear-aliases": "1.0.6",
     "pear-bridge": "1.2.4",
     "pear-electron": "1.7.25-rc.0",
     "pear-ipc": "6.4.0",
