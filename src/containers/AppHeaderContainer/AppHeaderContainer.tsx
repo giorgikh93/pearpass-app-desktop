@@ -9,15 +9,18 @@ import {
 } from '../../components/AppHeaderV2'
 import { CreateNewCategoryPopupContent } from '../../components/CreateNewCategoryPopupContent'
 import { PopupMenu } from '../../components/PopupMenu'
+import { useModal } from '../../context/ModalContext'
 import { useRouter } from '../../context/RouterContext'
 import { useAppHeaderContext } from '../../context/AppHeaderContext'
 import { useCreateOrEditRecord } from '../../hooks/useCreateOrEditRecord'
 import { useRecordMenuItems } from '../../hooks/useRecordMenuItems'
 import { isV2 } from '../../utils/designVersion'
 import { isFavorite } from '../../utils/isFavorite'
+import { ImportItemOrVaultModalContentV2 } from '../Modal/ImportItemOrVaultModalContentV2'
 
 export const AppHeaderContainer = () => {
-  const { currentPage, data: routerData, navigate } = useRouter()
+  const { currentPage, data: routerData } = useRouter()
+  const { setModal } = useModal()
   const {
     searchValue,
     setSearchValue,
@@ -55,7 +58,7 @@ export const AppHeaderContainer = () => {
   }
 
   const handleImportClick = () => {
-    navigate('settings', { initialTab: 'vault' })
+    setModal(html`<${ImportItemOrVaultModalContentV2} />`)
   }
 
   const addItemControl = html`

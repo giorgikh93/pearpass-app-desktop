@@ -23,6 +23,7 @@ declare module 'styled-components' {
       }
       grey300: {
         mode1: string
+        dark: string
       }
       grey350: {
         mode1: string
@@ -32,6 +33,7 @@ declare module 'styled-components' {
       }
       grey500: {
         mode1: string
+        dark: string
       }
       black: {
         dark: string
