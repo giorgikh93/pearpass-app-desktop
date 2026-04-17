@@ -14,6 +14,15 @@ jest.mock(
   })
 )
 
+jest.mock(
+  '../containers/Modal/CreateFolderModalContentV2/CreateFolderModalContentV2',
+  () => ({
+    CreateFolderModalContentV2: function MockCreateFolderModalContentV2() {
+      return null
+    }
+  })
+)
+
 jest.mock('../context/ModalContext', () => ({
   useModal: jest.fn()
 }))

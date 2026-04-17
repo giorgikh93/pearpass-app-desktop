@@ -9,6 +9,15 @@ import '@testing-library/jest-dom'
 
 const mockSetModal = jest.fn()
 
+jest.mock(
+  '../../containers/Modal/CreateFolderModalContentV2/CreateFolderModalContentV2',
+  () => ({
+    CreateFolderModalContentV2: function MockCreateFolderModalContentV2() {
+      return null
+    }
+  })
+)
+
 jest.mock('@tetherto/pearpass-lib-vault', () => ({
   useFolders: jest.fn()
 }))
