@@ -4,6 +4,24 @@ import { useCreateOrEditRecord } from './useCreateOrEditRecord'
 import { useModal } from '../context/ModalContext'
 import '@testing-library/jest-dom'
 
+jest.mock(
+  '../containers/Modal/CreateFolderModalContentV2/CreateFolderModalContentV2',
+  () => ({
+    CreateFolderModalContentV2: function MockCreateFolderModalContentV2() {
+      return null
+    }
+  })
+)
+
+jest.mock(
+  '../containers/Modal/DisplayPictureModalContentV2/DisplayPictureModalContentV2',
+  () => ({
+    DisplayPictureModalContentV2: function MockDisplayPictureModalContentV2() {
+      return null
+    }
+  })
+)
+
 jest.mock('../context/ModalContext', () => ({
   useModal: jest.fn()
 }))

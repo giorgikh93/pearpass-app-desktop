@@ -6,6 +6,7 @@ import { useVault } from '@tetherto/pearpass-lib-vault'
 
 import { SettingsVaultsTab } from './index'
 import { useModal } from '../../../context/ModalContext'
+import { isV2 } from '../../../utils/designVersion'
 import '@testing-library/jest-dom'
 
 jest.mock('@lingui/react', () => ({
@@ -23,6 +24,20 @@ jest.mock('@tetherto/pearpass-lib-vault', () => ({
 
 jest.mock('../../../context/ModalContext', () => ({
   useModal: jest.fn()
+}))
+
+jest.mock(
+  '../../../containers/Modal/CreateOrEditVaultModalContentV2/CreateOrEditVaultModalContentV2',
+  () => ({
+    CreateOrEditVaultModalContentV2:
+      function MockCreateOrEditVaultModalContentV2() {
+        return null
+      }
+  })
+)
+
+jest.mock('../../../utils/designVersion', () => ({
+  isV2: jest.fn(() => false)
 }))
 
 jest.mock('../../../utils/vaultCreated', () => ({
@@ -49,6 +64,7 @@ jest.mock('../../../components/ListItem', () => ({
 
 describe('VaultsTab', () => {
   const setModalMock = jest.fn()
+  const closeModalMock = jest.fn()
 
   const renderWithProviders = (component) =>
     render(<ThemeProvider>{component}</ThemeProvider>)
@@ -63,8 +79,11 @@ describe('VaultsTab', () => {
     })
 
     useModal.mockReturnValue({
-      setModal: setModalMock
+      setModal: setModalMock,
+      closeModal: closeModalMock
     })
+
+    isV2.mockReturnValue(false)
   })
 
   afterEach(() => {
@@ -84,11 +103,21 @@ describe('VaultsTab', () => {
     expect(screen.getByText('Vault 1')).toBeInTheDocument()
   })
 
-  it('opens ModifyVaultModalContent when editing the vault', () => {
+  it('opens vault edit modal when editing the vault', () => {
     renderWithProviders(<SettingsVaultsTab />)
 
     const editButton = screen.getByText('Edit')
     fireEvent.click(editButton)
+
+    expect(setModalMock).toHaveBeenCalledWith(expect.anything())
+  })
+
+  it('opens CreateOrEditVaultModalContentV2 when design version is v2', () => {
+    isV2.mockReturnValue(true)
+
+    renderWithProviders(<SettingsVaultsTab />)
+
+    fireEvent.click(screen.getByText('Edit'))
 
     expect(setModalMock).toHaveBeenCalledWith(expect.anything())
   })
