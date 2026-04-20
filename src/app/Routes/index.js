@@ -13,6 +13,7 @@ import { LoadingPage } from '../../pages/LoadingPage'
 import { LoadingPageV2 } from '../../pages/LoadingPage/LoadingPageV2'
 import { MainView } from '../../pages/MainView'
 import { SettingsView } from '../../pages/SettingsView'
+import { SettingsViewV2 } from '../../pages/SettingsViewV2/SettingsViewV2'
 import { WelcomePage } from '../../pages/WelcomePage'
 import { isV2 } from '../../utils/designVersion'
 
@@ -55,7 +56,11 @@ export const Routes = ({
   }
 
   if (currentPage === 'settings') {
-    return html` <${SettingsView} /> `
+    if (isV2()) {
+      return <SettingsViewV2 />
+    } else {
+      return <SettingsView />
+    }
   }
 
   if (currentPage === 'vault') {
