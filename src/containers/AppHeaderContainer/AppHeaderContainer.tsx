@@ -1,5 +1,4 @@
 import React from 'react'
-import { html } from 'htm/react'
 
 import { AUTHENTICATOR_ENABLED } from '@tetherto/pearpass-lib-constants'
 
@@ -9,15 +8,18 @@ import {
 } from '../../components/AppHeaderV2'
 import { CreateNewCategoryPopupContent } from '../../components/CreateNewCategoryPopupContent'
 import { PopupMenu } from '../../components/PopupMenu'
+import { useModal } from '../../context/ModalContext'
 import { useRouter } from '../../context/RouterContext'
 import { useAppHeaderContext } from '../../context/AppHeaderContext'
 import { useCreateOrEditRecord } from '../../hooks/useCreateOrEditRecord'
 import { useRecordMenuItems } from '../../hooks/useRecordMenuItems'
 import { isV2 } from '../../utils/designVersion'
 import { isFavorite } from '../../utils/isFavorite'
+import { ImportItemOrVaultModalContentV2 } from '../Modal/ImportItemOrVaultModalContentV2'
 
 export const AppHeaderContainer = () => {
-  const { currentPage, data: routerData, navigate } = useRouter()
+  const { currentPage, data: routerData } = useRouter()
+  const { setModal } = useModal()
   const {
     searchValue,
     setSearchValue,
@@ -55,24 +57,24 @@ export const AppHeaderContainer = () => {
   }
 
   const handleImportClick = () => {
-    navigate('settings', { initialTab: 'vault' })
+    setModal(<ImportItemOrVaultModalContentV2 />)
   }
 
-  const addItemControl = html`
-    <${PopupMenu}
+  const addItemControl = (
+    <PopupMenu
       direction="bottomRight"
-      isOpen=${isAddMenuOpen}
-      setIsOpen=${setIsAddMenuOpen}
-      content=${html`
-        <${CreateNewCategoryPopupContent}
-          menuItems=${popupItems}
-          onClick=${handleMenuItemClick}
+      isOpen={isAddMenuOpen}
+      setIsOpen={setIsAddMenuOpen}
+      content={
+        <CreateNewCategoryPopupContent
+          menuItems={popupItems}
+          onClick={handleMenuItemClick}
         />
-      `}
+      }
     >
-      <${AppHeaderAddItemTrigger} testId="main-plus-button" />
-    <//>
-  `
+      <AppHeaderAddItemTrigger testId="main-plus-button" />
+    </PopupMenu>
+  )
 
   return (
     <AppHeaderV2

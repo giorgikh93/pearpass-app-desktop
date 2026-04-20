@@ -16,7 +16,7 @@ import { toSentenceCase } from '../../utils/toSentenceCase'
 /**
  * @param {{
  *  isOpen: boolean,
- *  setIsOpen: () => void,
+ *  setIsOpen: (isOpen: boolean) => void,
  *  content: import('react').ReactNode,
  *  children: import('react').ReactNode,
  *  direction: 'top' | 'bottom' | 'left' | 'right' | 'topRight' | 'topLeft' | 'bottomRight' | 'bottomLeft'

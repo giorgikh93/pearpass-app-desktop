@@ -44,6 +44,7 @@ import { isV2 } from '../../utils/designVersion'
 import { FAVORITES_FOLDER_ID } from '../../utils/isFavorite'
 import { sortByName } from '../../utils/sortByName'
 import { AddDeviceModalContent } from '../Modal/AddDeviceModalContent'
+import { AddDeviceModalContentV2 } from '../Modal/AddDeviceModalContentV2/AddDeviceModalContentV2'
 import { CreateFolderModalContent } from '../Modal/CreateFolderModalContent'
 import { CreateFolderModalContentV2 } from '../Modal/CreateFolderModalContentV2/CreateFolderModalContentV2'
 
@@ -128,7 +129,7 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
   const { setModal, closeModal } = useModal()
 
   const handleAddDevice = () => {
-    setModal(html`<${AddDeviceModalContent} />`)
+    setModal(isV2() ? <AddDeviceModalContentV2 /> : <AddDeviceModalContent />)
   }
 
   const handleAddFolderClick = () => {

@@ -6,8 +6,8 @@ import { RECORD_ICON_BY_TYPE } from '../../constants/recordIconByType'
 
 /**
  * @param {{
- * menuItems: Array<string>,
- * onClick: () => void,
+ * menuItems: Array<{ name: string; type: string; }>,
+ * onClick: (item: { name: string; type: string; }) => void,
  * }}
  */
 export const CreateNewCategoryPopupContent = ({ menuItems, onClick }) => {
