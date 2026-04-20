@@ -129,11 +129,7 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
   const { setModal, closeModal } = useModal()
 
   const handleAddDevice = () => {
-    setModal(
-      isV2()
-        ? html`<${AddDeviceModalContentV2} />`
-        : html`<${AddDeviceModalContent} />`
-    )
+    setModal(isV2() ? <AddDeviceModalContentV2 /> : <AddDeviceModalContent />)
   }
 
   const handleAddFolderClick = () => {

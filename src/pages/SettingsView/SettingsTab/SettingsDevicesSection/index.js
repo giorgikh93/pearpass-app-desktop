@@ -1,3 +1,5 @@
+import React from 'react'
+
 import { useLingui } from '@lingui/react'
 import { formatDate } from '@tetherto/pear-apps-utils-date'
 import { useVault } from '@tetherto/pearpass-lib-vault'
@@ -22,9 +24,7 @@ export const SettingsDevicesSection = () => {
 
   const handleAddDevice = () => {
     setModal(
-      isV2()
-        ? html`<${AddDeviceModalContentV2} />`
-        : html`<${AddDeviceModalContent} />`
+      isV2() ? <AddDeviceModalContentV2 /> : html`<${AddDeviceModalContent} />`
     )
   }
 

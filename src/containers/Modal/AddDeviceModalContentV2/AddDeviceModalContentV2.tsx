@@ -1,8 +1,13 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { generateQRCodeSVG } from '@tetherto/pear-apps-utils-qr'
-import { html } from 'htm/react'
-import { useTheme, RingSpinner} from '@tetherto/pearpass-lib-ui-kit'
+import {
+  Button,
+  Dialog,
+  RingSpinner,
+  Text,
+  useTheme
+} from '@tetherto/pearpass-lib-ui-kit'
 import { ContentCopy } from '@tetherto/pearpass-lib-ui-kit/icons'
 import {
   authoriseCurrentProtectedVault,
@@ -16,7 +21,6 @@ import { useToast } from '../../../context/ToastContext'
 import { useAutoLockPreferences } from '../../../hooks/useAutoLockPreferences'
 import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard.electron'
 import { useTranslation } from '../../../hooks/useTranslation'
-import { ModalContentV2 } from '../ModalContentV2'
 import { VaultPasswordFormModalContent } from '../VaultPasswordFormModalContent'
 import { ScanQRExpireTimer } from '../AddDeviceModalContent/ScanQRExpireTimer'
 
@@ -84,76 +88,75 @@ export const AddDeviceModalContentV2 = () => {
   }
 
   if (isProtected) {
-    return html`<${VaultPasswordFormModalContent}
-      onSubmit=${async (password: string) => {
-        if (await authoriseCurrentProtectedVault(password)) {
-          setIsProtected(false)
-        }
-      }}
-      vault=${vaultData}
-    />`
+    return (
+      <VaultPasswordFormModalContent
+        onSubmit={async (password: string) => {
+          if (await authoriseCurrentProtectedVault(password)) {
+            setIsProtected(false)
+          }
+        }}
+        vault={vaultData!}
+      />
+    )
   }
 
   const displayLink = isCopied ? t('Copied!') : (data?.publicKey ?? '')
 
-  return html`
-    <${ModalContentV2}
-      onClose=${closeModal}
-      backgroundColor=${colors.colorSurfacePrimary}
-      borderColor=${colors.colorBorderPrimary}
-      headerWrapperStyle=${styles.headerRow}
-      headerChildren=${html`
-        <span style=${styles.title}>${t('Share Personal Vault')}<//>
-      `}
-      afterHeaderChildren=${html`
-        <div role="separator" style=${styles.divider} />
-      `}
+  return (
+    <Dialog
+      title={t('Share Personal Vault')}
+      onClose={closeModal}
+      testID="add-device-dialog-v2"
+      closeButtonTestID="add-device-close-v2"
     >
-      <div style=${styles.body}>
-        <span style=${styles.sectionLabel}>${t('Access Code')}<//>
-        <div style=${styles.accessPanel}>
-          <div style=${styles.qrWrap}>
+      <div style={styles.body}>
+        <Text variant="caption" color={colors.colorTextSecondary}>
+          {t('Access Code')}
+        </Text>
+        <div style={styles.accessPanel}>
+          <div style={styles.qrWrap}>
             <div
-              style=${styles.qrInner}
-              dangerouslySetInnerHTML=${{ __html: qrSvg }}
+              style={styles.qrInner}
+              dangerouslySetInnerHTML={{ __html: qrSvg }}
             />
           </div>
-          <div style=${styles.timerRow}>
-
-          <${RingSpinner}/>
-          <div style=${styles.timerTextRow}>
-          <span style=${styles.timerText}>${t('Code expires in')}</span>
-          <${ScanQRExpireTimer} withSuffix=${true} onFinish=${closeModal} />
-          </div>
-          </div>
-          <div role="separator" style=${styles.divider} />
-          <div style=${styles.vaultLinkSection}>
-            <div style=${styles.vaultLinkTextColumn}>
-              <span style=${styles.sectionLabel}>${t('Vault Link')}<//>
-              <span
-                style=${styles.vaultLinkValue}
-                title=${data?.publicKey ?? ''}
-              >
-                ${displayLink}
-              </span>
+          <div style={styles.timerRow}>
+            <RingSpinner />
+            <div style={styles.timerTextRow}>
+              <Text as="span" variant="label" color={colors.colorTextSecondary}>
+                {t('Code expires in')}
+              </Text>
+              <ScanQRExpireTimer withSuffix onFinish={closeModal} />
             </div>
-            <button
-              type="button"
-              style=${styles.copyIconButton}
-              aria-label=${t('Copy vault key')}
+          </div>
+          <div role="separator" style={styles.divider} />
+          <div style={styles.vaultLinkSection}>
+            <div style={styles.vaultLinkTextColumn}>
+              <Text variant="caption" color={colors.colorTextSecondary}>
+                {t('Vault Link')}
+              </Text>
+              <div style={styles.vaultLinkValue} title={data?.publicKey ?? ''}>
+                <Text as="span" variant="label" color={colors.colorTextPrimary}>
+                  {displayLink}
+                </Text>
+              </div>
+            </div>
+            <Button
+              variant="tertiary"
+              size="small"
+              aria-label={t('Copy vault key')}
               data-testid="add-device-v2-copy-link"
-              onClick=${handleCopyKey}
+              onClick={handleCopyKey}
             >
-              <${ContentCopy}
-                width=${24}
-                height=${24}
-                color=${colors.colorTextPrimary}
-                style=${{ display: 'block' }}
+              <ContentCopy
+                width={24}
+                height={24}
+                color={colors.colorTextPrimary}
               />
-            </button>
+            </Button>
           </div>
         </div>
       </div>
-    <//>
-  `
+    </Dialog>
+  )
 }

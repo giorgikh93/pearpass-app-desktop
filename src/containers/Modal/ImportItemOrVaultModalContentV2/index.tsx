@@ -1,22 +1,16 @@
 import os from 'os'
-
 import type { ChangeEvent } from 'react'
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-import { html } from 'htm/react'
-import { Button, InputField, useTheme } from '@tetherto/pearpass-lib-ui-kit'
+import { Button, Dialog, InputField, useTheme, Text } from '@tetherto/pearpass-lib-ui-kit'
 import { ContentPaste } from '@tetherto/pearpass-lib-ui-kit/icons'
-import {
-  useVault,
-  usePair
-} from '@tetherto/pearpass-lib-vault'
+import { useVault, usePair } from '@tetherto/pearpass-lib-vault'
 import { useModal } from '../../../context/ModalContext'
 import { useToast } from '../../../context/ToastContext'
 import { useAutoLockPreferences } from '../../../hooks/useAutoLockPreferences'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useTranslation } from '../../../hooks/useTranslation'
 import { createStyles } from './ImportItemOrVaultModalContentV2.styles'
-import { ModalContentV2 } from '../ModalContentV2'
 import { ImportVaultPreviewModalContent } from '../ImportVaultPreviewModalContent'
 
 export const ImportItemOrVaultModalContentV2 = () => {
@@ -27,10 +21,7 @@ export const ImportItemOrVaultModalContentV2 = () => {
   const { closeModal, setModal } = useModal()
 
   const [shareLink, setShareLink] = useState('')
-  const {
-    refetch: refetchVault,
-    addDevice
-  } = useVault()
+  const { refetch: refetchVault, addDevice } = useVault()
   const {
     pairActiveVault,
     isLoading: isPairing,
@@ -75,7 +66,7 @@ export const ImportItemOrVaultModalContentV2 = () => {
           os.hostname() + ' ' + os.platform() + ' ' + os.release()
         )
 
-        setModal(html`<${ImportVaultPreviewModalContent} />`, {
+        setModal(<ImportVaultPreviewModalContent />, {
           replace: true
         })
       } catch {
@@ -156,78 +147,74 @@ export const ImportItemOrVaultModalContentV2 = () => {
 
   const canContinue = Boolean(shareLink.trim()) && !isPairing
 
-  return html`
-    <${ModalContentV2}
-      onClose=${closeModal}
-      backgroundColor=${colors.colorSurfacePrimary}
-      borderColor=${colors.colorBorderPrimary}
-      headerWrapperStyle=${styles.headerRow}
-      headerChildren=${html`
-        <span style=${styles.title}>${t('Import Vault')}<//>
-      `}
-      afterHeaderChildren=${html`
-        <div role="separator" style=${styles.divider} />
-      `}
-    >
-      <div style=${styles.bodyColumn}>
-        <div style=${styles.shareLinkSection}>
-          <span style=${styles.sectionLabel}>${t('Share Link')}<//>
-        </div>
-        <div style=${styles.inputSection}>
-          <${InputField}
-            label=${t('Vault Link')}
-            placeholder=${t('Enter Share Link')}
-            inputRef=${shareLinkInputRef}
-            onChange=${(e: ChangeEvent<HTMLInputElement>) =>
-              handleChange(e.target.value)}
-            value=${shareLink}
-            testID="import-share-link-input"
-            rightSlot=${html`
-              <${Button}
-                variant="tertiary"
-                size="small"
-                type="button"
-                aria-label=${t('Paste from clipboard')}
-                data-testid="import-share-link-paste"
-                onClick=${handlePasteClick}
-                iconBefore=${html`<${ContentPaste}
-                  width=${18}
-                  height=${18}
-                  color=${colors.colorTextPrimary}
-                />`}
-              />
-            `}
-          />
-        <//>
-        <div role="separator" style=${styles.divider} />
-        ${isPairing &&
-        html`
-          <span style=${styles.pairingHint}>
-            ${t('Click Escape to cancel pairing')}
-          </span>
-        `}
-        <div style=${styles.footer}>
-          <${Button}
+  return (
+    <Dialog
+      title={t('Import Vault')}
+      onClose={closeModal}
+      testID="import-vault-dialog-v2"
+      closeButtonTestID="import-vault-close-v2"
+      footer={
+        <>
+          <Button
             variant="secondary"
             size="small"
             type="button"
             data-testid="import-modal-discard"
-            onClick=${closeModal}
+            onClick={closeModal}
           >
-            ${t('Discard')}
-          <//>
-          <${Button}
+            {t('Discard')}
+          </Button>
+          <Button
             variant="primary"
             size="small"
             type="button"
             data-testid="import-modal-continue"
-            disabled=${!canContinue}
-            onClick=${handleContinue}
+            disabled={!canContinue}
+            onClick={handleContinue}
           >
-            ${t('Continue')}
-          <//>
+            {t('Continue')}
+          </Button>
+        </>
+      }
+    >
+      <div style={styles.bodyColumn}>
+          <Text variant="caption" color={colors.colorTextSecondary}>{t('Share Link')}</Text>
+        <div style={styles.inputSection}>
+          <InputField
+            label={t('Vault Link')}
+            placeholder={t('Enter Share Link')}
+            inputRef={shareLinkInputRef}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              handleChange(e.target.value)
+            }
+            value={shareLink}
+            testID="import-share-link-input"
+            rightSlot={
+              <Button
+                variant="tertiary"
+                size="small"
+                aria-label={t('Paste from clipboard')}
+                data-testid="import-share-link-paste"
+                onClick={handlePasteClick}
+                iconBefore={
+                  <ContentPaste
+                    width={18}
+                    height={18}
+                    color={colors.colorTextPrimary}
+                  />
+                }
+              />
+            }
+          />
         </div>
+        {isPairing && (
+          <div style={styles.pairingHint}>
+            <Text variant="caption" color={colors.colorTextSecondary}>
+              {t('Click Escape to cancel pairing')}
+            </Text>
+          </div>
+        )}
       </div>
-    <//>
-  `
+    </Dialog>
+  )
 }

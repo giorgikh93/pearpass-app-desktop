@@ -1,5 +1,3 @@
-import { html } from 'htm/react'
-
 import { useCountDown } from '@tetherto/pear-apps-lib-ui-react-hooks'
 
 import { ExpireTime } from './styles'
@@ -10,11 +8,21 @@ interface Props {
   withSuffix?: boolean
 }
 
-export const ScanQRExpireTimer = ({initialSeconds = 120, onFinish, withSuffix = false }: Props) => {
+export const ScanQRExpireTimer = ({
+  initialSeconds = 120,
+  onFinish,
+  withSuffix = false
+}: Props) => {
   const expireTime = useCountDown({
     initialSeconds,
     onFinish
   })
 
-  return html`<${ExpireTime}> ${expireTime}${withSuffix ? 's' : ''} <//>`
+  return (
+    <ExpireTime>
+      {' '}
+      {expireTime}
+      {withSuffix ? 's' : ''}{' '}
+    </ExpireTime>
+  )
 }

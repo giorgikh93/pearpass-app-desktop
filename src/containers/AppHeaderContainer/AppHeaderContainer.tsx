@@ -1,5 +1,4 @@
 import React from 'react'
-import { html } from 'htm/react'
 
 import { AUTHENTICATOR_ENABLED } from '@tetherto/pearpass-lib-constants'
 
@@ -58,24 +57,24 @@ export const AppHeaderContainer = () => {
   }
 
   const handleImportClick = () => {
-    setModal(html`<${ImportItemOrVaultModalContentV2} />`)
+    setModal(<ImportItemOrVaultModalContentV2 />)
   }
 
-  const addItemControl = html`
-    <${PopupMenu}
+  const addItemControl = (
+    <PopupMenu
       direction="bottomRight"
-      isOpen=${isAddMenuOpen}
-      setIsOpen=${setIsAddMenuOpen}
-      content=${html`
-        <${CreateNewCategoryPopupContent}
-          menuItems=${popupItems}
-          onClick=${handleMenuItemClick}
+      isOpen={isAddMenuOpen}
+      setIsOpen={setIsAddMenuOpen}
+      content={
+        <CreateNewCategoryPopupContent
+          menuItems={popupItems}
+          onClick={handleMenuItemClick}
         />
-      `}
+      }
     >
-      <${AppHeaderAddItemTrigger} testId="main-plus-button" />
-    <//>
-  `
+      <AppHeaderAddItemTrigger testId="main-plus-button" />
+    </PopupMenu>
+  )
 
   return (
     <AppHeaderV2

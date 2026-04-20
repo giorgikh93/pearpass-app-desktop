@@ -22,6 +22,7 @@ import { ModalContent } from '../ModalContent'
  * @param {Object} props.vault
  * @param {string} props.vault.id
  * @param {string} [props.vault.name]
+ * @param {(password: string) => Promise<void> | void} [props.onSubmit]
  */
 export const VaultPasswordFormModalContent = ({ vault, onSubmit }) => {
   const { i18n } = useLingui()

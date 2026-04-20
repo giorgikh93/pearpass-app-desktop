@@ -2,11 +2,6 @@ import type { ThemeColors } from '@tetherto/pearpass-lib-ui-kit'
 import { rawTokens } from '@tetherto/pearpass-lib-ui-kit'
 
 export const createStyles = (colors: ThemeColors) => ({
-  headerRow: {
-    padding: `${rawTokens.spacing12}px ${rawTokens.spacing16}px`,
-    marginBottom: 0,
-    boxSizing: 'border-box' as const
-  },
   divider: {
     width: '100%',
     height: 1,
@@ -16,24 +11,11 @@ export const createStyles = (colors: ThemeColors) => ({
     padding: 0,
     margin: 0
   },
-  title: {
-    color: colors.colorTextPrimary,
-    fontFamily: rawTokens.fontPrimary,
-    fontSize: rawTokens.fontSize14,
-    fontWeight: rawTokens.weightMedium
-  },
   body: {
     display: 'flex' as const,
     flexDirection: 'column' as const,
     gap: rawTokens.spacing12,
-    padding: `${rawTokens.spacing16}px`,
     boxSizing: 'border-box' as const
-  },
-  sectionLabel: {
-    color: colors.colorTextSecondary,
-    fontFamily: rawTokens.fontPrimary,
-    fontSize: rawTokens.fontSize12,
-    fontWeight: rawTokens.weightMedium
   },
   accessPanel: {
     display: 'flex' as const,
@@ -73,15 +55,12 @@ export const createStyles = (colors: ThemeColors) => ({
     flexWrap: 'wrap' as const,
     marginBottom: rawTokens.spacing24,
   },
-  timerTextRow:{
-  fontSize: rawTokens.fontSize14,
-  fontWeight: rawTokens.weightMedium
-  },
-  timerText: {
-    color: colors.colorTextSecondary,
-    fontFamily: rawTokens.fontPrimary,
-    fontSize: rawTokens.fontSize14,
-    fontWeight: rawTokens.weightMedium
+  timerTextRow: {
+    display: 'flex' as const,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    flexWrap: 'wrap' as const,
+    gap: rawTokens.spacing4
   },
   vaultLinkSection: {
     display: 'flex' as const,
@@ -102,27 +81,11 @@ export const createStyles = (colors: ThemeColors) => ({
     minWidth: 0
   },
   vaultLinkValue: {
+    display: 'block' as const,
     minWidth: 0,
+    maxWidth: '100%',
     overflow: 'hidden' as const,
     textOverflow: 'ellipsis' as const,
-    whiteSpace: 'nowrap' as const,
-    color: colors.colorTextPrimary,
-    fontFamily: rawTokens.fontPrimary,
-    fontSize: rawTokens.fontSize14,
-    fontWeight: rawTokens.weightRegular
-  },
-  copyIconButton: {
-    display: 'inline-flex' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-    flexShrink: 0,
-    padding: 0,
-    margin: 0,
-    border: 'none',
-    backgroundColor: 'transparent',
-    cursor: 'pointer' as const,
-    borderRadius: rawTokens.radius8,
-    lineHeight: 0,
-    color: colors.colorTextPrimary,
+    whiteSpace: 'nowrap' as const
   }
 })
