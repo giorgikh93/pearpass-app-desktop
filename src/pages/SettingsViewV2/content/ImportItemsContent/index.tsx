@@ -80,8 +80,9 @@ export const ImportItemsContent = () => {
     {
       title: '1Password',
       type: '1password',
-      description:
-        'To import data from 1Password, open the app, go to File > Export, and export your data as a CSV file. Once the export is complete, upload the file here.',
+      description: t(
+        'To import data from 1Password, open the app, go to File > Export, and export your data as a CSV file. Once the export is complete, upload the file here.'
+      ),
       testId: 'settings-import-1password',
       accepts: ['.csv'],
       imgSrc: 'assets/images/1password.png',
@@ -90,8 +91,9 @@ export const ImportItemsContent = () => {
     {
       title: 'Bitwarden',
       type: 'bitwarden',
-      description:
-        'To import data from Bitwarden, go to Tools > Export Vault in the web app, choose JSON or CSV format, and upload the exported file here.',
+      description: t(
+        'To import data from Bitwarden, go to Tools > Export Vault in the web app, choose JSON or CSV format, and upload the exported file here.'
+      ),
       testId: 'settings-import-bitwarden',
       accepts: ['.json', '.csv'],
       imgSrc: 'assets/images/BitWarden.png',
@@ -100,8 +102,9 @@ export const ImportItemsContent = () => {
     {
       title: 'KeePass',
       type: 'keepass',
-      description:
-        'To import data from KeePass, open your database and export it via File > Export. KDBX files require your database password. Upload the exported file here.',
+      description: t(
+        'To import data from KeePass, open your database and export it via File > Export. KDBX files require your database password. Upload the exported file here.'
+      ),
       testId: 'settings-import-keepass',
       accepts: ['.kdbx', '.csv', '.xml'],
       imgSrc: 'assets/images/KeePass.png',
@@ -110,8 +113,9 @@ export const ImportItemsContent = () => {
     {
       title: 'KeePassXC',
       type: 'keepass',
-      description:
-        'To import data from KeePassXC, open your database and go to Database > Export to CSV or XML. Once done, upload the exported file here.',
+      description: t(
+        'To import data from KeePassXC, open your database and go to Database > Export to CSV or XML. Once done, upload the exported file here.'
+      ),
       testId: 'settings-import-keepassxc',
       accepts: ['.csv', '.xml'],
       imgSrc: 'assets/images/KeePassXC.png',
@@ -121,8 +125,9 @@ export const ImportItemsContent = () => {
     {
       title: 'LastPass',
       type: 'lastpass',
-      description:
-        'To import data from LastPass, go to Advanced Options > Export in your LastPass vault. Export as CSV and upload the file here.',
+      description: t(
+        'To import data from LastPass, go to Advanced Options > Export in your LastPass vault. Export as CSV and upload the file here.'
+      ),
       testId: 'settings-import-lastpass',
       accepts: ['.csv'],
       imgSrc: 'assets/images/LastPass.png',
@@ -132,8 +137,9 @@ export const ImportItemsContent = () => {
     {
       title: 'NordPass',
       type: 'nordpass',
-      description:
-        'To import data from NordPass, open the app, go to Settings > Import & Export, and export your data as CSV. Upload the exported file here.',
+      description: t(
+        'To import data from NordPass, open the app, go to Settings > Import & Export, and export your data as CSV. Upload the exported file here.'
+      ),
       testId: 'settings-import-nordpass',
       accepts: ['.csv'],
       imgSrc: 'assets/images/NordPass.png',
@@ -143,8 +149,9 @@ export const ImportItemsContent = () => {
     {
       title: 'Proton Pass',
       type: 'protonpass',
-      description:
-        'To import data from Proton Pass, open the app, go to Settings, navigate to the Export tab, and choose your preferred export format. Once the export is complete, upload the file here.',
+      description: t(
+        'To import data from Proton Pass, open the app, go to Settings, navigate to the Export tab, and choose your preferred export format. Once the export is complete, upload the file here.'
+      ),
       testId: 'settings-import-protonpass',
       accepts: ['.csv', '.json'],
       imgSrc: 'assets/images/ProtonPass.png',
@@ -153,8 +160,9 @@ export const ImportItemsContent = () => {
     {
       title: 'Encrypted file',
       type: 'encrypted',
-      description:
-        'Upload a PearPass-encrypted JSON export file. You will need the password used to encrypt the file.',
+      description: t(
+        'Upload a PearPass-encrypted JSON export file. You will need the password used to encrypt the file.'
+      ),
       accepts: ['.json'],
       imgSrc: 'assets/images/pearpass_logo.png',
       supportLink:
@@ -163,8 +171,9 @@ export const ImportItemsContent = () => {
     {
       title: 'Unencrypted file',
       type: 'unencrypted',
-      description:
-        'Upload an unencrypted PearPass export file in JSON or CSV format.',
+      description: t(
+        'Upload an unencrypted PearPass export file in JSON or CSV format.'
+      ),
       testId: 'settings-import-unencrypted',
       accepts: ['.json', '.csv'],
       imgSrc: 'assets/images/pearpass_logo.png',
@@ -523,7 +532,7 @@ export const ImportItemsContent = () => {
               {t('Import from')} {selectedOption.title}
             </Title>
             <Text color={theme.colors.colorTextSecondary} as="p">
-              {t(selectedOption.description)}
+              {selectedOption.description}
               {selectedOption.supportLink && (
                 <>
                   {' '}
