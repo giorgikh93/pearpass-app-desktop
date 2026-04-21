@@ -45,11 +45,11 @@ type ImportState = 'default' | 'upload' | 'inputPassword'
 type ImportOption = {
   title: string
   type: string
+  description: string
   testId?: string
   accepts: string[]
   imgSrc: string
   supportLink?: string
-  description: string
   learnMoreUrl?: string
 }
 
@@ -69,109 +69,109 @@ const isAllowedType = (fileType: string, accepts: string[]) =>
     return fileType === accept
   })
 
-const importOptions: ImportOption[] = [
-  {
-    title: '1Password',
-    type: '1password',
-    testId: 'settings-import-1password',
-    accepts: ['.csv'],
-    imgSrc: 'assets/images/1password.png',
-    supportLink: 'https://support.1password.com/export',
-    description:
-      'To import data from 1Password, open the app, go to File > Export, and export your data as a CSV file. Once the export is complete, upload the file here.'
-  },
-  {
-    title: 'Bitwarden',
-    type: 'bitwarden',
-    testId: 'settings-import-bitwarden',
-    accepts: ['.json', '.csv'],
-    imgSrc: 'assets/images/BitWarden.png',
-    supportLink: 'https://bitwarden.com/help/export-your-data/',
-    description:
-      'To import data from Bitwarden, go to Tools > Export Vault in the web app, choose JSON or CSV format, and upload the exported file here.'
-  },
-  {
-    title: 'KeePass',
-    type: 'keepass',
-    testId: 'settings-import-keepass',
-    accepts: ['.kdbx', '.csv', '.xml'],
-    imgSrc: 'assets/images/KeePass.png',
-    supportLink: 'https://keepass.info/help/base/importexport.html',
-    description:
-      'To import data from KeePass, open your database and export it via File > Export. KDBX files require your database password. Upload the exported file here.'
-  },
-  {
-    title: 'KeePassXC',
-    type: 'keepass',
-    testId: 'settings-import-keepassxc',
-    accepts: ['.csv', '.xml'],
-    imgSrc: 'assets/images/KeePassXC.png',
-    supportLink:
-      'https://keepassxc.org/docs/KeePassXC_UserGuide#_exporting_databases',
-    description:
-      'To import data from KeePassXC, open your database and go to Database > Export to CSV or XML. Once done, upload the exported file here.'
-  },
-  {
-    title: 'LastPass',
-    type: 'lastpass',
-    testId: 'settings-import-lastpass',
-    accepts: ['.csv'],
-    imgSrc: 'assets/images/LastPass.png',
-    supportLink:
-      'https://support.lastpass.com/s/document-item?language=en_US&bundleId=lastpass&topicId=LastPass/export-web-vault.html&_LANG=enus',
-    description:
-      'To import data from LastPass, go to Advanced Options > Export in your LastPass vault. Export as CSV and upload the file here.'
-  },
-  {
-    title: 'NordPass',
-    type: 'nordpass',
-    testId: 'settings-import-nordpass',
-    accepts: ['.csv'],
-    imgSrc: 'assets/images/NordPass.png',
-    supportLink:
-      'https://support.nordpass.com/hc/en-us/articles/360007646477-How-to-export-passwords-from-NordPass',
-    description:
-      'To import data from NordPass, open the app, go to Settings > Import & Export, and export your data as CSV. Upload the exported file here.'
-  },
-  {
-    title: 'Proton Pass',
-    type: 'protonpass',
-    testId: 'settings-import-protonpass',
-    accepts: ['.csv', '.json'],
-    imgSrc: 'assets/images/ProtonPass.png',
-    supportLink: 'https://proton.me/support/pass-export',
-    description:
-      'To import data from Proton Pass, open the app, go to Settings, navigate to the Export tab, and choose your preferred export format. Once the export is complete, upload the file here.'
-  },
-  {
-    title: 'Encrypted file',
-    type: 'encrypted',
-    accepts: ['.json'],
-    imgSrc: 'assets/images/pearpass_logo.png',
-    supportLink:
-      'https://docs.pass.pears.com/how-to-guides/how-to-export-your-vault/',
-    description:
-      'Upload a PearPass-encrypted JSON export file. You will need the password used to encrypt the file.'
-  },
-  {
-    title: 'Unencrypted file',
-    type: 'unencrypted',
-    testId: 'settings-import-unencrypted',
-    accepts: ['.json', '.csv'],
-    imgSrc: 'assets/images/pearpass_logo.png',
-    supportLink:
-      'https://docs.pass.pears.com/how-to-guides/how-to-export-your-vault/',
-    description:
-      'Upload an unencrypted PearPass export file in JSON or CSV format.'
-  }
-]
-
 export const ImportItemsContent = () => {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const styles = createStyles(theme.colors)
   const { setToast } = useToast()
   const { createRecord } = useCreateRecord()
+
+  const importOptions: ImportOption[] = [
+    {
+      title: '1Password',
+      type: '1password',
+      description:
+        'To import data from 1Password, open the app, go to File > Export, and export your data as a CSV file. Once the export is complete, upload the file here.',
+      testId: 'settings-import-1password',
+      accepts: ['.csv'],
+      imgSrc: 'assets/images/1password.png',
+      supportLink: 'https://support.1password.com/export'
+    },
+    {
+      title: 'Bitwarden',
+      type: 'bitwarden',
+      description:
+        'To import data from Bitwarden, go to Tools > Export Vault in the web app, choose JSON or CSV format, and upload the exported file here.',
+      testId: 'settings-import-bitwarden',
+      accepts: ['.json', '.csv'],
+      imgSrc: 'assets/images/BitWarden.png',
+      supportLink: 'https://bitwarden.com/help/export-your-data/'
+    },
+    {
+      title: 'KeePass',
+      type: 'keepass',
+      description:
+        'To import data from KeePass, open your database and export it via File > Export. KDBX files require your database password. Upload the exported file here.',
+      testId: 'settings-import-keepass',
+      accepts: ['.kdbx', '.csv', '.xml'],
+      imgSrc: 'assets/images/KeePass.png',
+      supportLink: 'https://keepass.info/help/base/importexport.html'
+    },
+    {
+      title: 'KeePassXC',
+      type: 'keepass',
+      description:
+        'To import data from KeePassXC, open your database and go to Database > Export to CSV or XML. Once done, upload the exported file here.',
+      testId: 'settings-import-keepassxc',
+      accepts: ['.csv', '.xml'],
+      imgSrc: 'assets/images/KeePassXC.png',
+      supportLink:
+        'https://keepassxc.org/docs/KeePassXC_UserGuide#_exporting_databases'
+    },
+    {
+      title: 'LastPass',
+      type: 'lastpass',
+      description:
+        'To import data from LastPass, go to Advanced Options > Export in your LastPass vault. Export as CSV and upload the file here.',
+      testId: 'settings-import-lastpass',
+      accepts: ['.csv'],
+      imgSrc: 'assets/images/LastPass.png',
+      supportLink:
+        'https://support.lastpass.com/s/document-item?language=en_US&bundleId=lastpass&topicId=LastPass/export-web-vault.html&_LANG=enus'
+    },
+    {
+      title: 'NordPass',
+      type: 'nordpass',
+      description:
+        'To import data from NordPass, open the app, go to Settings > Import & Export, and export your data as CSV. Upload the exported file here.',
+      testId: 'settings-import-nordpass',
+      accepts: ['.csv'],
+      imgSrc: 'assets/images/NordPass.png',
+      supportLink:
+        'https://support.nordpass.com/hc/en-us/articles/360007646477-How-to-export-passwords-from-NordPass'
+    },
+    {
+      title: 'Proton Pass',
+      type: 'protonpass',
+      description:
+        'To import data from Proton Pass, open the app, go to Settings, navigate to the Export tab, and choose your preferred export format. Once the export is complete, upload the file here.',
+      testId: 'settings-import-protonpass',
+      accepts: ['.csv', '.json'],
+      imgSrc: 'assets/images/ProtonPass.png',
+      supportLink: 'https://proton.me/support/pass-export'
+    },
+    {
+      title: 'Encrypted file',
+      type: 'encrypted',
+      description:
+        'Upload a PearPass-encrypted JSON export file. You will need the password used to encrypt the file.',
+      accepts: ['.json'],
+      imgSrc: 'assets/images/pearpass_logo.png',
+      supportLink:
+        'https://docs.pass.pears.com/how-to-guides/how-to-export-your-vault/'
+    },
+    {
+      title: 'Unencrypted file',
+      type: 'unencrypted',
+      description:
+        'Upload an unencrypted PearPass export file in JSON or CSV format.',
+      testId: 'settings-import-unencrypted',
+      accepts: ['.json', '.csv'],
+      imgSrc: 'assets/images/pearpass_logo.png',
+      supportLink:
+        'https://docs.pass.pears.com/how-to-guides/how-to-export-your-vault/'
+    }
+  ]
 
   const [state, setState] = useState<ImportState>('default')
   const [selectedOption, setSelectedOption] = useState<ImportOption | null>(
