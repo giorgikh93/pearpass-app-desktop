@@ -87,7 +87,7 @@ const renderActiveContent = (
     case SettingsItemKey.ExportItems:
       return <ExportItemsContent />
     case SettingsItemKey.ReportAProblem:
-      return <ReportAProblemContent />
+      return <ReportAProblemContent currentVersion={currentVersion}/>
     case SettingsItemKey.Language:
       return <LanguageContent />
     case SettingsItemKey.AppVersion:
