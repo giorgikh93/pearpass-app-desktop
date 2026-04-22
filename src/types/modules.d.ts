@@ -259,6 +259,14 @@ declare module '@tetherto/pear-apps-utils-validator' {
   export const Validator: any
 }
 
+declare module '@tetherto/pear-apps-utils-date' {
+  export function formatDate(
+    date: string | Date,
+    format: string,
+    separator: string
+  ): string
+}
+
 declare module '@tetherto/pearpass-lib-vault/src/utils/buffer' {
   export const clearBuffer: (buffer: any) => void
   export const stringToBuffer: (value: string) => any

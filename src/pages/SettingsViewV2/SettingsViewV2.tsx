@@ -37,6 +37,7 @@ import {
   ImportItemsContent,
   MasterPasswordContent
 } from './content'
+import { YourVaultsContent } from './content/YourVaultsContent'
 
 export enum SettingsItemKey {
   AppPreferences = 'app-preferences',
@@ -72,6 +73,8 @@ const renderActiveContent = (
       return <AppPreferencesContent />
     case SettingsItemKey.MasterPassword:
       return <MasterPasswordContent />
+    case SettingsItemKey.YourVaults:
+      return <YourVaultsContent />
     case SettingsItemKey.BlindPeering:
       return <BlindPeersContent />
     case SettingsItemKey.ImportItems:
