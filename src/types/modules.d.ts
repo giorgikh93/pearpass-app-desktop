@@ -206,6 +206,13 @@ declare module '@tetherto/pearpass-lib-vault' {
 
   export const useRecords: any
   export const useBlindMirrors: any
+
+  export function closeAllInstances(): Promise<void>
+
+  export function useRecordCountsByType(): {
+    data: Record<string, number> | undefined
+    isLoading: boolean
+  }
 }
 
 declare module '@tetherto/pearpass-utils-password-check' {

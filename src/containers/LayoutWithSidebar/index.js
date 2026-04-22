@@ -2,11 +2,14 @@ import { html } from 'htm/react'
 
 import {
   ContentWrapper,
+  ContentWrapperV2,
   LayoutWrapper,
   SideBarWrapper,
   SideViewWrapper
 } from './styles'
+import { isV2 } from '../../utils/designVersion'
 import { Sidebar } from '../Sidebar'
+import { SidebarV2 } from '../Sidebar/SidebarV2'
 
 /**
  * @typedef LayoutWithSidebarProps
@@ -18,14 +21,21 @@ import { Sidebar } from '../Sidebar'
  * @param {LayoutWithSidebarProps} props
  */
 
-export const LayoutWithSidebar = ({ mainView, sideView }) => html`
-  <${LayoutWrapper}>
-    <${SideBarWrapper}>
-      <${Sidebar} />
+export const LayoutWithSidebar = ({ mainView, sideView }) => {
+  const isV2Design = isV2()
+  const VersionBasedContentWrapper = isV2Design
+    ? ContentWrapperV2
+    : ContentWrapper
+
+  return html`
+    <${LayoutWrapper}>
+      <${SideBarWrapper}>
+        ${isV2Design ? html`<${SidebarV2} />` : html`<${Sidebar} />`}
+      <//>
+
+      <${VersionBasedContentWrapper}> ${mainView} <//>
+
+      ${sideView && html` <${SideViewWrapper}> ${sideView} <//>`}
     <//>
-
-    <${ContentWrapper}> ${mainView} <//>
-
-    ${sideView && html` <${SideViewWrapper}> ${sideView} <//>`}
-  <//>
-`
+  `
+}
