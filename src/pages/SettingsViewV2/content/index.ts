@@ -1,3 +1,4 @@
+import { AppPreferencesContent } from './AppPreferencesContent'
 import { BlindPeersContent } from './BlindPeersContent'
 import { ExportItemsContent } from './ExportItemsContent'
 import { ImportItemsContent } from './ImportItemsContent'
@@ -7,5 +8,6 @@ export {
   BlindPeersContent,
   ExportItemsContent,
   ImportItemsContent,
-  MasterPasswordContent
+  MasterPasswordContent,
+  AppPreferencesContent
 }

@@ -31,6 +31,7 @@ import { useRouter } from '../../context/RouterContext'
 import { useTranslation } from '../../hooks/useTranslation'
 import { createStyles } from './SettingsViewV2.styles'
 import {
+  AppPreferencesContent,
   BlindPeersContent,
   ExportItemsContent,
   ImportItemsContent,
@@ -67,6 +68,8 @@ const renderActiveContent = (
   activeItemKey: SettingsItemKey
 ): React.ReactNode => {
   switch (activeItemKey) {
+    case SettingsItemKey.AppPreferences:
+      return <AppPreferencesContent />
     case SettingsItemKey.MasterPassword:
       return <MasterPasswordContent />
     case SettingsItemKey.BlindPeering:
