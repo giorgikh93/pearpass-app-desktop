@@ -1,37 +1,27 @@
 import React, { useEffect, useState } from 'react'
 
-import {
-  Button,
-  Link,
-  PageHeader,
-  Text,
-  useTheme
-} from '@tetherto/pearpass-lib-ui-kit'
+import { Link, PageHeader, Text, useTheme } from '@tetherto/pearpass-lib-ui-kit'
 import {
   PEARPASS_WEBSITE,
   PRIVACY_POLICY,
   TERMS_OF_USE
 } from '@tetherto/pearpass-lib-constants'
 
-import { useToast } from '../../../../context/ToastContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
 import { logger } from '../../../../utils/logger'
 import { createStyles } from './styles'
 
 const TEST_IDS = {
   root: 'settings-app-version',
-  fieldVersion: 'settings-app-version-field',
-  checkForUpdates: 'settings-app-version-check-for-updates'
+  fieldVersion: 'settings-app-version-field'
 } as const
 
 export const AppVersionContent = (): React.ReactElement => {
   const { t } = useTranslation()
   const { theme } = useTheme()
-  const { setToast } = useToast()
   const styles = createStyles(theme.colors)
 
   const [currentVersion, setCurrentVersion] = useState('')
-  const [isChecking, setIsChecking] = useState(false)
 
   useEffect(() => {
     const electronAPI = window.electronAPI
@@ -54,35 +44,6 @@ export const AppVersionContent = (): React.ReactElement => {
         )
       )
   }, [])
-
-  const handleCheckForUpdates = async () => {
-    const electronAPI = window.electronAPI
-    if (isChecking || !electronAPI?.checkUpdated) {
-      return
-    }
-
-    try {
-      setIsChecking(true)
-      const hasUpdate = await electronAPI.checkUpdated()
-
-      setToast({
-        message: hasUpdate
-          ? t('Update available. Restart the app to apply it.')
-          : t('You are on the latest version.')
-      })
-    } catch (error) {
-      logger.error(
-        'AppVersionContent',
-        'Error checking for updates:',
-        error
-      )
-      setToast({
-        message: t('Could not check for updates. Please try again.')
-      })
-    } finally {
-      setIsChecking(false)
-    }
-  }
 
   return (
     <div data-testid={TEST_IDS.root} style={styles.root}>
@@ -121,16 +82,6 @@ export const AppVersionContent = (): React.ReactElement => {
           {currentVersion}
         </Text>
       </div>
-
-      <Button
-        variant="primary"
-        size="small"
-        isLoading={isChecking}
-        onClick={handleCheckForUpdates}
-        data-testid={TEST_IDS.checkForUpdates}
-      >
-        {t('Check for updates')}
-      </Button>
     </div>
   )
 }
