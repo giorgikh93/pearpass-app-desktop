@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo } from 'react'
 
 import {
   Button,
@@ -6,8 +6,8 @@ import {
   ListItem,
   MultiSlotInput,
   NavbarListItem,
+  PageHeader,
   Text,
-  Title,
   useTheme
 } from '@tetherto/pearpass-lib-ui-kit'
 import {
@@ -29,7 +29,6 @@ import { createStyles } from './styles'
 export const YourVaultsContent = () => {
   const { t } = useTranslation()
   const { setModal, closeModal } = useModal()
-  const [vaultContextMenuOpen, setVaultContextMenuOpen] = useState(false)
   const { theme } = useTheme()
   const styles = createStyles(theme.colors)
 
@@ -97,12 +96,11 @@ export const YourVaultsContent = () => {
   return (
     <div style={styles.root} data-testid="settings-card-your-vault">
       <div style={styles.header}>
-        <Title as="h2">{t('Your Vaults')}</Title>
-        <Text color={theme.colors.colorTextSecondary}>
-          {t(
-            'Manage your vaults, control access permissions, and take protective measures if needed.'
-          )}
-        </Text>
+        <PageHeader
+          as='h1'
+          title={t('Your Vaults')}
+          subtitle={t('Manage your vaults, control access permissions, and take protective measures if needed.')}
+        />
       </div>
 
       <div style={styles.section}>
@@ -133,8 +131,6 @@ export const YourVaultsContent = () => {
                   }
                 />
                 <ContextMenu
-                  open={vaultContextMenuOpen}
-                  onOpenChange={setVaultContextMenuOpen}
                   testID="settings-vault-context-menu"
                   menuWidth={200}
                   trigger={
@@ -162,7 +158,6 @@ export const YourVaultsContent = () => {
                       />
                     }
                     onClick={() => {
-                      setVaultContextMenuOpen(false)
                       openEditModal(vault)
                     }}
                   />
@@ -185,7 +180,7 @@ export const YourVaultsContent = () => {
                   key={v.id}
                   withRoundedBottomBorders={false}
                   dividerColor={theme.colors.colorBorderPrimary}
-                  testID={`settings-other-vault-${v.name}`}
+                  testID={`settings-other-vault-${v.name}-${index}`}
                   selectable={false}
                   title={v.name}
                   showDivider={index < otherVaults.length - 1}
