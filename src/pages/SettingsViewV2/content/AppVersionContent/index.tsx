@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 import { Link, PageHeader, Text, useTheme } from '@tetherto/pearpass-lib-ui-kit'
 import {
@@ -8,7 +8,6 @@ import {
 } from '@tetherto/pearpass-lib-constants'
 
 import { useTranslation } from '../../../../hooks/useTranslation'
-import { logger } from '../../../../utils/logger'
 import { createStyles } from './styles'
 
 const TEST_IDS = {
@@ -16,34 +15,16 @@ const TEST_IDS = {
   fieldVersion: 'settings-app-version-field'
 } as const
 
-export const AppVersionContent = (): React.ReactElement => {
+type AppVersionContentProps = {
+  currentVersion: string
+}
+
+export const AppVersionContent = ({
+  currentVersion
+}: AppVersionContentProps): React.ReactElement => {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const styles = createStyles(theme.colors)
-
-  const [currentVersion, setCurrentVersion] = useState('')
-
-  useEffect(() => {
-    const electronAPI = window.electronAPI
-    if (!electronAPI || typeof electronAPI.getConfig !== 'function') {
-      return
-    }
-
-    electronAPI
-      .getConfig()
-      .then((cfg) => {
-        if (cfg && typeof cfg.version === 'string') {
-          setCurrentVersion(cfg.version)
-        }
-      })
-      .catch((error) =>
-        logger.error(
-          'AppVersionContent',
-          'Error getting runtime config:',
-          error
-        )
-      )
-  }, [])
 
   return (
     <div data-testid={TEST_IDS.root} style={styles.root}>
