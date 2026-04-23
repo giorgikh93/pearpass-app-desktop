@@ -2,60 +2,88 @@
   <img src="assets/images/logo.png" alt="Pearpass logo" width="264"/>
 </p>
 
-# pearpass-app-desktop
+# PearPass Desktop
 
-PearPass is a distributed password manager powered by Pear Runtime. It allows secure storage of passwords, credit card details, and secure notes, with the ability to distribute data across multiple devices.
+> A distributed, end-to-end encrypted password manager for desktop, built on Pear Runtime, works offline, syncs across devices.
+
+---
 
 ## Table of Contents
 
+- [Introduction](#introduction)
 - [Features](#features)
 - [Installation](#installation)
-- [Testing](#testing)
 - [Usage Examples](#usage-examples)
+- [Testing](#testing)
+- [Staging to Dev](#staging-to-dev)
+- [Workspace Dependencies](#workspace-dependencies)
 - [Dependencies](#dependencies)
 - [Related Projects](#related-projects)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Introduction
+
+PearPass Desktop is a password manager that stores and synchronises credentials (passwords, credit card details, secure notes, and custom fields) across multiple devices using [Pear Runtime](https://pears.com/). All data is encrypted locally before it ever leaves your machine.
+
+It runs as both a Pear application and an Electron desktop app, and is designed to work fully offline; devices sync peer-to-peer when they are online together.
+
+Non-goals: PearPass is not a cloud-hosted service and does not rely on a central server. If you need a managed SaaS password manager, this is not it.
+
+---
 
 ## Features
 
-- Secure password, identity, and credit card, notes and custom fields storage
-- Cross-device and platform synchronization
-- Offline access to your credentials
-- Encryption for data security
-- Password strength analysis
-- Random password generator
-- Easy-to-use interface
+- **Encrypted-at-rest storage.** Passwords, credit cards, secure notes, and custom fields, all encrypted before hitting disk.
+- **Cross-device sync.** Peer-to-peer replication via Pear Runtime; no central server required.
+- **Offline access.** Your vault is always available locally, even without a network connection.
+- **Password health.** Built-in strength analysis flags weak or reused passwords.
+- **Random password generator.** Configurable generator produces strong, unique passwords on demand.
+- **Multi-platform.** Runs on macOS, Linux, and Windows via Electron; also available as a native Pear app.
+- **Browser extension integration.** Works alongside the [PearPass browser extension](https://github.com/tetherto/pearpass-app-browser-extension) for autofill.
+
+---
 
 ## Installation
 
-- **Node.js**: Ensure you have the correct Node.js version installed. You can check the required version in the `.nvmrc` file. And ensure it matches to your current node version  by running:
+### Prerequisites
+
+- **Node.js 22.12.0** — check the required version in `.nvmrc` and verify with:
+
 ```bash
 node --version
 ```
 
-- **Pear**: Ensure you have Pear installed. More details can be found [here](https://docs.pears.com/guide/getting-started.html)
+- **Pear Runtime** — install guide: [docs.pears.com/guide/getting-started](https://docs.pears.com/guide/getting-started.html).
 
-
-Clone the repository
+### Steps
 
 ```bash
+# 1. Clone the repository
 git clone git@github.com:tetherto/pearpass-app-desktop.git
-```
-Go to the cloned directory 
-```bash
 cd pearpass-app-desktop
-```
-Install npm modules
-```bash
+
+# 2. Install dependencies
 npm install
-```
-generate translation keys
-```bash
+
+# 3. Build translation keys
 npm run build
-```
-run the app
-```bash
+
+# 4. Start the development app
 npm run dev
 ```
+
+---
+
+## Usage Examples
+
+Full user documentation, including a getting-started guide, vault management, cross-device sync, and the browser extension, is available at:
+
+**[docs.pass.pears.com](https://docs.pass.pears.com)**
+
+---
 
 ## Testing
 
@@ -67,35 +95,31 @@ Run unit tests with Jest:
 npm test
 ```
 
-## Staging to dev
+Run the linter:
+
+```bash
+npm run lint
+```
+
+---
+
+## Staging to Dev
 
 Ensure the app runs correctly using `npm run dev`.
 
-If successful, stage it—for example: `pear stage dev`.
+If successful, stage it, for example: `pear stage dev`.
 
 Then run the app: `pear run pear://GENERATED_URL`.
 
-Pear serves files from the "dist" folder:
-
-```html
-<!-- index.html -->
-<script type="module" src="./dist/app.js"></script>
-```
-
-The "src" folder is for development and it's ignored in package.json
+Pear serves files from the `dist/` folder. The `src/` folder is for development only and is excluded from the Pear bundle via `package.json`:
 
 ```json
-  "ignore": [
-    ".github",
-    "appling",
-    ".git",
-    ".gitignore",
-    "packages",
-    "src"     
-  ]
+"ignore": [".github", "appling", ".git", ".gitignore", "packages", "src"]
 ```
 
-## Depended modules
+---
+
+## Workspace Dependencies
 
 The following sibling modules must be present in the workspace (they are not declared as npm dependencies):
 
@@ -117,6 +141,8 @@ The following sibling modules must be present in the workspace (they are not dec
 - [`@tetherto/pearpass-utils-password-check`](../pearpass-utils-password-check)
 - [`@tetherto/pearpass-utils-password-generator`](../pearpass-utils-password-generator)
 
+---
+
 ## Dependencies
 
 - [Pear Runtime](https://pears.com/)
@@ -125,15 +151,27 @@ The following sibling modules must be present in the workspace (they are not dec
 - [Lingui](https://lingui.dev/)
 - [Redux](https://redux.js.org/)
 
+---
+
 ## Related Projects
 
-- [@tetherto/pearpass-app-mobile](https://github.com/tetherto/pearpass-app-mobile) - A mobile app for PearPass, a password manager
-- [@tetherto/pearpass-lib-ui-react-native-components](https://github.com/tetherto/pearpass-lib-ui-react-native-components) - A library of React Native UI components for PearPass
-- [@tetherto/pearpass-lib-ui-react-components](https://github.com/tetherto/pearpass-lib-ui-react-components) - A library of React UI components for PearPass
-- [@tetherto/pearpass-app-browser-extension](https://github.com/tetherto/pearpass-app-browser-extension) - A browser extension for PearPass, a password manager
-- [@tetherto/tether-dev-docs](https://github.com/tetherto/tether-dev-docs) - Documentations and guides for developers
-- [@tetherto/pearpass-lib-vault](https://github.com/tetherto/pearpass-lib-vault) - A library for managing password vaults
-- [@tetherto/pearpass-lib-vault-core](https://github.com/tetherto/pearpass-lib-vault-core) - A bare worker and a client for PearPass vaults
+| Project                                                                                                          | Description                                |
+| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| [`pearpass-app-mobile`](https://github.com/tetherto/pearpass-app-mobile)                                         | Mobile app for PearPass                    |
+| [`pearpass-app-browser-extension`](https://github.com/tetherto/pearpass-app-browser-extension)                   | Browser extension for autofill             |
+| [`pearpass-lib-vault`](https://github.com/tetherto/pearpass-lib-vault)                                           | Vault management library                   |
+| [`pearpass-lib-vault-core`](https://github.com/tetherto/pearpass-lib-vault-core)                                 | Bare worker and client for PearPass vaults |
+| [`pearpass-lib-ui-react-components`](https://github.com/tetherto/pearpass-lib-ui-react-components)               | React UI component library                 |
+| [`pearpass-lib-ui-react-native-components`](https://github.com/tetherto/pearpass-lib-ui-react-native-components) | React Native UI component library          |
+| [`tether-dev-docs`](https://github.com/tetherto/tether-dev-docs)                                                 | Developer documentation and guides         |
+
+---
+
+## Contributing
+
+Contributions are welcome. See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the dev loop, coding conventions, and how to run the test suite.
+
+---
 
 ## License
 
