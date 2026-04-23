@@ -156,7 +156,7 @@ The following sibling modules must be present in the workspace (they are not dec
 | Project                                                                                                          | Description                                |
 | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | [`pearpass-app-mobile`](https://github.com/tetherto/pearpass-app-mobile)                                         | Mobile app for PearPass                    |
-| [`pearpass-app-browser-extension`](https://github.com/tetherto/pearpass-app-browser-extension)                   | Browser extension for autofill             |
+| [`pearpass-app-browser-extension`](https://github.com/tetherto/pearpass-app-browser-extension)                   | Browser extension for PearPass             |
 | [`pearpass-lib-vault`](https://github.com/tetherto/pearpass-lib-vault)                                           | Vault management library                   |
 | [`pearpass-lib-vault-core`](https://github.com/tetherto/pearpass-lib-vault-core)                                 | Bare worker and client for PearPass vaults |
 | [`pearpass-lib-ui-react-components`](https://github.com/tetherto/pearpass-lib-ui-react-components)               | React UI component library                 |
