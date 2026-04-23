@@ -26,11 +26,9 @@
 
 ## Introduction
 
-PearPass Desktop is a password manager that stores and synchronises credentials (passwords, credit card details, secure notes, and custom fields) across multiple devices using [Pear Runtime](https://pears.com/). All data is encrypted locally before it ever leaves your machine.
+PearPass is an open-source, privacy-first password and identity manager that gives you full control over your sensitive information. It makes storing and managing your credentials simple, secure, and private, with all data encrypted and stored locally on your device.
 
-It runs as both a Pear application and an Electron desktop app, and is designed to work fully offline; devices sync peer-to-peer when they are online together.
-
-Non-goals: PearPass is not a cloud-hosted service and does not rely on a central server. If you need a managed SaaS password manager, this is not it.
+Unlike traditional password managers that rely on centralized servers, PearPass is built on [Pear Runtime](https://pears.com/) and uses peer-to-peer technology to sync your credentials directly between your devices, ensuring they remain private, secure, and always under your control.
 
 ---
 
