@@ -1,9 +1,9 @@
 import React from 'react'
-import { RuntimeLoader } from '@rive-app/canvas'
+import { RuntimeLoader } from '@rive-app/webgl2'
 import { useRiveWithRetry } from '../../../hooks/useRiveWithRetry'
 import { useMemo } from 'react'
 
-RuntimeLoader.setWasmUrl('assets/rive/rive.wasm')
+RuntimeLoader.setWasmUrl('assets/rive/rive_webgl2.wasm')
 
 export const PasswordFillAnimation = (): React.ReactElement => {
   const riveParams = useMemo(() => ({

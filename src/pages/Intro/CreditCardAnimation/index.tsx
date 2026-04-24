@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react'
-import { RuntimeLoader } from '@rive-app/canvas'
+import { RuntimeLoader } from '@rive-app/webgl2'
 import { useRiveWithRetry } from '../../../hooks/useRiveWithRetry'
 
-RuntimeLoader.setWasmUrl('assets/rive/rive.wasm')
+RuntimeLoader.setWasmUrl('assets/rive/rive_webgl2.wasm')
 
 export const CreditCardAnimation = (): React.ReactElement => {
   const riveParams = useMemo(() => ({

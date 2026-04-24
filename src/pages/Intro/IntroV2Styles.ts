@@ -14,10 +14,9 @@ export const MainContent = styled.div`
 export const RiveArtWrapper = styled.div`
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  width: 100%;
-  height: 260px;
-  padding-bottom: 21px;
+  align-items: center;
+  width: min(100%, 260px);
+  aspect-ratio: 1 / 1;
   box-sizing: border-box;
   overflow: hidden;
   isolation: isolate;

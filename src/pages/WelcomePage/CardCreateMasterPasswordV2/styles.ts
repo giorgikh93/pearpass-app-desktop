@@ -4,8 +4,6 @@ import { rawTokens } from '@tetherto/pearpass-lib-ui-kit'
 export const createStyles = (colors: ThemeColors) => ({
   card: {
     background: colors.colorSurfacePrimary,
-    border: `1px solid ${colors.colorBorderPrimary}`,
-    borderRadius: `${rawTokens.radius8}px ${rawTokens.radius8}px ${rawTokens.radius20}px ${rawTokens.radius20}px`,
     paddingTop: '55px',
     paddingBottom: '55px',
     display: 'flex',

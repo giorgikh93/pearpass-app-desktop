@@ -2,14 +2,17 @@ import React, { useState } from 'react'
 
 import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { Validator } from '@tetherto/pear-apps-utils-validator'
-// @ts-ignore - JS module re-export
 import { TERMS_OF_USE } from '@tetherto/pearpass-lib-constants'
-import { useUserData } from '@tetherto/pearpass-lib-vault'
+import {
+  useCreateVault,
+  useUserData,
+  useVault,
+  useVaults
+} from '@tetherto/pearpass-lib-vault'
 import {
   stringToBuffer,
   clearBuffer
 } from '@tetherto/pearpass-lib-vault/src/utils/buffer'
-// @ts-ignore - JS module without type declarations
 import { checkPasswordStrength } from '@tetherto/pearpass-utils-password-check'
 import {
   AlertMessage,
@@ -32,6 +35,7 @@ import { LOCAL_STORAGE_KEYS } from '../../../constants/localStorage'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
+import { getDeviceName } from '../../../utils/getDeviceName'
 import { logger } from '../../../utils/logger'
 
 const STRENGTH_MAP: Record<string, PasswordIndicatorVariant> = {
@@ -42,14 +46,17 @@ const STRENGTH_MAP: Record<string, PasswordIndicatorVariant> = {
 
 export const CardCreateMasterPasswordV2 = () => {
   const { t } = useTranslation()
-  const { currentPage, navigate } = useRouter()
+  const { navigate } = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const { theme } = useTheme()
   const styles = createStyles(theme.colors)
 
   useGlobalLoading({ isLoading })
 
-  const { createMasterPassword } = useUserData()
+  const { createMasterPassword, logIn } = useUserData()
+  const { initVaults } = useVaults()
+  const { addDevice } = useVault()
+  const { createVault } = useCreateVault()
 
   const schema = Validator.object({
     password: Validator.string().required(t('Password is required')),
@@ -110,12 +117,17 @@ export const CardCreateMasterPasswordV2 = () => {
       return
     }
 
-    const passwordBuffer = stringToBuffer(formValues.password)
+    const createBuffer = stringToBuffer(formValues.password)
+    const loginBuffer = stringToBuffer(formValues.password)
     try {
       setIsLoading(true)
       localStorage.setItem(LOCAL_STORAGE_KEYS.TOU_ACCEPTED, 'true')
-      await createMasterPassword(passwordBuffer)
-      navigate(currentPage, { state: 'masterPassword' })
+      await createMasterPassword(createBuffer)
+      await logIn({ password: loginBuffer })
+      await initVaults({ password: loginBuffer })
+      await createVault({ name: t('Personal vault') })
+      await addDevice(getDeviceName())
+      navigate('vault', { recordType: 'all' })
       setIsLoading(false)
     } catch (error) {
       setIsLoading(false)
@@ -126,12 +138,8 @@ export const CardCreateMasterPasswordV2 = () => {
         error
       )
     } finally {
-      clearBuffer(passwordBuffer)
+      clearBuffer(loginBuffer)
     }
-  }
-
-  const handleLoadVaultClick = () => {
-    navigate(currentPage, { state: 'loadVault' })
   }
 
   const showInfoToast = values.password && !isPasswordStrong
@@ -142,12 +150,6 @@ export const CardCreateMasterPasswordV2 = () => {
       <Form onSubmit={handleSubmit(onSubmit)} style={styles.container}>
         <div style={styles.header}>
           <Title as="h2">{t('Create Master Password')}</Title>
-          <Text as="p">
-            <Text as="span">{t('Create a Master Password, or ')}</Text>{' '}
-            <Link onClick={handleLoadVaultClick}>
-              {t('continue with existing PearPass')}
-            </Link>
-          </Text>
         </div>
 
         <div style={styles.fieldsWrapper}>
