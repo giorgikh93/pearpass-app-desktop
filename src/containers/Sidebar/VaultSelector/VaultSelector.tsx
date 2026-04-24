@@ -65,9 +65,14 @@ export const VaultSelector = ({ onClose }: VaultSelectorProps) => {
   const iconSecondary = { color: theme.colors.colorTextSecondary }
   const iconDestructive = { color: theme.colors.colorSurfaceDestructiveElevated }
 
-  const openInviteModal = async () => {
-    if (!inviteData?.publicKey) {
-      await createInvite()
+  const openInviteModal = async (vault: Vault) => {
+    if (inviteData?.vaultId !== vault.id) {
+      setIsLoading(true)
+      try {
+        await createInvite()
+      } finally {
+        setIsLoading(false)
+      }
     }
     setModal(<AddDeviceModalContentV2 />)
   }
@@ -77,6 +82,7 @@ export const VaultSelector = ({ onClose }: VaultSelectorProps) => {
     onSuccess: () => void | Promise<void>
   ) => {
     setIsLoading(true)
+
     try {
       if (vault.id === activeVault?.id) {
         await onSuccess()
@@ -93,6 +99,9 @@ export const VaultSelector = ({ onClose }: VaultSelectorProps) => {
               setIsLoading(true)
               try {
                 await refetchVault(vault.id, { password })
+                // TODO: MainView's useGlobalLoading prematurely changes our loading to
+                //  false after vault refetch. Switch to reliable local loading.
+                setIsLoading(true)
                 closeModal()
                 await onSuccess()
               } finally {
@@ -105,6 +114,9 @@ export const VaultSelector = ({ onClose }: VaultSelectorProps) => {
       }
 
       await refetchVault(vault.id)
+      // TODO: MainView's useGlobalLoading prematurely changes our loading to
+      //  false after vault refetch. Switch to reliable local loading.
+      setIsLoading(true)
       await onSuccess()
     } finally {
       setIsLoading(false)
@@ -125,23 +137,27 @@ export const VaultSelector = ({ onClose }: VaultSelectorProps) => {
   }
 
   const handleInvite = (vault: Vault) => {
-    void switchVault(vault, openInviteModal)
+    void switchVault(vault, () => openInviteModal(vault))
   }
 
   const handleRename = (vault: Vault) => {
-    setModal(
-      <CreateOrEditVaultModalContentV2
-        vault={vault}
-        onClose={closeModal}
-        onSuccess={closeModal}
-      />
-    )
+    void switchVault(vault, () => {
+      setModal(
+        <CreateOrEditVaultModalContentV2
+          vault={vault}
+          onClose={closeModal}
+          onSuccess={closeModal}
+        />
+      )
+    })
   }
 
   const handleSetPassword = (vault: Vault) => {
-    setModal(
-      <ModifyVaultModalContent vaultId={vault.id} vaultName={vault.name} />
-    )
+    void switchVault(vault, () => {
+      setModal(
+        <ModifyVaultModalContent vaultId={vault.id} vaultName={vault.name} />
+      )
+    })
   }
 
   const handleDelete = (vault: Vault) => {
