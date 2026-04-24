@@ -9,6 +9,7 @@ import { CreateNewCategoryPopupContent } from '../../components/CreateNewCategor
 import { EmptyCollectionView } from '../../components/EmptyCollectionView'
 import { InputSearch } from '../../components/InputSearch'
 import { PopupMenu } from '../../components/PopupMenu'
+import { LOCAL_STORAGE_KEYS } from '../../constants/localStorage'
 import { BrowserExtensionDialogV2 } from '../../containers/Modal/BrowserExtensionDialogV2'
 import { RecordListView } from '../../containers/RecordListView'
 import { useAppHeaderContext } from '../../context/AppHeaderContext'
@@ -48,6 +49,11 @@ export const MainView = () => {
 
   useEffect(() => {
     if (!isV2()) return
+
+    const dismissed =
+      localStorage.getItem(LOCAL_STORAGE_KEYS.EXTENSION_DIALOG_DISMISSED) ===
+      'true'
+    if (dismissed) return
 
     const enabled = getNativeMessagingEnabled()
     const isRunning = isNativeMessagingIPCRunning()
