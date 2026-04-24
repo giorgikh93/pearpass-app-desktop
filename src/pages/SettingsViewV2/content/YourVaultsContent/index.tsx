@@ -27,7 +27,7 @@ import {
 
 import { AddDeviceModalContentV2 } from '../../../../containers/Modal/AddDeviceModalContentV2/AddDeviceModalContentV2'
 import { CreateOrEditVaultModalContentV2 } from '../../../../containers/Modal/CreateOrEditVaultModalContentV2/CreateOrEditVaultModalContentV2'
-import { SeeDevicesModalContent } from '../../../../containers/Modal/SeeDevicesModalContent'
+import { PairedDevicesModalContent } from '../../../../containers/Modal/PairedDevicesModalContent'
 import { useModal } from '../../../../context/ModalContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
 import { sortByName } from '../../../../utils/sortByName'
@@ -67,7 +67,7 @@ export const YourVaultsContent = () => {
   }, [setModal])
 
   const openDevicesModal = useCallback(() => {
-    setModal(<SeeDevicesModalContent />)
+    setModal(<PairedDevicesModalContent />)
   }, [setModal])
 
   const openCreateModal = useCallback(() => {
@@ -186,7 +186,7 @@ export const YourVaultsContent = () => {
                     testID="settings-vault-devices-button"
                     variant="secondary"
                     size="small"
-                    label={t('See Devices')}
+                    label={t('View Paired Devices')}
                     icon={
                       <Devices
                         color={theme.colors.colorTextPrimary}

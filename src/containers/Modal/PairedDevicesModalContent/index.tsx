@@ -56,7 +56,7 @@ const getDeviceIcon = (deviceName?: string) => {
   return Devices
 }
 
-export const SeeDevicesModalContent = () => {
+export const PairedDevicesModalContent = () => {
   const { t } = useTranslation()
   const { closeModal } = useModal()
   const { theme } = useTheme()
@@ -71,19 +71,18 @@ export const SeeDevicesModalContent = () => {
 
   return (
     <Dialog
-      title={t('Devices')}
+      title={t('Paired Devices')}
       onClose={closeModal}
       testID="see-devices-dialog"
       closeButtonTestID="see-devices-close"
       footer={
         <Button
-          variant="secondary"
           size="small"
           type="button"
           onClick={closeModal}
           data-testid="see-devices-close-button"
         >
-          {t('Close')}
+          {t('Understood')}
         </Button>
       }
     >

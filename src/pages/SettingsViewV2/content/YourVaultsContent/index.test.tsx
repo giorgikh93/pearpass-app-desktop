@@ -5,7 +5,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react'
 
 import { AddDeviceModalContentV2 } from '../../../../containers/Modal/AddDeviceModalContentV2/AddDeviceModalContentV2'
 import { CreateOrEditVaultModalContentV2 } from '../../../../containers/Modal/CreateOrEditVaultModalContentV2/CreateOrEditVaultModalContentV2'
-import { SeeDevicesModalContent } from '../../../../containers/Modal/SeeDevicesModalContent'
+import { PairedDevicesModalContent } from '../../../../containers/Modal/PairedDevicesModalContent'
 import { YourVaultsContent } from './index'
 
 const mockSetModal = jest.fn()
@@ -296,7 +296,7 @@ describe('YourVaultsContent', () => {
 
     expect(mockSetModal).toHaveBeenCalledTimes(1)
     const el = mockSetModal.mock.calls[0][0] as React.ReactElement
-    expect(el.type).toBe(SeeDevicesModalContent)
+    expect(el.type).toBe(PairedDevicesModalContent)
   })
 
   it('opens rename (edit) for the current vault from the context menu', async () => {
