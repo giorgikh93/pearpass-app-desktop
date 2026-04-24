@@ -1,0 +1,126 @@
+import React from 'react'
+
+import { Button, Dialog, Text, useTheme } from '@tetherto/pearpass-lib-ui-kit'
+import { useRecords } from '@tetherto/pearpass-lib-vault'
+
+import { createStyles } from './DeleteRecordsModalContentV2.styles'
+import { RecordItemIcon } from '../../../components/RecordItemIcon'
+import { useGlobalLoading } from '../../../context/LoadingContext'
+import { useModal } from '../../../context/ModalContext'
+import { useTranslation } from '../../../hooks/useTranslation'
+import { getRecordSubtitle } from '../../../utils/getRecordSubtitle'
+import type { VaultRecord } from '../../../utils/groupRecordsByTimePeriod'
+
+type DeleteRecordsModalContentV2Props = {
+  records: VaultRecord[]
+  onCompleted?: () => void
+}
+
+export const DeleteRecordsModalContentV2 = ({
+  records,
+  onCompleted
+}: DeleteRecordsModalContentV2Props) => {
+  const { t } = useTranslation()
+  const { theme } = useTheme()
+  const styles = createStyles()
+  const { closeModal } = useModal()
+
+  const { deleteRecords, isLoading } = useRecords({
+    onCompleted: closeModal
+  })
+
+  useGlobalLoading({ isLoading })
+
+  const count = records.length
+  const isSingle = count === 1
+
+  const dialogTitle = isSingle
+    ? t('Delete 1 Item')
+    : t('Delete {count} Items', { count })
+
+  const confirmText = isSingle
+    ? t('Are you sure to delete the selected item?')
+    : t('Are you sure to delete the selected items?')
+
+  const selectedLabel = isSingle ? t('Selected Item') : t('Selected Items')
+
+  const submitLabel = isSingle ? t('Delete Item') : t('Delete Items')
+
+  const handleDelete = async () => {
+    if (!count || isLoading) return
+    await deleteRecords(records.map((r) => r.id))
+    onCompleted?.()
+  }
+
+  return (
+    <Dialog
+      title={dialogTitle}
+      onClose={closeModal}
+      testID="delete-records-dialog-v2"
+      closeButtonTestID="delete-records-close-v2"
+      footer={
+        <>
+          <Button
+            variant="secondary"
+            size="small"
+            type="button"
+            onClick={closeModal}
+            data-testid="delete-records-discard-v2"
+          >
+            {t('Discard')}
+          </Button>
+          <Button
+            variant="destructive"
+            size="small"
+            type="button"
+            disabled={!count || isLoading}
+            isLoading={isLoading}
+            onClick={handleDelete}
+            data-testid="delete-records-submit-v2"
+          >
+            {submitLabel}
+          </Button>
+        </>
+      }
+    >
+      <div style={styles.body}>
+        <div style={styles.itemsListHeader}>
+          <Text variant="caption" color={theme.colors.colorTextSecondary}>
+            {selectedLabel}
+          </Text>
+        </div>
+
+        {count > 0 && (
+          <div style={styles.itemsList}>
+            {records.map((record) => {
+              const subtitle = getRecordSubtitle(record)
+              const titleText = record.data?.title ?? ''
+              return (
+                <div key={record.id} style={styles.itemRow}>
+                  <RecordItemIcon record={record} size={32} />
+                  <div style={styles.itemText}>
+                    <Text>{titleText}</Text>
+                    {subtitle ? (
+                      <Text
+                        variant="caption"
+                        color={theme.colors.colorTextSecondary}
+                      >
+                        {subtitle}
+                      </Text>
+                    ) : null}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        <div style={styles.confirmText}>
+          <Text variant="caption" color={theme.colors.colorTextSecondary}>
+            {confirmText}
+          </Text>
+        </div>
+      </div>
+    </Dialog>
+  )
+}

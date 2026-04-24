@@ -1,7 +1,6 @@
-import type { ThemeColors } from '@tetherto/pearpass-lib-ui-kit'
 import { rawTokens } from '@tetherto/pearpass-lib-ui-kit'
 
-export const createStyles = (_colors: ThemeColors) => ({
+export const createStyles = () => ({
   body: {
     display: 'flex' as const,
     flexDirection: 'column' as const,
@@ -9,7 +8,7 @@ export const createStyles = (_colors: ThemeColors) => ({
     width: '100%'
   },
   itemsListHeader: {
-    marginBottom: `${rawTokens.spacing16}px`,
+    marginBottom: `${rawTokens.spacing16}px`
   },
   itemRow: {
     display: 'flex' as const,
@@ -32,19 +31,10 @@ export const createStyles = (_colors: ThemeColors) => ({
     width: '100%',
     maxHeight: '220px',
     overflowY: 'auto' as const,
-    paddingLeft: `${rawTokens.spacing12}px`,
+    paddingLeft: `${rawTokens.spacing12}px`
   },
-  destinationHint: {
+  confirmText: {
     marginTop: `${rawTokens.spacing16}px`,
     width: '100%'
-  },
-  chipRow: {
-    display: 'flex' as const,
-    flexDirection: 'row' as const,
-    flexWrap: 'wrap' as const,
-    gap: `${rawTokens.spacing12}px`,
-    width: '100%',
-    maxHeight: '100px',
-    overflowY: 'auto' as const,
   }
 })

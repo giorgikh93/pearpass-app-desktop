@@ -105,7 +105,12 @@ export const MainViewHeader = ({
                 size="small"
                 onClick={() => setIsMultiSelectOn(!isMultiSelectOn)}
                 data-testid="main-view-header-select"
-                aria-label={t('Toggle multi-select')}
+                aria-label={
+                  isMultiSelectOn
+                    ? t('Exit multi-select')
+                    : t('Toggle multi-select')
+                }
+                aria-pressed={isMultiSelectOn}
                 iconBefore={<Checklist style={iconStyle} />}
               />
 

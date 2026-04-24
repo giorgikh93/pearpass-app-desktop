@@ -10,10 +10,8 @@ import { RECORD_COLOR_BY_TYPE } from '../../../constants/recordColorByType'
 import { useModal } from '../../../context/ModalContext'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useTranslation } from '../../../hooks/useTranslation'
-import { Folder, Layers } from '@tetherto/pearpass-lib-ui-kit/icons'
+import { Folder } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { RecordAvatar } from '../../../components/RecordAvatar'
-
-const ALL_ID = '__all__'
 
 export type MoveFolderRecord = Record<string, unknown> & {
   id: string
@@ -36,9 +34,7 @@ export type MoveFolderModalContentV2Props = {
 
 type FolderOption = {
   id: string
-  kind: 'all' | 'custom'
   label: string
-  customName?: string
   icon: React.ReactNode
 }
 
@@ -55,11 +51,6 @@ function getRecordSubtitle(record: MoveFolderRecord): string {
   return ''
 }
 
-function hasCustomFolder(record: MoveFolderRecord): boolean {
-  return !!(record.folder && String(record.folder).length > 0)
-}
-
-
 export const MoveFolderModalContentV2 = ({
   records,
   onCompleted
@@ -71,7 +62,7 @@ export const MoveFolderModalContentV2 = ({
 
   const { data: folders, isLoading: isLoadingFolders } = useFolders()
 
-  const { updateFolder, updateRecords, isLoading: isUpdating } = useRecords({
+  const { updateFolder, isLoading: isUpdating } = useRecords({
     onCompleted: closeModal
   })
 
@@ -81,35 +72,19 @@ export const MoveFolderModalContentV2 = ({
 
   const iconColor = theme.colors.colorTextPrimary
 
-  const folderOptions = useMemo(() => {
+  const folderOptions = useMemo<FolderOption[]>(() => {
     const customFolders = Object.values(
       (folders?.customFolders ?? {}) as Record<string, { name: string }>
     )
 
-    const opts: FolderOption[] = []
-
-    opts.push({
-      id: ALL_ID,
-      kind: 'all',
-      label: t('All Items'),
-      icon: <Layers width={20} height={20} style={{ color: iconColor }} />
-    })
-
-    for (const f of customFolders.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    )) {
-      const { name } = f
-      opts.push({
+    return customFolders
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(({ name }) => ({
         id: name,
-        kind: 'custom',
-        customName: name,
         label: name,
         icon: <Folder width={20} height={20} style={{ color: iconColor }} />
-      })
-    }
-
-    return opts
-  }, [folders, t, iconColor])
+      }))
+  }, [folders, iconColor])
 
   const recordIdsKey = records.map((r) => r.id).sort().join(',')
   const customFoldersListKey = Object.keys(
@@ -117,48 +92,32 @@ export const MoveFolderModalContentV2 = ({
   )
     .sort()
     .join(',')
-  const [selectedId, setSelectedId] = useState<string>(ALL_ID)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
 
   useEffect(() => {
-    setSelectedId(ALL_ID)
+    setSelectedId(null)
   }, [recordIdsKey, customFoldersListKey])
 
-  const allAtRootNoCustomFolder = records.every((r) => !hasCustomFolder(r))
-
   const atDestination =
-    selectedId === ALL_ID
-      ? records.length > 0 && allAtRootNoCustomFolder
-      : records.length > 0 &&
-      records.every((r) => r.folder === selectedId)
+    !!selectedId &&
+    records.length > 0 &&
+    records.every((r) => r.folder === selectedId)
 
-  const isMoveDisabled =
-    isLoading || folderOptions.length === 0 || !!atDestination
+  const isMoveDisabled = isLoading || !selectedId || atDestination
 
-  const moveDialogTitle =
-    records.length === 1
-      ? t('Move 1 item')
-      : t('Move {count} items', { count: records.length })
+  const isSingle = records.length === 1
+  const moveDialogTitle = isSingle
+    ? t('Move 1 item')
+    : t('Move {count} items', { count: records.length })
+  const moveSubmitLabel = isSingle ? t('Move item') : t('Move items')
+  const selectedItemsLabel = isSingle ? t('Selected Item') : t('Selected Items')
+  const destinationHintLabel = isSingle
+    ? t('Choose the destination folder of this item')
+    : t('Choose the destination folder of these items')
 
   const handleMove = async () => {
-    const opt = folderOptions.find((o) => o.id === selectedId)
-    if (!opt || isMoveDisabled) {
-      return
-    }
-
-    const ids = records.map((r) => r.id)
-    const { kind, customName } = opt
-
-    if (kind === 'all') {
-      await updateRecords(
-        records.map((r) => ({
-          ...r,
-          folder: null
-        }))
-      )
-    } else if (customName) {
-      await updateFolder(ids, customName)
-    }
-
+    if (!selectedId || isMoveDisabled) return
+    await updateFolder(records.map((r) => r.id), selectedId)
     onCompleted?.()
   }
 
@@ -169,9 +128,6 @@ export const MoveFolderModalContentV2 = ({
     itemsList,
     destinationHint,
     chipRow,
-    chip,
-    chipSelected,
-    chipUnselected,
     itemsListHeader
   } = styles
   return (
@@ -200,7 +156,7 @@ export const MoveFolderModalContentV2 = ({
             onClick={handleMove}
             data-testid="movefolder-submit-v2"
           >
-            {t(`Move ${records.length > 1 ? 'items' : 'item'}`)}
+            {moveSubmitLabel}
           </Button>
         </>
       }
@@ -208,7 +164,7 @@ export const MoveFolderModalContentV2 = ({
       <div style={body}>
         <div style={itemsListHeader}>
         <Text variant="caption" color={theme.colors.colorTextSecondary}>
-          {t(`Selected ${records.length > 1 ? 'Items' : 'Item'}`)}
+          {selectedItemsLabel}
         </Text>
         </div>
 
@@ -255,7 +211,7 @@ export const MoveFolderModalContentV2 = ({
 
         <div style={destinationHint}>
           <Text variant="caption" color={theme.colors.colorTextSecondary}>
-            {t(`Choose the destination folder of ${records.length > 1 ? 'these items' : 'this item'}`)}
+            {destinationHintLabel}
           </Text>
         </div>
 
@@ -264,19 +220,19 @@ export const MoveFolderModalContentV2 = ({
             const { id, label, icon } = opt
             const selected = id === selectedId
             return (
-              <button
+              <Button
                 key={id}
-                type="button"
+                variant="secondary"
+                size="small"
+                pressed={selected}
+                iconBefore={icon}
                 data-testid={`movefolder-chip-${id}`}
-                onClick={() => setSelectedId(id)}
-                style={{
-                  ...chip,
-                  ...(selected ? chipSelected : chipUnselected)
-                }}
+                onClick={() =>
+                  setSelectedId((prev) => (prev === id ? null : id))
+                }
               >
-                {icon}
                 {label}
-              </button>
+              </Button>
             )
           })}
         </div>
