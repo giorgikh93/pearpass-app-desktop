@@ -2,60 +2,87 @@
   <img src="assets/images/logo.png" alt="Pearpass logo" width="264"/>
 </p>
 
-# pearpass-app-desktop
+# PearPass Desktop
 
-PearPass is a distributed password manager powered by Pear Runtime. It allows secure storage of passwords, credit card details, and secure notes, with the ability to distribute data across multiple devices.
+> The desktop app for PearPass, an open-source, end-to-end encrypted password and identity manager built on Pear Runtime.
+
+---
 
 ## Table of Contents
 
+- [Introduction](#introduction)
 - [Features](#features)
 - [Installation](#installation)
-- [Testing](#testing)
 - [Usage Examples](#usage-examples)
+- [Testing](#testing)
+- [Staging to Dev](#staging-to-dev)
+- [Workspace Dependencies](#workspace-dependencies)
 - [Dependencies](#dependencies)
 - [Related Projects](#related-projects)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Introduction
+
+PearPass is an open-source, privacy-first password and identity manager that gives you full control over your sensitive information. It makes storing and managing your credentials simple, secure, and private. PearPass encrypts and stores all data locally on your device.
+
+Unlike traditional password managers that rely on centralized servers, PearPass is built on [Pear Runtime](https://pears.com/) and uses peer-to-peer technology to sync your credentials directly between your devices, ensuring they remain private, secure, and always under your control.
+
+---
 
 ## Features
 
-- Secure password, identity, and credit card, notes and custom fields storage
-- Cross-device and platform synchronization
-- Offline access to your credentials
-- Encryption for data security
-- Password strength analysis
-- Random password generator
-- Easy-to-use interface
+- **Encrypted-at-rest storage** — PearPass encrypts passwords, credit cards, secure notes, and custom fields before writing them to disk.
+- **Cross-device sync** — PearPass syncs credentials directly between your devices using Pear Runtime, with no central server.
+- **Offline access** — Access your vault anytime, even without a network connection.
+- **Password health** — Analyse password strength and identify weak passwords.
+- **Random password generator** — Generate strong, unique passwords.
+- **Multi-platform** — Runs on macOS, Linux, and Windows. PearPass is also available on [mobile](https://github.com/tetherto/pearpass-app-mobile) and as a [browser extension](https://github.com/tetherto/pearpass-app-browser-extension).
+
+---
 
 ## Installation
 
-- **Node.js**: Ensure you have the correct Node.js version installed. You can check the required version in the `.nvmrc` file. And ensure it matches to your current node version  by running:
+### Prerequisites
+
+- **Node.js** — check the required version in `.nvmrc` and verify with:
+
 ```bash
 node --version
 ```
 
-- **Pear**: Ensure you have Pear installed. More details can be found [here](https://docs.pears.com/guide/getting-started.html)
+- **Pear Runtime** — [Installation guide](https://docs.pears.com/guide/getting-started.html).
 
-
-Clone the repository
+### Steps
 
 ```bash
+# 1. Clone the repository
 git clone git@github.com:tetherto/pearpass-app-desktop.git
-```
-Go to the cloned directory 
-```bash
+
+# 2. Go to the cloned directory
 cd pearpass-app-desktop
-```
-Install npm modules
-```bash
+
+# 3. Install dependencies
 npm install
-```
-generate translation keys
-```bash
+
+# 4. Generate translation keys
 npm run build
-```
-run the app
-```bash
+
+# 5. Start the development app
 npm run dev
 ```
+
+---
+
+## Usage Examples
+
+Visit the official PearPass documentation for step-by-step guides on setup, vault management, syncing across devices, browser extension usage, and all other PearPass features:
+
+**[docs.pass.pears.com](https://docs.pass.pears.com)**
+
+---
 
 ## Testing
 
@@ -67,35 +94,33 @@ Run unit tests with Jest:
 npm test
 ```
 
-## Staging to dev
+
+---
+
+## Staging to Dev
 
 Ensure the app runs correctly using `npm run dev`.
 
-If successful, stage it—for example: `pear stage dev`.
+If successful, stage it, for example: `pear stage dev`.
 
 Then run the app: `pear run pear://GENERATED_URL`.
 
-Pear serves files from the "dist" folder:
+Pear serves files from the `dist/` folder:
 
 ```html
 <!-- index.html -->
 <script type="module" src="./dist/app.js"></script>
 ```
 
-The "src" folder is for development and it's ignored in package.json
+The `src/` folder is for development and it's ignored in `package.json`:
 
 ```json
-  "ignore": [
-    ".github",
-    "appling",
-    ".git",
-    ".gitignore",
-    "packages",
-    "src"     
-  ]
+"ignore": [".github", "appling", ".git", ".gitignore", "packages", "src"]
 ```
 
-## Depended modules
+---
+
+## Workspace Dependencies
 
 The following sibling modules must be present in the workspace (they are not declared as npm dependencies):
 
@@ -117,6 +142,8 @@ The following sibling modules must be present in the workspace (they are not dec
 - [`@tetherto/pearpass-utils-password-check`](../pearpass-utils-password-check)
 - [`@tetherto/pearpass-utils-password-generator`](../pearpass-utils-password-generator)
 
+---
+
 ## Dependencies
 
 - [Pear Runtime](https://pears.com/)
@@ -125,15 +152,27 @@ The following sibling modules must be present in the workspace (they are not dec
 - [Lingui](https://lingui.dev/)
 - [Redux](https://redux.js.org/)
 
+---
+
 ## Related Projects
 
-- [@tetherto/pearpass-app-mobile](https://github.com/tetherto/pearpass-app-mobile) - A mobile app for PearPass, a password manager
-- [@tetherto/pearpass-lib-ui-react-native-components](https://github.com/tetherto/pearpass-lib-ui-react-native-components) - A library of React Native UI components for PearPass
-- [@tetherto/pearpass-lib-ui-react-components](https://github.com/tetherto/pearpass-lib-ui-react-components) - A library of React UI components for PearPass
-- [@tetherto/pearpass-app-browser-extension](https://github.com/tetherto/pearpass-app-browser-extension) - A browser extension for PearPass, a password manager
-- [@tetherto/tether-dev-docs](https://github.com/tetherto/tether-dev-docs) - Documentations and guides for developers
-- [@tetherto/pearpass-lib-vault](https://github.com/tetherto/pearpass-lib-vault) - A library for managing password vaults
-- [@tetherto/pearpass-lib-vault-core](https://github.com/tetherto/pearpass-lib-vault-core) - A bare worker and a client for PearPass vaults
+| Project                                                                                                          | Description                                |
+| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| [`pearpass-app-mobile`](https://github.com/tetherto/pearpass-app-mobile)                                         | Mobile app for PearPass                    |
+| [`pearpass-app-browser-extension`](https://github.com/tetherto/pearpass-app-browser-extension)                   | Browser extension for PearPass             |
+| [`pearpass-lib-vault`](https://github.com/tetherto/pearpass-lib-vault)                                           | Vault management library                   |
+| [`pearpass-lib-vault-core`](https://github.com/tetherto/pearpass-lib-vault-core)                                 | Bare worker and client for PearPass vaults |
+| [`pearpass-lib-ui-react-components`](https://github.com/tetherto/pearpass-lib-ui-react-components)               | React UI component library                 |
+| [`pearpass-lib-ui-react-native-components`](https://github.com/tetherto/pearpass-lib-ui-react-native-components) | React Native UI component library          |
+| [`tether-dev-docs`](https://github.com/tetherto/tether-dev-docs)                                                 | Developer documentation and guides         |
+
+---
+
+## Contributing
+
+We welcome contributions. See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the development workflow and coding conventions.
+
+---
 
 ## License
 
