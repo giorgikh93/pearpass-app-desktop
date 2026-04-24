@@ -160,7 +160,7 @@ export const Sidebar = ({ sidebarSize = 'tight' }) => {
     <${SidebarWrapper} size=${sidebarSize}>
       <${LogoWrapper} onClick=${openMainView}>
         <${LogoLock} width="20" height="26" />
-        <${PearPass}>PearPass<//>
+        <${PearPass}>${window.electronAPI?.productName ?? 'PearPass'}<//>
       <//>
 
       <${sideBarContent}>
