@@ -5,6 +5,7 @@ import { OnboardingShell } from '../../components/OnboardingShell'
 import { NAVIGATION_ROUTES } from '../../constants/navigation'
 import { useRouter } from '../../context/RouterContext'
 import { SyncWithoutCloudAnimation } from './SyncWithoutCloudAnimation'
+import { OnboardingLockVideo } from './OnboardingLockVideo'
 import {
   ButtonIconWrapper,
   ContinueButtonWrapper,
@@ -13,7 +14,6 @@ import {
   TextBlock,
   RiveArtWrapper,
 } from './IntroV2Styles'
-import { OnboardingLock } from '../../svgs/OnboardingLock'
 
 export const IntroV2: React.FC = () => {
   const { navigate } = useRouter()
@@ -29,7 +29,11 @@ export const IntroV2: React.FC = () => {
           Only you have access to them.
         </Text>
       ),
-      art: <OnboardingLock />
+      art: (
+        <RiveArtWrapper>
+          <OnboardingLockVideo />
+        </RiveArtWrapper>
+      )
     },
     {
       title: 'Sync without the cloud',

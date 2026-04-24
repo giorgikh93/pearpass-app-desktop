@@ -1,5 +1,5 @@
-import { useRive } from '@rive-app/react-canvas'
-import { UseRiveParameters, UseRiveOptions, RiveState } from '@rive-app/react-canvas'
+import { useRive } from '@rive-app/react-webgl2'
+import { UseRiveParameters, UseRiveOptions, RiveState } from '@rive-app/react-webgl2'
 import { useState, useCallback, useMemo } from 'react'
 
 const MAX_RETRIES = 20
