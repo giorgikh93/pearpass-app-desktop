@@ -100,6 +100,12 @@ jest.mock('@tetherto/pearpass-lib-ui-kit/icons', () => {
   }
 })
 
+jest.mock('./RecordRowContextMenuV2', () => {
+  return {
+    RecordRowContextMenuV2: () => null
+  }
+})
+
 import { RecordListViewV2 } from './RecordListViewV2'
 
 const makeSection = (
