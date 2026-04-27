@@ -21,6 +21,7 @@ import { useAppHeaderContext } from '../../context/AppHeaderContext'
 import { useGlobalLoading } from '../../context/LoadingContext'
 import { useModal } from '../../context/ModalContext'
 import { useRouter } from '../../context/RouterContext'
+import { LOCAL_STORAGE_KEYS } from '../../constants/localStorage'
 import { isNativeMessagingIPCRunning } from '../../services/nativeMessagingIPCServer'
 import { getNativeMessagingEnabled } from '../../services/nativeMessagingPreferences'
 import {
@@ -47,6 +48,10 @@ export const MainViewV2 = () => {
   }, [isMultiSelectOn])
 
   useEffect(() => {
+    const dismissed =
+      localStorage.getItem(LOCAL_STORAGE_KEYS.EXTENSION_DIALOG_DISMISSED) === 'true'
+    if (dismissed) return
+
     const enabled = getNativeMessagingEnabled()
     const isRunning = isNativeMessagingIPCRunning()
 
