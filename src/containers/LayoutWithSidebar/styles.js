@@ -20,6 +20,14 @@ export const ContentWrapper = styled.div`
   background: ${({ theme }) => theme.colors.grey400.mode1};
 `
 
+export const ContentWrapperV2 = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+`
+
 export const SideViewWrapper = styled.div`
   flex: 1;
   overflow-y: auto;

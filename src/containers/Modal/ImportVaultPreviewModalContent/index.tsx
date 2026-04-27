@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
 
-// @ts-expect-error - declaration file is incomplete for this module
 import { generateAvatarInitials } from '@tetherto/pear-apps-utils-avatar-initials'
 import { useRecords, useVault } from '@tetherto/pearpass-lib-vault'
 import { Button, Dialog, ListItem, Text, useTheme } from '@tetherto/pearpass-lib-ui-kit'

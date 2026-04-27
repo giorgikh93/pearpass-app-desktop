@@ -17,9 +17,9 @@ import {
   TrashOutlined
 } from '@tetherto/pearpass-lib-ui-kit/icons'
 // @ts-expect-error - declaration file is incomplete
-import { RECORD_TYPES, useRecordById } from '@tetherto/pearpass-lib-vault'
+import { useRecordById } from '@tetherto/pearpass-lib-vault'
 
-import { RecordAvatarV2 } from '../../components/RecordAvatar/RecordAvatarV2'
+import { RecordItemIcon } from '../../components/RecordItemIcon'
 import { useRouter } from '../../context/RouterContext'
 import { useRecordActionItems } from '../../hooks/useRecordActionItems'
 import { useTranslation } from '../../hooks/useTranslation'
@@ -93,15 +93,11 @@ export const RecordDetailsV2 = () => {
   if (!record) return null
 
   const title = record?.data?.title ?? ''
-  const website =
-    record.type === RECORD_TYPES.LOGIN ? record?.data?.websites?.[0] ?? '' : ''
-  const domain = record.type === RECORD_TYPES.LOGIN ? website : ''
 
   const avatar = (
-    <RecordAvatarV2
-      type={record.type}
-      title={title}
-      websiteDomain={domain}
+    <RecordItemIcon
+      record={record}
+      size={24}
       testId={`details-avatar-v2-${record.type}`}
     />
   )

@@ -59,9 +59,15 @@ export const DeleteFolderModalContentV2 = ({
 
   const handleDelete = async () => {
     if (selected === DeleteOption.DeleteFolder) {
-      const folderRecords: { folder?: string | null }[] =
+      // Folder entries can include markers without data/type; skip them.
+      const folderRecords =
         folderData?.customFolders?.[folderName]?.records ?? []
-      await updateRecords(folderRecords.map((r) => ({ ...r, folder: null })))
+      const realRecords = folderRecords.filter(
+        (r: { data?: unknown; type?: unknown }) => !!r.data && !!r.type
+      )
+      await updateRecords(realRecords.map((r) => ({ ...r, folder: null })))
+      // Items are now at root; remove the folder marker record.
+      await deleteFolder(folderName)
     } else {
       await deleteFolder(folderName)
     }

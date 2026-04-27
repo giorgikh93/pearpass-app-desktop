@@ -51,7 +51,10 @@ export const CreateOrEditVaultModalContentV2 = ({
     if (isEditMode) {
       void refetchVault()
     }
-  }, [isEditMode, refetchVault])
+    // TODO: refetchVault ref changes on every vault state update; including it
+    //  would re-trigger this effect in an infinite loop.
+    //  Make it have stable reference by wrapping in useCallback.
+  }, [isEditMode])
 
   const nameField = register('name')
 

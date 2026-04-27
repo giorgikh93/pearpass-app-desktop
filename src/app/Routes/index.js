@@ -12,6 +12,7 @@ import { IntroV2 } from '../../pages/Intro/IntroV2'
 import { LoadingPage } from '../../pages/LoadingPage'
 import { LoadingPageV2 } from '../../pages/LoadingPage/LoadingPageV2'
 import { MainView } from '../../pages/MainView'
+import { MainViewV2 } from '../../pages/MainView/MainViewV2'
 import { SettingsView } from '../../pages/SettingsView'
 import { SettingsViewV2 } from '../../pages/SettingsViewV2/SettingsViewV2'
 import { WelcomePage } from '../../pages/WelcomePage'
@@ -67,12 +68,14 @@ export const Routes = ({
     const isAuthenticator =
       AUTHENTICATOR_ENABLED && data?.recordType === 'authenticator'
 
+    const VersionBasedMainView = isV2() ? MainViewV2 : MainView
+
     return html`
       <${OtpRefreshProvider}>
         <${LayoutWithSidebar}
           mainView=${isAuthenticator
             ? html`<${AuthenticatorView} />`
-            : html`<${MainView} />`}
+            : html`<${VersionBasedMainView} />`}
           sideView=${getSideView(currentPage, data)}
         />
       <//>

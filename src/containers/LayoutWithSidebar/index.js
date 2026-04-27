@@ -3,12 +3,14 @@ import { html } from 'htm/react'
 
 import {
   ContentWrapper,
+  ContentWrapperV2,
   LayoutWrapper,
   SideBarWrapper,
   SideViewWrapper
 } from './styles'
 import { isV2 } from '../../utils/designVersion'
 import { Sidebar } from '../Sidebar'
+import { SidebarV2 } from '../Sidebar/SidebarV2'
 
 /**
  * @typedef LayoutWithSidebarProps
@@ -22,7 +24,10 @@ import { Sidebar } from '../Sidebar'
 
 export const LayoutWithSidebar = ({ mainView, sideView }) => {
   const { theme } = useTheme()
-  const v2 = isV2()
+  const isV2Design = isV2()
+  const VersionBasedContentWrapper = isV2Design
+    ? ContentWrapperV2
+    : ContentWrapper
 
   const v2SideViewStyle = {
     flex: 1,
@@ -34,13 +39,13 @@ export const LayoutWithSidebar = ({ mainView, sideView }) => {
   return html`
     <${LayoutWrapper}>
       <${SideBarWrapper}>
-        <${Sidebar} />
+        ${isV2Design ? html`<${SidebarV2} />` : html`<${Sidebar} />`}
       <//>
 
-      <${ContentWrapper}> ${mainView} <//>
+      <${VersionBasedContentWrapper}> ${mainView} <//>
 
       ${sideView &&
-      (v2
+      (isV2Design
         ? html`<div style=${v2SideViewStyle}>${sideView}</div>`
         : html`<${SideViewWrapper}>${sideView}<//>`)}
     <//>

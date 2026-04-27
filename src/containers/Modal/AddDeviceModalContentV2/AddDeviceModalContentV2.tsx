@@ -43,12 +43,16 @@ export const AddDeviceModalContentV2 = () => {
   }, [setShouldBypassAutoLock])
 
   useEffect(() => {
-    createInvite()
+    if (!data?.publicKey) {
+      createInvite()
+    }
 
     return () => {
       deleteInvite()
     }
-  }, [])
+    // `data?.publicKey` intentionally excluded: this is a mount/unmount
+    // lifecycle - create once on open, delete once on close.
+  }, [createInvite, deleteInvite])
 
   useEffect(() => {
     if (data?.publicKey) {

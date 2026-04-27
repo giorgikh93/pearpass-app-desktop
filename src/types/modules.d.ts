@@ -228,6 +228,13 @@ declare module '@tetherto/pearpass-lib-vault' {
 
   export const useRecords: any
   export const useBlindMirrors: any
+
+  export function closeAllInstances(): Promise<void>
+
+  export function useRecordCountsByType(): {
+    data: Record<string, number> | undefined
+    isLoading: boolean
+  }
 }
 
 declare module '@tetherto/pearpass-utils-password-check' {
@@ -265,6 +272,10 @@ declare module '@tetherto/pear-apps-lib-ui-react-hooks' {
 
 declare module '@tetherto/pear-apps-utils-qr' {
   export const generateQRCodeSVG: any
+}
+
+declare module '@tetherto/pear-apps-utils-avatar-initials' {
+  export function generateAvatarInitials(name: string): string
 }
 
 declare module '@tetherto/pear-apps-utils-validator' {

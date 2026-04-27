@@ -11,12 +11,14 @@ import { useTranslation } from '../../../hooks/useTranslation'
 export interface CreateFolderModalContentV2Props {
   onClose: () => void
   onCreate?: (folderName: string) => void
+  onRename?: (newFolderName: string, previousFolderName: string) => void
   initialValues?: { title: string }
 }
 
 export const CreateFolderModalContentV2 = ({
   onClose,
   onCreate,
+  onRename,
   initialValues
 }: CreateFolderModalContentV2Props) => {
   const { t } = useTranslation()
@@ -74,6 +76,7 @@ export const CreateFolderModalContentV2 = ({
       try {
         setIsRenameLoading(true)
         await renameFolder(initialValues.title, formValues.title)
+        onRename?.(formValues.title, initialValues.title)
         onClose()
       } finally {
         setIsRenameLoading(false)

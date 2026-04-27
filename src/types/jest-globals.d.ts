@@ -25,11 +25,16 @@ interface Matchers<R = void> {
   toBeFalsy(): R
   toBeNull(): R
   toBeUndefined(): R
+  toBeDefined(): R
   toContain(expected: unknown): R
   toHaveLength(expected: number): R
+  toHaveProperty(key: string, value?: unknown): R
+  toMatchObject(expected: unknown): R
   toBeInTheDocument(): R
   toHaveBeenCalledTimes(expected: number): R
   toHaveBeenCalledWith(...args: unknown[]): R
+  toHaveBeenNthCalledWith(n: number, ...args: unknown[]): R
+  toHaveBeenLastCalledWith(...args: unknown[]): R
   toHaveBeenCalled(): R
   toHaveAttribute(attr: string, value?: unknown): R
   toBeDisabled(): R
