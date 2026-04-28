@@ -43,7 +43,6 @@ export const YourVaultsContent = () => {
   const { theme } = useTheme()
   const styles = createStyles(theme.colors)
 
-
   const { data: vault, refetch: refetchVault } = useVault()
   const { data: allVaults } = useVaults()
 
@@ -104,29 +103,31 @@ export const YourVaultsContent = () => {
 
   const DevicesMeta = vault?.devices?.length
     ? t('{count, plural, one {# Device} other {# Devices}}', {
-      count: vault?.devices?.length ?? 0
-    })
+        count: vault?.devices?.length ?? 0
+      })
     : t('Private')
+
+  const switchToVault = useCallback(
+    async (v: Vault) => {
+      if (v.id === vault?.id) {
+        return
+      }
+
+      try {
+        setIsLoading(true)
+        await refetchVault(v.id)
+      } catch (error) {
+        logger.error('YourVaultsContent', 'Error switching to vault:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [vault?.id, setIsLoading]
+  )
 
   if (!vault) {
     return null
   }
-
-  const switchToVault = useCallback(async (v: Vault) => {
-    if (v.id === vault?.id) {
-      return
-    }
-
-    try {
-      setIsLoading(true)
-      await refetchVault(v.id)
-    } catch (error) {
-      logger.error('YourVaultsContent', 'Error switching to vault:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [vault?.id])
-
 
   return (
     <div style={styles.root} data-testid="settings-card-your-vault">
