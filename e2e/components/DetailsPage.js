@@ -25,6 +25,17 @@ class DetailsPage {
   }
 
   getElementItemDetails(labelOrPlaceholder) {
+    // v2: InputField renders testID on wrapper div; inner input holds the value
+    const v2LabelMap = {
+      'Email or username': 'credentials-multi-slot-input-slot-0',
+      'Password': 'credentials-multi-slot-input-slot-1',
+      'https://': 'website-multi-slot-input-slot-0',
+    }
+    const v2TestId = v2LabelMap[labelOrPlaceholder]
+    if (v2TestId) {
+      return this.root.getByTestId(v2TestId).locator('input').first()
+    }
+    // v1 fallback
     return this.root
       .locator('input', {
         has: this.root.locator('[data-testid="details-header"]', {
@@ -66,8 +77,12 @@ class DetailsPage {
     return this.root.getByAltText('TestPhoto.png')
   }
 
+  get detailsBarActionsButton() {
+    return this.root.getByTestId('details-button-actions-v2')
+  }
+
   get detailsBarEditButton() {
-    return this.root.getByText('Edit').last()
+    return this.root.getByTestId('details-actions-item-edit-v2')
   }
 
   get detailsBarFavoriteButton() {
@@ -113,16 +128,21 @@ class DetailsPage {
 
   getCreateNewFolderTitleInput() {
     return this.root.locator(
-      'input[data-testid="input-field"][placeholder="Insert folder name"]'
+      'input[placeholder="Enter Name"]'
     )
   }
 
   get createFolderButton() {
-    return this.root.getByText('Create folder')
-  }
+  return this.root.getByRole('button', { name: 'Create New Folder' });
+}
+
+  // get createFolderButton() {
+  //   return this.root.getByText('Create folder')
+  // }
 
   getItemDetailsFolderName(foldername) {
-    return this.root.getByTestId(`details-folder-${foldername}`)
+    // v2: folder badge not shown in details panel; verify via sidebar folder item
+    return this.root.getByTestId(`sidebar-folder-${foldername}`)
   }
 
   async verifyItemDetailsFolderName(foldername) {
@@ -173,11 +193,14 @@ class DetailsPage {
   }
 
   async clickCreateFolderButton() {
-    await expect(this.createFolderButton).toBeVisible()
-    await this.createFolderButton.click()
+    const saveBtn = this.root.getByTestId('createfolder-save-v2')
+    await expect(saveBtn).toBeVisible()
+    await saveBtn.click()
   }
 
   async editElement() {
+    await expect(this.detailsBarActionsButton).toBeVisible()
+    await this.detailsBarActionsButton.click()
     await expect(this.detailsBarEditButton).toBeVisible()
     await this.detailsBarEditButton.click()
   }

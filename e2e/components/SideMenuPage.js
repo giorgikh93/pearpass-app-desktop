@@ -8,7 +8,7 @@ class SideMenuPage {
   // ==== LOCATORS ====
 
   get sidebarExitButton() {
-    return this.root.getByTestId('sidebar-exit-button')
+    return this.root.getByTestId('sidebar-lock-app')
   }
 
   getSideMenuFolder(folderName) {
@@ -26,8 +26,12 @@ class SideMenuPage {
   }
 
   get sidebarAddButton() {
-    return this.root.getByTestId('sidebarfolder-button-add')
+    return this.root.getByTestId('sidebar-folder-add')
   }
+
+  // get sidebarAddButton() {
+  //   return this.root.getByTestId('sidebarfolder-button-add')
+  // }
 
   get confirmButton() {
     return this.root.getByTestId('button-primary')

@@ -106,7 +106,16 @@ class CreateOrEditPage {
   }
 
   getCreateOrEditInputField(field) {
-    return this.root.getByTestId(`createoredit-input-${field}`)
+    const v2FieldMap = {
+      title: 'createoredit-input-title-v2',
+      username: 'createoredit-input-username-v2',
+      password: 'createoredit-input-password-v2',
+      website: 'createoredit-input-website-v2-0',
+      note: 'createoredit-input-comment-v2',
+    }
+    const testId = v2FieldMap[field] ?? `createoredit-input-${field}`
+    // v2 InputField/PasswordField renders testID on wrapper div; drill into actual input
+    return this.root.getByTestId(testId).locator('input').first()
   }
 
   getCreateOrEditTextareaField(field) {
@@ -157,15 +166,19 @@ class CreateOrEditPage {
   }
 
   get dropdownFolderMenu() {
-    return this.root.getByTestId('createoredit-dropdown-folder')
+    return this.root.getByTestId('createoredit-select-folder-v2')
   }
+
+  // get dropdownFolderMenu() {
+  //   return this.root.getByTestId('createoredit-dropdown-folder')
+  // }
 
   getDropdownItem(item) {
     return this.root.getByTestId(`menudropdown-item-${item}`)
   }
 
   getCreateOrEditButton(name) {
-    return this.root.getByTestId(`createoredit-button-${name}`)
+    return this.root.getByTestId(`createoredit-button-${name}-v2`)
   }
 
   get deleteFileButton() {
@@ -186,12 +199,12 @@ class CreateOrEditPage {
 
   get elementItemPasswordShowHideFirst() {
     return this.root
-      .getByTestId('passwordfield-button-togglevisibility')
+      .getByTestId('password-field-eye-button')
       .first()
   }
 
   get elementItemPasswordShowHideLast() {
-    return this.root.getByTestId('passwordfield-button-togglevisibility').last()
+    return this.root.getByTestId('password-field-eye-button').last()
   }
 
   get uploadedFileLink() {
@@ -342,7 +355,8 @@ class CreateOrEditPage {
   }
 
   async selectFromDropdownMenu(foldername) {
-    const folder = this.getDropdownItem(foldername)
+    const folder = this.root.getByTestId(`createoredit-folder-option-v2-${foldername}`)
+    await expect(folder).toBeVisible()
     await folder.click()
   }
 

@@ -45,33 +45,37 @@ class Utilities {
   // ==== ACTIONS ====
 
   async deleteAllElements() {
-    const firstElement = this.root
-      .getByTestId('recordList-record-container')
-      .first()
-    const emptyText = this.collectionEmptyText
+    // v2: rows have data-record-id; right-click opens RecordRowContextMenuV2
+    // portal-rendered to body, so this.root (body locator) finds menu elements
+    const emptyState = this.root.getByTestId('empty-collection-v2')
 
     while (true) {
-      const emptyVisible = await emptyText.isVisible().catch(() => false)
+      const emptyVisible = await emptyState.isVisible().catch(() => false)
       if (emptyVisible) break
 
-      const elementVisible = await firstElement
+      const firstRow = this.root.locator('[data-record-id]').first()
+      const rowVisible = await firstRow
         .isVisible({ timeout: 3000 })
         .catch(() => false)
-      if (!elementVisible) break
+      if (!rowVisible) break
 
-      await firstElement.click()
+      const recordId = await firstRow.getAttribute('data-record-id')
+      if (!recordId) break
 
-      await expect(this.detailsHeader).toBeVisible({ timeout: 5000 })
+      await firstRow.click({ button: 'right' })
 
-      await this.itemBarThreeDots.click()
+      const deleteButton = this.root.getByTestId(
+        `record-row-menu-delete-${recordId}`
+      )
+      await expect(deleteButton).toBeVisible({ timeout: 5000 })
+      await deleteButton.click()
 
-      await expect(this.deleteElementButton).toBeVisible({ timeout: 5000 })
-      await this.deleteElementButton.click()
+      const confirmButton = this.root.getByTestId('delete-records-submit-v2')
+      await expect(confirmButton).toBeVisible({ timeout: 5000 })
+      await confirmButton.click()
 
-      await this.root.getByText('Yes').click()
-
-      await expect(emptyText)
-        .toBeVisible({ timeout: 5000 })
+      await confirmButton
+        .waitFor({ state: 'hidden', timeout: 5000 })
         .catch(() => {})
     }
   }

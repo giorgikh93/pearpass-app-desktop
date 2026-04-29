@@ -21,10 +21,7 @@ class MainPage {
   }
 
   get element() {
-    return this.root
-      .getByTestId('recordList-record-container')
-      .first()
-      .locator('span')
+    return this.root.locator('[data-record-id]').first()
   }
 
   get firstElement() {
@@ -36,10 +33,7 @@ class MainPage {
   }
 
   get elementFolder() {
-    return this.root
-      .getByTestId('recordList-record-container')
-      .locator('p')
-      .first()
+    return this.root.locator('[data-record-id]').first()
   }
 
   getElementFavoriteIcon(initials) {
@@ -225,6 +219,14 @@ class MainPage {
     await button.click()
   }
 
+  async clickAddItem(type) {
+    await expect(this.mainPlusButon).toBeVisible()
+    await this.mainPlusButon.click()
+    const menuItem = this.root.getByTestId(`add-item-${type}`)
+    await expect(menuItem).toBeVisible()
+    await menuItem.click()
+  }
+
   async openElementDetails() {
     await expect(this.element).toBeVisible()
     await this.element.click()
@@ -248,8 +250,8 @@ class MainPage {
   // ==== VERIFICATIONS ====
 
   async verifyElementTitle(title) {
-    await expect(this.element).toBeVisible()
-    await expect(this.element).toHaveText(title)
+    const row = this.root.locator('[data-record-id]').filter({ hasText: title })
+    await expect(row).toBeVisible()
   }
 
   async verifyElementFavoriteIcon(initials) {
@@ -257,8 +259,11 @@ class MainPage {
   }
 
   async verifyElementFolderName(elementfoldername) {
-    await expect(this.elementFolder).toBeVisible()
-    await expect(this.elementFolder).toHaveText(elementfoldername)
+    // v2: navigate to the folder in the sidebar and verify item appears
+    const folderBtn = this.root.getByTestId(`sidebar-folder-${elementfoldername}`)
+    await expect(folderBtn).toBeVisible()
+    await folderBtn.click()
+    await expect(this.root.locator('[data-record-id]').first()).toBeVisible()
   }
 
   async verifyElementIsNotVisible() {
