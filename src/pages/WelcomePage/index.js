@@ -12,6 +12,7 @@ import { CardUnlockVault } from './CardUnlockVault'
 import { CardUploadBackupFile } from './CardUploadBackupFile'
 import { CardVaultSelect } from './CardVaultSelect'
 import { LockedScreen } from './LockedScreen'
+import { LockedScreenV2 } from './LockedScreenV2/LockedScreenV2'
 import { CardVaultActions, PageContainer } from './styles'
 import { InitialPageWrapper } from '../../components/InitialPageWrapper'
 import { NAVIGATION_ROUTES } from '../../constants/navigation'
@@ -20,7 +21,8 @@ import { isV2 } from '../../utils/designVersion'
 
 const V2_STATES = new Set([
   NAVIGATION_ROUTES.CREATE_MASTER_PASSWORD,
-  NAVIGATION_ROUTES.MASTER_PASSWORD
+  NAVIGATION_ROUTES.MASTER_PASSWORD,
+  NAVIGATION_ROUTES.SCREEN_LOCKED
 ])
 
 export const WelcomePage = () => {
@@ -43,7 +45,7 @@ export const WelcomePage = () => {
       case NAVIGATION_ROUTES.NEW_VAULT_CREDENTIALS:
         return CardNewVaultCredentials
       case NAVIGATION_ROUTES.SCREEN_LOCKED:
-        return LockedScreen
+        return isV2() ? LockedScreenV2 : LockedScreen
       default:
         return null
     }
