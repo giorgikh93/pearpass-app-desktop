@@ -210,7 +210,7 @@ export const CreateOrEditCreditCardModalContentV2 = ({
 
   return (
     <Dialog
-      title={isEdit ? t('Edit Credit Card') : t('New Credit Card')}
+      title={isEdit ? t('Edit Credit Card Item') : t('New Credit Card Item')}
       onClose={closeModal}
       testID="createoredit-creditcard-dialog-v2"
       closeButtonTestID="createoredit-creditcard-close-v2"
@@ -255,13 +255,13 @@ export const CreateOrEditCreditCardModalContentV2 = ({
 
         <div style={styles.sectionLabel}>
           <Text variant="caption" color={theme.colors.colorTextSecondary}>
-            {t('Card Details')}
+            {t('Details')}
           </Text>
         </div>
 
         <MultiSlotInput testID="createoredit-creditcard-details-slot-v2">
           <InputField
-            label={t('Name on card')}
+            label={t('Cardholder Name')}
             placeholder={t('Enter Name')}
             value={nameField.value}
             onChange={(e) => nameField.onChange(e.target.value)}
@@ -269,22 +269,22 @@ export const CreateOrEditCreditCardModalContentV2 = ({
             testID="createoredit-creditcard-input-name-v2"
           />
           <InputField
-            label={t('Number on card')}
+            label={t('Card Number')}
             placeholder={t('Enter Card Number')}
             value={values.number}
             onChange={(e) => setValue('number', formatCardNumber(e.target.value))}
             testID="createoredit-creditcard-input-number-v2"
           />
           <DateField
-            label={t('Date of expire')}
-            placeholder={t('MM YY')}
+            label={t('Expiration Date')}
+            placeholder={t('Enter Expiration Date')}
             value={values.expireDate}
             onChange={(e) => setValue('expireDate', formatExpireDate(e.target.value))}
             pickerMode="month-year"
             testID="createoredit-creditcard-input-expiredate-v2"
           />
           <PasswordField
-            label={t('Security code')}
+            label={t('Security Code')}
             placeholder={t('Enter Security Code')}
             value={securityCodeField.value}
             onChange={(e) =>
@@ -294,7 +294,7 @@ export const CreateOrEditCreditCardModalContentV2 = ({
             testID="createoredit-creditcard-input-securitycode-v2"
           />
           <PasswordField
-            label={t('Pin code')}
+            label={t('Pin')}
             placeholder={t('Enter PIN')}
             value={pinCodeField.value}
             onChange={(e) =>
