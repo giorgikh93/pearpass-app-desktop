@@ -7,14 +7,62 @@ class DetailsPage {
 
   // ==== LOCATORS ====
 
-  get getItemDetailsCustomInput() {
-    return this.root.getByPlaceholder('Add comment')
+  get getItemDetailsCommentInput() {
+    return this.root.getByTestId('comments-multi-slot-input-slot-0').locator('input')
   }
 
-  async verifyCustomNoteText(expectedText) {
-    await expect(this.getItemDetailsCustomInput).toBeVisible()
-    await expect(this.getItemDetailsCustomInput).toHaveValue(expectedText)
+  getItemDetailsSlot(slot) {
+    return this.root.getByTestId(`credentials-multi-slot-input-slot-${slot}`).locator('input')
   }
+
+  getItemDetailsByPlaceholder(placeholder) {
+    return this.root.getByPlaceholder(placeholder)
+  }
+
+  // async verifyItemDetailsByPlaceholderValue(placeholder, value) {
+  //   const input = this.getItemDetailsByPlaceholder(placeholder)
+  //   await expect(input).toHaveValue(value)
+  // }
+
+  get itemDetailsCounter() {
+    return this.root
+    .getByTestId('details-header-v2')
+    .locator('input[placeholder]')
+  }
+
+  async verifyDetailsNoItems() {
+    await expect(this.itemDetailsCounter).toHaveCount(0)
+  }
+
+  // async verifyDetailsSlotNotVisible(slot) {
+  //   const slotInput = this.getItemDetailsSlot(slot)
+
+  //   await expect
+  //     .poll(async () => await slotInput.isVisible(), {
+  //       timeout: 5000,
+  //       message: `Slot ${slot} is still visible`
+  //     })
+  //     .toBe(false)
+  // }
+
+  async verifyCustomNoteText(expectedText) {
+    await expect(this.getItemDetailsCommentInput).toBeVisible()
+    await expect(this.getItemDetailsCommentInput).toHaveValue(expectedText)
+  }
+
+  async verifyCustomNoteTextNotVisible(expectedText) {
+    await expect(this.getItemDetailsCommentInput).not.toBeVisible()
+    await expect(this.getItemDetailsCommentInput).not.toHaveValue(expectedText)
+  }
+
+  // get getItemDetailsCustomInput() {
+  //   return this.root.getByPlaceholder('Add comment')
+  // }
+
+  // async verifyCustomNoteText(expectedText) {
+  //   await expect(this.getItemDetailsCustomInput).toBeVisible()
+  //   await expect(this.getItemDetailsCustomInput).toHaveValue(expectedText)
+  // }
 
   get getItemDetailsTitle() {
     return this.root.locator('[data-testid^="details-title"]')
@@ -30,6 +78,13 @@ class DetailsPage {
       'Email or username': 'credentials-multi-slot-input-slot-0',
       'Password': 'credentials-multi-slot-input-slot-1',
       'https://': 'website-multi-slot-input-slot-0',
+      // Credit card v2 fields
+      'Name on card': 'card-details-multi-slot-input-slot-0',
+      'Number on card': 'card-details-multi-slot-input-slot-1',
+      'Date of expire': 'card-details-multi-slot-input-slot-2',
+      'Security code': 'card-details-multi-slot-input-slot-3',
+      'Pin code': 'card-details-multi-slot-input-slot-4',
+      'Comment': 'comments-multi-slot-input-slot-0',
     }
     const v2TestId = v2LabelMap[labelOrPlaceholder]
     if (v2TestId) {
@@ -70,7 +125,11 @@ class DetailsPage {
   }
 
   get elementItemFileLink() {
-    return this.root.getByRole('link', { name: 'TestPhoto.png' })
+    // return this.root.getByRole('link', { name: 'TestPhoto.png' })
+    // return this.root.getByTestId('attachment-field-0').getByText('TestPhoto.png', { exact: true })
+    return this.root
+      .getByTestId('attachment-field-0')
+      .getByText('TestPhoto.png', { exact: true })
   }
 
   get uploadedImage() {
@@ -85,9 +144,15 @@ class DetailsPage {
     return this.root.getByTestId('details-actions-item-edit-v2')
   }
 
+  // details-actions-item-favorite-v2
+
   get detailsBarFavoriteButton() {
-    return this.root.getByTestId('details-button-favorite')
+    return this.root.getByTestId('details-actions-item-favorite-v2')
   }
+
+  // get detailsBarFavoriteButton() {
+  //   return this.root.getByTestId('details-button-favorite')
+  // }
 
   get detailsBarThreeDots() {
     return this.root.getByTestId('button-round-icon').first()
@@ -98,16 +163,22 @@ class DetailsPage {
   }
 
   async openItemBarThreeDotsDropdownMenu() {
-    await expect(this.detailsBarThreeDotsCloseDetails).toBeVisible()
-    await this.detailsBarThreeDotsCloseDetails.click()
+    await expect(this.detailsBarEditButton).toBeVisible()
+    await this.detailsBarEditButton.click()
   }
 
   get markAsFavoriteButton() {
-    return this.root.getByText('Mark as favorite').last()
-  }
+    // return this.root.getByText('Mark as favorite').last()
+    // return this.root.getByTestId('details-actions-item-favorite-v2')
+    return this.root.locator('[data-testid="details-actions-item-favorite-v2"]').getByText('Add to Favorites', { exact: true })
+  }//// details-actions-item-favorite-v2
 
   get removeFromFavoritesButton() {
-    return this.root.getByText('Remove from Favorites').last()
+    // page.getByTestId('details-actions-item-favorite-v2').locator('[name="Remove from Favorites"]')
+    // page.getByTestId('details-actions-item-favorite-v2')
+    // return this.root.getByText('Remove from Favorites').last()
+    return this.root.locator('[data-testid="details-actions-item-favorite-v2"]').getByText('Remove from Favorites', { exact: true })
+    // page.locator('[data-testid="details-actions-item-favorite-v2"]').getByText('Remove from Favorites', { exact: true })
   }
 
   get moveToAnotherFolderButton() {
@@ -119,7 +190,14 @@ class DetailsPage {
   }
 
   get elementItemCloseButton() {
-    return this.root.getByTestId('modalheader-button-close').last() //modalheader-button-close
+    // Matches any close button whose testID ends with "-close-v2"
+    // e.g. createoredit-login-close-v2, createoredit-creditcard-close-v2, etc.
+    return this.root.getByTestId(/-close-v2$/).first()
+  }
+
+  async clickElementItemCloseButton() {
+    await expect(this.elementItemCloseButton).toBeVisible()
+    await this.elementItemCloseButton.click()
   }
 
   get createNewFolderButton() {
@@ -133,8 +211,8 @@ class DetailsPage {
   }
 
   get createFolderButton() {
-  return this.root.getByRole('button', { name: 'Create New Folder' });
-}
+    return this.root.getByRole('button', { name: 'Create New Folder' });
+  }
 
   // get createFolderButton() {
   //   return this.root.getByText('Create folder')
@@ -178,14 +256,25 @@ class DetailsPage {
   }
 
   async clickMarkAsFavoriteButton() {
-    await expect(this.markAsFavoriteButton).toBeVisible()
-    await this.markAsFavoriteButton.click()
-  }
-
-  async clickFavoriteButton() {
+    // await expect(this.markAsFavoriteButton).toBeVisible()
+    // await this.markAsFavoriteButton.click()
     await expect(this.detailsBarFavoriteButton).toBeVisible()
     await this.detailsBarFavoriteButton.click()
   }
+
+  async clickFavoriteButton() {
+    await expect(this.detailsBarActionsButton).toBeVisible()
+    await this.detailsBarActionsButton.click()
+    await expect(this.detailsBarFavoriteButton).toBeVisible()
+    await this.detailsBarFavoriteButton.click()
+  }
+
+  // async clickFavoriteButton() {
+  //   await expect(this.detailsBarActionsButton).toBeVisible()
+  //   await this.detailsBarActionsButton.click()
+  //   await expect(this.detailsBarEditButton).toBeVisible()
+  //   await this.detailsBarEditButton.click()
+  // }
 
   async clickCreateNewFolder() {
     await expect(this.createNewFolderButton).toBeVisible()
@@ -206,8 +295,8 @@ class DetailsPage {
   }
 
   async openItemBarThreeDotsDropdownMenu() {
-    await expect(this.detailsBarThreeDots).toBeVisible()
-    await this.detailsBarThreeDots.click()
+    await expect(this.detailsBarActionsButton).toBeVisible()
+    await this.detailsBarActionsButton.click()
   }
 
   async clickMoveToAnotherFolder() {
@@ -240,9 +329,16 @@ class DetailsPage {
     await this.elementItemFileLink.click()
   }
 
-  async clickElementItemCloseButton() {
-    await expect(this.elementItemCloseButton).toBeVisible()
-    await this.elementItemCloseButton.click()
+  async verifyPasswordFieldType(slotTestId, expectedType) {
+    const input = this.root.getByTestId(slotTestId).locator('input').first()
+    await expect(input).toBeVisible()
+    await expect(input).toHaveAttribute('type', expectedType)
+  }
+
+  async clickPasswordToggle(slotTestId) {
+    const toggle = this.root.getByTestId(slotTestId).getByTestId('password-field-eye-button')
+    await expect(toggle).toBeVisible()
+    await toggle.click()
   }
 
   // ==== VERIFICATIONS ====
@@ -256,6 +352,13 @@ class DetailsPage {
     const itemDetail = this.getElementItemDetails(labelOrPlaceholder)
     await expect(itemDetail).not.toBeVisible()
   }
+
+  // async verifyItemDetailsValueIsNotVisible(labelOrPlaceholder) {
+  //   const itemDetail = this.getElementItemDetails(labelOrPlaceholder)
+  //   await expect(itemDetail).not.toBeVisible()
+  // }
+
+  // credentials-multi-slot-input
 
   async verifyLoginElementItemUsername(username) {
     await expect(this.elementItemUsername).toBeVisible()

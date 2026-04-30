@@ -12,9 +12,9 @@ class SideMenuPage {
   }
 
   getSideMenuFolder(folderName) {
-    return this.root
-      .getByTestId('sidebar-folder')
-      .getByText(folderName, { exact: true })
+    return this.root.getByRole('button', { name: folderName })
+      // .getByTestId('sidebar-folder')
+      // .getByText(folderName, { exact: true })
   }
 
   async verifySideMenuFolderName(folderName) {
@@ -38,7 +38,12 @@ class SideMenuPage {
   }
 
   get favoritesFolder() {
-    return this.root.getByTestId('sidebar-folder-favorites')
+    return this.root.getByTestId('sidebar-folder-favorites').locator('span').last()
+  }
+
+  async verifySideBarFavoritesFolder(items) {
+    await expect(this.favoritesFolder).toBeVisible()
+    await expect(this.favoritesFolder).toHaveAttribute('aria-label', items)
   }
 
   get sidebarSettingsButton() {
@@ -63,20 +68,60 @@ class SideMenuPage {
     const folder = this.getSideMenuFolder(foldername)
     await expect(folder).toBeVisible()
 
-    await folder
-      .getByText(foldername)
-      .locator('..')
-      .locator('div')
-      .first()
-      .click()
+    await folder.click({ button: 'right' })
 
-    const deleteButton = folder
-      .locator('..')
-      .getByText('Delete', { exact: true })
+    const deleteButton = this.root.getByText('Delete Folder', { exact: true })
+
+    await expect(deleteButton).toBeVisible()
     await deleteButton.click()
-    await expect(this.confirmButton).toBeVisible()
-    await this.confirmButton.click()
+
+    // after click, menu should disappear
+    await expect(deleteButton).toBeHidden()
   }
+
+  // async deleteFolder(foldername) {
+  //   const folder = this.getSideMenuFolder(foldername)
+  //   await expect(folder).toBeVisible()
+
+  //   const folderRow = folder
+  //     .getByText(foldername)
+  //     .locator('..')
+  //     .locator('div')
+  //     .first()
+
+  //   // right click instead of left click
+  //   await folderRow.click({ button: 'right' })
+
+  //   const deleteButton = folder
+  //     .locator('..')
+  //     .getByText('Delete Folder', { exact: true })
+
+  //   await expect(deleteButton).toBeVisible()
+  //   await deleteButton.click()
+
+  //   await expect(this.deleteButton).not.toBeVisible()
+  //   // await this.confirmButton.click()
+  // }
+  
+
+  // async deleteFolder(foldername) {
+  //   const folder = this.getSideMenuFolder(foldername)
+  //   await expect(folder).toBeVisible()
+
+  //   await folder
+  //     .getByText(foldername)
+  //     .locator('..')
+  //     .locator('div')
+  //     .first()
+  //     .click()
+
+  //   const deleteButton = folder
+  //     .locator('..')
+  //     .getByText('Delete', { exact: true })
+  //   await deleteButton.click()
+  //   await expect(this.confirmButton).toBeVisible()
+  //   await this.confirmButton.click()
+  // }
 
   async clickSidebarAddButton() {
     await expect(this.sidebarAddButton).toBeVisible()

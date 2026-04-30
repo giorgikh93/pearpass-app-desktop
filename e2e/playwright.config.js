@@ -27,7 +27,7 @@ export default defineConfig({
     [
       'playwright-qase-reporter',
       {
-        mode: 'testops',
+        mode: process.env.QASE_MODE ?? 'off',
         debug: false,
         testops: {
           api: {

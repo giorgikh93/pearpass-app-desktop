@@ -1,4 +1,4 @@
-import { qase } from 'playwright-qase-reporter'
+// import { qase } from 'playwright-qase-reporter'
 
 import {
   LoginPage,
@@ -37,18 +37,14 @@ test.describe('Password', () => {
 
     await sideMenuPage.selectSideBarCategory('login')
     await utilities.deleteAllElements()
-    await mainPage.clickCreateNewElementButton('Create a login')
+    await mainPage.clickAddItem('login')
 
     await createOrEditPage.fillCreateOrEditInput('title', 'Login Title')
     await createOrEditPage.fillCreateOrEditInput('username', 'Test User')
     await createOrEditPage.fillCreateOrEditInput('password', 'Test Pass')
-    await createOrEditPage.fillCreateOrEditInput(
-      'website',
-      'https://www.website.co'
-    )
-    await createOrEditPage.fillCreateOrEditInput('note', 'Test Note')
+    await createOrEditPage.fillCreateOrEditInput('website', 'https://www.website.co')
+    await createOrEditPage.fillCreateOrEditInput('comment', 'Test Note')
     await createOrEditPage.clickOnCreateOrEditButton('save')
-
     await page.waitForTimeout(testData.timeouts.action)
   })
 
@@ -68,34 +64,46 @@ test.describe('Password', () => {
   })
 
   test('Verify that the password was changed to a generic password, with "Safe" strength as the default option.', async () => {
-    qase.id(2000)
+    // qase.id(2000)
     await mainPage.openElementDetails()
     await detailsPage.editElement()
     await createOrEditPage.openPasswordMenu()
     await createOrEditPage.clickInsertPasswordButton()
     await createOrEditPage.clickShowHidePasswordButtonLast()
-    await createOrEditPage.verifyPasswordToNotHaveValue('Test Password')
+    await createOrEditPage.verifyPasswordToNotHaveValue('Test Pass')
+    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await page.waitForTimeout(testData.timeouts.action)
+    await mainPage.clickDetailsCloseButton()
   })
 
   test('Verify that password strength updates when the "special characters" switch is toggled', async () => {
-    qase.id(2001)
+    // qase.id(2001)
+    const root = page.locator('body')
+    await mainPage.openElementDetails()
+    await detailsPage.editElement()
     await createOrEditPage.openPasswordMenu()
 
-    await createOrEditPage.verifyRadioButtonPasswordState('active')
-    await createOrEditPage.verifyRadioButtonPassphraseState('inactive')
-    await createOrEditPage.verifyCharsliderByPositionNumber('8')
-    await createOrEditPage.verifySpecialCharactersSwitchByState('on')
-    await createOrEditPage.verifyPasswordStrenght('success', 'success', 'Safe')
+    // Verify default state: Random Characters selected, 8 chars, special chars ON, strength Strong
+    await expect(root.getByRole('radio', { name: /Random Characters/i })).toBeChecked()
+    await expect(root.getByText('8 chars')).toBeVisible()
+    await expect(root.getByText('Special character')).toBeVisible()
+    const toggle = root.locator('[role="switch"]')
+    await expect(toggle).toHaveAttribute('aria-checked', 'true')
+    await expect(root.getByText('Strong')).toBeVisible()
 
-    await createOrEditPage.clickSwitchByState('on')
-    await createOrEditPage.verifySpecialCharactersSwitchByState('off')
-    await createOrEditPage.verifyPasswordStrenght('warning', 'warning', 'Weak')
+    // Toggle special characters OFF → strength decreases
+    await toggle.click()
+    await expect(toggle).toHaveAttribute('aria-checked', 'false')
+    await expect(root.getByText('Strong')).not.toBeVisible()
 
-    await createOrEditPage.clickSwitchByState('off')
-    await createOrEditPage.verifySpecialCharactersSwitchByState('on')
-    await createOrEditPage.verifyPasswordStrenght('success', 'success', 'Safe')
+    // Toggle special characters back ON → strength returns to Strong
+    await toggle.click()
+    await expect(toggle).toHaveAttribute('aria-checked', 'true')
+    await expect(root.getByText('Strong')).toBeVisible()
 
-    await createOrEditPage.clickElementItemCloseButton()
-    await createOrEditPage.clickElementItemCloseButton()
+    // Close generator and discard edit
+    await root.getByTestId('generatepassword-button-discard-v2').click()
+    await createOrEditPage.clickOnCreateOrEditButton('discard')
+    await mainPage.clickDetailsCloseButton()
   })
 })

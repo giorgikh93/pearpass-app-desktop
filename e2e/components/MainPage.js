@@ -7,6 +7,16 @@ class MainPage {
 
   // ==== LOCATORS ====
 
+  // verifySideBarFavoritesFolder
+  get mainViewHeaderSelect() {
+    return this.root.getByTestId('main-view-header-select')
+  }
+
+  async clickMainViewHeaderSelect() {
+    await expect(this.mainViewHeaderSelect).toBeVisible()
+    await this.mainViewHeaderSelect.click()
+  }
+
   get listItemThreeDotsMenuMarkAsFavorite() {
     return this.root.getByTestId('recordaction-item-favorite').first()
   }
@@ -17,11 +27,57 @@ class MainPage {
   }
 
   get emptyCollectionView() {
-    return this.root.getByTestId('empty-collection-view')
+    return this.root.getByTestId('empty-collection-v2')
   }
 
   get element() {
     return this.root.locator('[data-record-id]').first()
+  }
+
+  get mainViewFavoriteIcon() {
+    return this.root.getByTestId('multi-select-favorite')
+  }
+
+  async clickOnMainViewFavoriteIcon() {
+    await expect(this.mainViewFavoriteIcon).toBeVisible()
+    await this.mainViewFavoriteIcon.click()
+  }
+
+  async favoriteIconState(expectedState) {
+    const favorite = this.mainViewFavoriteIcon
+    await expect(favorite)
+    .toHaveAttribute('aria-checked', String(expectedState))
+  }
+
+  async favoriteIconDisabled() {
+    const favorite1 = this.mainViewFavoriteIcon
+    await expect(favorite1).toHaveAttribute('aria-label', 'Add to Favorites')
+  }
+
+  async favoriteIconEnabled() {
+    const favorite2 = this.mainViewFavoriteIcon
+    await expect(favorite2).toHaveAttribute('aria-label', 'Remove from Favorites')
+  }
+
+  // async favoriteIconDisabled(expectedState) {
+  //   await expect(this.mainViewFavoriteIcon).toBeDisabled();
+  // }
+
+  // async favoriteIconEnabled(expectedState) {
+  //   await expect(this.mainViewFavoriteIcon).toBeEnabled();
+  // }
+
+  async elementCheckBox(expectedState) {
+    const checkbox = this.element
+      .locator('button[aria-checked]')
+
+    await expect(checkbox)
+      .toHaveAttribute('aria-checked', String(expectedState))
+  }
+
+  async clickOnFirstElement() {
+    await expect(this.element).toBeVisible()
+    await this.element.click()
   }
 
   get firstElement() {
@@ -113,7 +169,7 @@ class MainPage {
       .getByTestId('modalheader-button-close')
       .last()
     const closeBtn = collapseBtn.or(modalCloseBtn)
-    await closeBtn.click({ timeout: 5000 }).catch(() => {})
+    await closeBtn.click({ timeout: 5000 }).catch(() => { })
     // If neither visible (e.g. save already closed everything), no-op
   }
 

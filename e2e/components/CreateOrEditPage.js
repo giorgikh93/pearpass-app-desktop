@@ -7,6 +7,29 @@ class CreateOrEditPage {
 
   // ==== LOCATORS ====
 
+  // website-multi-slot-input-slot-0
+  get detailsWebsite() {
+    return this.root.getByTestId('website-multi-slot-input-slot-0')
+  }
+
+  async verifyDetailsWebsiteCount(expectedCount) {
+    await expect(this.detailsWebsite).toHaveCount(expectedCount)
+  }
+
+  get detailsComment() {
+    return this.root.getByTestId('comments-multi-slot-input-slot-0')
+  }
+
+  async verifyDetailsCommentCount(expectedCount) {
+    await expect(this.detailsComment).toHaveCount(expectedCount)
+  }
+
+  get deleteAttachmentButton() {
+    // Matches any delete-attachment button ending with "-button-deleteattachment-v2-0"
+    // e.g. createoredit-button-deleteattachment-v2-0, createoredit-creditcard-button-deleteattachment-v2-0, etc.
+    return this.root.getByTestId(/-button-deleteattachment-v2-0$/).first()
+  }
+
   getPasswordStrenghtCheck(strenght_type) {
     return this.root.getByTestId(`passwordcheck-strength-${strenght_type}`)
   }
@@ -101,7 +124,7 @@ class CreateOrEditPage {
 
   get insertPasswordButton() {
     return this.root
-      .getByTestId('passwordGenerator-button-insertpassword')
+      .getByTestId('generatepassword-button-primary-v2')
       .first()
   }
 
@@ -111,7 +134,16 @@ class CreateOrEditPage {
       username: 'createoredit-input-username-v2',
       password: 'createoredit-input-password-v2',
       website: 'createoredit-input-website-v2-0',
-      note: 'createoredit-input-comment-v2',
+      comment: 'createoredit-input-comment-v2',
+      attachment: 'createoredit-attachment-upload-v2',
+      // Credit card v2 fields
+      'creditcard-title': 'createoredit-creditcard-input-title-v2',
+      'creditcard-name': 'createoredit-creditcard-input-name-v2',
+      'creditcard-number': 'createoredit-creditcard-input-number-v2',
+      'creditcard-expiredate': 'createoredit-creditcard-input-expiredate-v2',
+      'creditcard-securitycode': 'createoredit-creditcard-input-securitycode-v2',
+      'creditcard-pincode': 'createoredit-creditcard-input-pincode-v2',
+      'creditcard-comment': 'createoredit-creditcard-input-comment-v2',
     }
     const testId = v2FieldMap[field] ?? `createoredit-input-${field}`
     // v2 InputField/PasswordField renders testID on wrapper div; drill into actual input
@@ -123,7 +155,7 @@ class CreateOrEditPage {
   }
 
   get passwordMenu() {
-    return this.root.getByTestId('createoredit-button-generatepassword')
+    return this.root.getByTestId('createoredit-button-generatepassword-v2')
   }
 
   get createOrEditCustomInputField() {
@@ -178,7 +210,24 @@ class CreateOrEditPage {
   }
 
   getCreateOrEditButton(name) {
-    return this.root.getByTestId(`createoredit-button-${name}-v2`)
+    const buttonMap = {
+      'creditcard-save': 'createoredit-creditcard-button-save-v2',
+      'creditcard-discard': 'createoredit-creditcard-button-discard-v2',
+    }
+    const testId = buttonMap[name] ?? `createoredit-button-${name}-v2`
+    return this.root.getByTestId(testId)
+  }
+
+  getCreateOrEditUploadAttachment() {
+    // Matches any attachment upload button ending with "-attachment-upload-v2"
+    // e.g. createoredit-attachment-upload-v2, createoredit-creditcard-attachment-upload-v2, etc.
+    return this.root.getByTestId(/-attachment-upload-v2$/).first()
+  }
+
+  async clickOnAttachment() {
+    const input = this.getCreateOrEditUploadAttachment()
+    await input.waitFor({ state: 'visible' })
+    await input.click()
   }
 
   get deleteFileButton() {
@@ -208,7 +257,16 @@ class CreateOrEditPage {
   }
 
   get uploadedFileLink() {
-    return this.root.getByRole('link', { name: 'TestPhoto.png' })
+    // uploadfiles-dialog-v2
+    // uploadfiles-field-v2
+    // return this.root.getByRole('link', { name: 'TestPhoto.png' })
+    return this.root
+      .getByTestId('uploadfiles-field-v2')
+      .getByText('TestPhoto.png', { exact: true })
+  }
+
+  get uploadedFile() {
+    return this.root.getByTestId('uploadfiles-button-additem-v2')
   }
 
   get uploadedImage() {
@@ -227,12 +285,20 @@ class CreateOrEditPage {
     return this.root.getByTestId('createoredit-button-save')
   }
 
+  // get fileInput() {
+  //   // return this.root.locator('input[type="file"]').first()
+  //   return this.root.getByTestId('createoredit-attachment-upload-v2')
+  //   // createoredit-attachment-upload-v2
+  // }
+
   get fileInput() {
     return this.root.locator('input[type="file"]').first()
   }
 
   get elementItemCloseButton() {
-    return this.root.getByTestId('modalheader-button-close').last()
+    // Matches any close button whose testID ends with "-close-v2"
+    // e.g. createoredit-login-close-v2, createoredit-creditcard-close-v2, etc.
+    return this.root.getByTestId(/-close-v2$/).first()
   }
 
   get passwordInput() {
@@ -301,8 +367,15 @@ class CreateOrEditPage {
   }
 
   async clickOnUploadedFile() {
-    await expect(this.uploadedFileLink).toBeVisible()
-    await this.uploadedFileLink.click()
+    // uploadfiles-button-additem-v2
+    await expect(this.uploadedFile).toBeVisible()
+    await this.uploadedFile.click()
+  }
+
+  async clickOnDeleteAttachmentButton() {
+    const deleteButton = this.deleteAttachmentButton
+    await expect(deleteButton).toBeVisible()
+    await deleteButton.click()
   }
 
   async clickCreateCustomItem() {
