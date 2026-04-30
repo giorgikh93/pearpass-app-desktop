@@ -18,6 +18,7 @@ import {
   Text,
   Title,
   ToggleSwitch,
+  rawTokens,
   useTheme
 } from '@tetherto/pearpass-lib-ui-kit'
 import type { PasswordIndicatorVariant } from '@tetherto/pearpass-lib-ui-kit'
@@ -59,6 +60,14 @@ export type GeneratePasswordModalContentV2Props = {
   onPasswordInsert?: (pass: string, type: PassType) => void
 }
 
+const passwordDisplayStyles: Record<string, string | number> = {
+    fontFamily: rawTokens.fontDisplay,
+    fontSize: rawTokens.fontSize28,
+    fontWeight: rawTokens.weightRegular,
+    lineHeight: 1,
+    letterSpacing: 0,
+  } 
+
 const renderHighlightedPassword = (
   text: string,
   primaryColor: string,
@@ -74,7 +83,7 @@ const renderHighlightedPassword = (
         <Text
           key={`${part}-${index}`}
           color={primaryColor}
-          variant="bodyEmphasized"
+          style={passwordDisplayStyles}
         >
           {part}
         </Text>
@@ -86,7 +95,7 @@ const renderHighlightedPassword = (
         <Text
           key={`${part}-${index}`}
           color={secondaryColor}
-          variant="bodyEmphasized"
+          style={passwordDisplayStyles}
         >
           {part}
         </Text>
@@ -94,7 +103,7 @@ const renderHighlightedPassword = (
     }
 
     return (
-      <Text key={`${part}-${index}`} variant="bodyEmphasized">
+      <Text key={`${part}-${index}`} style={passwordDisplayStyles}>
         {part}
       </Text>
     )
@@ -337,8 +346,8 @@ export const GeneratePasswordModalContentV2 = ({
               <div style={styles.sliderLabel}>
                 <Text variant="bodyEmphasized">
                   {selectedOption === PASSWORD_OPTIONS.passphrase
-                    ? `${selectedRules.passphrase.words} ${t('words')}`
-                    : `${selectedRules.password.characters} ${t('chars')}`}
+                    ? `${selectedRules.passphrase.words} ${t('Words')}`
+                    : `${selectedRules.password.characters} ${t('Chars')}`}
                 </Text>
               </div>
 
