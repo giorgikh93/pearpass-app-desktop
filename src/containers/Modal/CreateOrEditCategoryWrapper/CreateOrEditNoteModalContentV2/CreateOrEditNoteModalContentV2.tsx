@@ -226,12 +226,12 @@ export const CreateOrEditNoteModalContentV2 = ({
         </div>
 
         <InputField
-          label={t('Comment')}
-          placeholder={t('Enter Comment')}
+          label={t('Note')}
+          placeholder={t('Enter Note')}
           value={noteField.value}
           onChange={(e) => noteField.onChange(e.target.value)}
           error={noteField.error || undefined}
-          testID="createoredit-note-input-comment-v2"
+          testID="createoredit-note-input-note-v2"
         />
 
         <div style={styles.sectionLabel}>
