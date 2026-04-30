@@ -17,7 +17,6 @@ import {
   SelectField,
   Text,
   useTheme,
-  PasswordIndicatorVariant
 } from '@tetherto/pearpass-lib-ui-kit'
 import { RECORD_TYPES } from '@tetherto/pearpass-lib-vault'
 import {
@@ -35,7 +34,6 @@ import {
   UploadFileFilled
 } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { html } from 'htm/react'
-import { STRENGTH_MAP } from '../../../../constants/password'
 import { createStyles } from './CreateOrEditLoginModalContentV2.styles'
 import { ATTACHMENTS_FIELD_KEY } from '../../../../constants/formFields'
 import { useGlobalLoading } from '../../../../context/LoadingContext'
@@ -49,10 +47,10 @@ import { formatPasskeyDate } from '../../../../utils/formatPasskeyDate'
 import { getFilteredAttachmentsById } from '../../../../utils/getFilteredAttachmentsById'
 import { handleFileSelect } from '../../../../utils/handleFileSelect'
 import { sortByName } from '../../../../utils/sortByName'
-import { getPasswordStrength } from '../../../../utils/getPasswordStrengthInfo'
 import { CreateFolderModalContentV2 } from '../../CreateFolderModalContentV2/CreateFolderModalContentV2'
 import { UploadFilesModalContentV2 } from '../../UploadFilesModalContentV2'
 import { PassType } from '../../../../shared/types'
+import { PasswordFieldStrengthIndicator } from '../../../../components/PasswordFieldStrengthIndicator'
 
 export type CreateOrEditLoginModalContentV2Props = {
   initialRecord?: {
@@ -264,7 +262,6 @@ export const CreateOrEditLoginModalContentV2 = ({
   const titleField = register('title')
   const usernameField = register('username')
   const passwordField = register('password')
-  const passwordStrength = getPasswordStrength(passwordField.value, passwordType)
   const otpSecretField = register('otpSecret')
   const noteField = register('note')
 
@@ -303,10 +300,7 @@ export const CreateOrEditLoginModalContentV2 = ({
     </>
   )
 
-  const passwordIndicator: PasswordIndicatorVariant | undefined =
-    passwordStrength ? STRENGTH_MAP[passwordStrength.strengthType] : undefined
-
-    return (
+  return (
     <Dialog
       title={isEdit ? t('Edit Login Item') : t('New Login Item')}
       onClose={closeModal}
@@ -370,7 +364,11 @@ export const CreateOrEditLoginModalContentV2 = ({
                   recordType: 'password',
                   setValue: (value: string, type: PassType) => {
                     setValue('password', value)
-                    setPasswordType(type === PassType.PassPhrase ? PassType.PassPhrase : PassType.Password)
+                    setPasswordType(
+                      type === PassType.PassPhrase
+                        ? PassType.PassPhrase
+                        : PassType.Password
+                    )
                   }
                 })
               }
@@ -388,18 +386,10 @@ export const CreateOrEditLoginModalContentV2 = ({
             error={usernameField.error || undefined}
             testID='createoredit-input-username-v2'
           />
-          <PasswordField
-            label={t('Password')}
-            placeholder={t('Enter Password')}
-            value={passwordField.value}
-            onChange={(e) => {
-              passwordField.onChange(e.target.value)
-              if(passwordType !== PassType.Password){
-                setPasswordType(PassType.Password)
-              }
-            }}
-            error={passwordField.error || undefined}
-            passwordIndicator={passwordIndicator}
+          <PasswordFieldStrengthIndicator
+            passwordField={passwordField}
+            passwordType={passwordType}
+            setPasswordType={setPasswordType}
             testID='createoredit-input-password-v2'
           />
         </MultiSlotInput>
@@ -538,47 +528,47 @@ export const CreateOrEditLoginModalContentV2 = ({
         >
           {values.attachments.length > 0
             ? values.attachments.map(
-              (
-                attachment: {
-                  id?: string
-                  tempId?: string
-                  name: string
-                },
-                index: number
-              ) => (
-                <UiKitAttachmentField
-                  key={attachment.id || attachment.tempId}
-                  label={t('Attachment')}
-                  value={attachment.name}
-                  testID={`createoredit-attachment-v2-${index}`}
-                  rightSlot={
-                    <Button
-                      variant='tertiary'
-                      size='small'
-                      type='button'
-                      aria-label={t('Delete File')}
-                      iconBefore={
-                        <TrashOutlined
-                          width={16}
-                          height={16}
-                          color={theme.colors.colorTextPrimary}
-                        />
-                      }
-                      onClick={() =>
-                        setValue(
-                          ATTACHMENTS_FIELD_KEY,
-                          getFilteredAttachmentsById(
-                            values.attachments,
-                            attachment
+                (
+                  attachment: {
+                    id?: string
+                    tempId?: string
+                    name: string
+                  },
+                  index: number
+                ) => (
+                  <UiKitAttachmentField
+                    key={attachment.id || attachment.tempId}
+                    label={t('Attachment')}
+                    value={attachment.name}
+                    testID={`createoredit-attachment-v2-${index}`}
+                    rightSlot={
+                      <Button
+                        variant='tertiary'
+                        size='small'
+                        type='button'
+                        aria-label={t('Delete File')}
+                        iconBefore={
+                          <TrashOutlined
+                            width={16}
+                            height={16}
+                            color={theme.colors.colorTextPrimary}
+                          />
+                        }
+                        onClick={() =>
+                          setValue(
+                            ATTACHMENTS_FIELD_KEY,
+                            getFilteredAttachmentsById(
+                              values.attachments,
+                              attachment
+                            )
                           )
-                        )
-                      }
-                      data-testid={`createoredit-button-deleteattachment-v2-${index}`}
-                    />
-                  }
-                />
+                        }
+                        data-testid={`createoredit-button-deleteattachment-v2-${index}`}
+                      />
+                    }
+                  />
+                )
               )
-            )
             : null}
           <UiKitAttachmentField
             label={t('Attachment')}
