@@ -37,12 +37,7 @@ import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
 import { getDeviceName } from '../../../utils/getDeviceName'
 import { logger } from '../../../utils/logger'
-
-const STRENGTH_MAP: Record<string, PasswordIndicatorVariant> = {
-  error: 'vulnerable',
-  warning: 'decent',
-  success: 'strong'
-}
+import { STRENGTH_MAP } from '../../../constants/password'
 
 export const CardCreateMasterPasswordV2 = () => {
   const { t } = useTranslation()

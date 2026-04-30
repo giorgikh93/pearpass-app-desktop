@@ -4,6 +4,7 @@ import {
   checkPassphraseStrength,
   checkPasswordStrength
 } from '@tetherto/pearpass-utils-password-check'
+import { PassType } from '../../../shared/types'
 import {
   generatePassphrase,
   generatePassword
@@ -55,7 +56,7 @@ const STRENGTH_TO_INDICATOR: Record<string, PasswordIndicatorVariant> = {
 }
 
 export type GeneratePasswordModalContentV2Props = {
-  onPasswordInsert?: (pass: string) => void
+  onPasswordInsert?: (pass: string, type: PassType) => void
 }
 
 const renderHighlightedPassword = (
@@ -203,7 +204,10 @@ export const GeneratePasswordModalContentV2 = ({
 
   const handlePrimaryAction = () => {
     if (onPasswordInsert) {
-      onPasswordInsert(generatedValue)
+      onPasswordInsert(
+        generatedValue,
+        selectedOption === PASSWORD_OPTIONS.passphrase ? PassType.PassPhrase : PassType.Password
+      )
       closeModal()
       return
     }
