@@ -196,7 +196,7 @@ export const CreateOrEditNoteModalContentV2 = ({
             variant="primary"
             size="small"
             type="button"
-            disabled={isLoading}
+            disabled={isLoading || (!isEdit && !values.title?.trim())}
             isLoading={isLoading}
             onClick={() => handleSubmit(onSubmit)()}
             data-testid="createoredit-note-button-save-v2"

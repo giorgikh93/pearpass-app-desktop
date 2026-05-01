@@ -190,7 +190,7 @@ export const CreateOrEditCustomModalContentV2 = ({
             variant="primary"
             size="small"
             type="button"
-            disabled={isLoading}
+            disabled={isLoading || (!isEdit && !values.title?.trim())}
             isLoading={isLoading}
             onClick={() => handleSubmit(onSubmit)()}
             data-testid="createoredit-custom-button-save-v2"

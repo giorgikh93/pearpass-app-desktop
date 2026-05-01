@@ -183,7 +183,7 @@ export const CreateOrEditPassPhraseModalContentV2 = ({
             variant="primary"
             size="small"
             type="button"
-            disabled={isLoading}
+            disabled={isLoading || (!isEdit && (!values.title?.trim() || !values.passPhrase?.trim()))}
             isLoading={isLoading}
             onClick={() => handleSubmit(onSubmit)()}
             data-testid="createoredit-passphrase-button-save-v2"

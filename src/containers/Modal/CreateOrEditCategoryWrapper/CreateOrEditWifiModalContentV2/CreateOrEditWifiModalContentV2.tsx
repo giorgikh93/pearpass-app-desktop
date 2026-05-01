@@ -168,7 +168,7 @@ export const CreateOrEditWifiModalContentV2 = ({
             variant="primary"
             size="small"
             type="button"
-            disabled={isLoading}
+            disabled={isLoading || (!isEdit && (!values.title?.trim() || !values.password?.trim()))}
             isLoading={isLoading}
             onClick={() => handleSubmit(onSubmit)()}
             data-testid="createoredit-wifi-button-save-v2"
