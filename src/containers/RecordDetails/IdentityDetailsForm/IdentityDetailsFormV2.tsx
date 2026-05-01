@@ -292,7 +292,6 @@ export const IdentityDetailsFormV2 = ({
 
   const hasNote = !!values.note?.length
   const hasCustomFields = !!values.customFields?.length
-  const hasFolder = !!values.folder?.length
 
   const handleAttachmentPress = (attachment: Attachment) => {
     if (!attachment?.buffer || !attachment?.name) return
@@ -699,21 +698,9 @@ export const IdentityDetailsFormV2 = ({
           </MultiSlotInput>
         </div>
       )}
-      {(hasFolder || hasNote || hasCustomFields) && (
+      {(hasNote || hasCustomFields) && (
         <div style={styles.section}>
           <Text variant="caption">{t('Additional')}</Text>
-
-          {hasFolder && (
-            <MultiSlotInput testID="folder-multi-slot-input">
-              <InputField
-                label={t('Folder')}
-                value={values.folder ?? ''}
-                readOnly
-                isGrouped
-                testID="folder-multi-slot-input-slot-0"
-              />
-            </MultiSlotInput>
-          )}
 
           {hasNote && (
             <MultiSlotInput testID="comments-multi-slot-input">

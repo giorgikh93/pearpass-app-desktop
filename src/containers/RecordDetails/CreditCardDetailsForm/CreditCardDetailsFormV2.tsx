@@ -113,7 +113,6 @@ export const CreditCardDetailsFormV2 = ({
   const hasNote = !!values.note?.length
   const hasCustomFields = !!values.customFields?.length
   const hasAttachments = !!values.attachments?.length
-  const hasFolder = !!values.folder?.length
 
   const handleAttachmentPress = (attachment: Attachment) => {
     if (!attachment?.buffer || !attachment?.name) return
@@ -228,18 +227,6 @@ export const CreditCardDetailsFormV2 = ({
               onClick={() => handleAttachmentPress(attachment)}
             />
           ))}
-        </MultiSlotInput>
-      )}
-
-      {hasFolder && (
-        <MultiSlotInput testID="folder-multi-slot-input">
-          <InputField
-            label={t('Folder')}
-            value={values.folder ?? ''}
-            readOnly
-            isGrouped
-            testID="folder-multi-slot-input-slot-0"
-          />
         </MultiSlotInput>
       )}
 
