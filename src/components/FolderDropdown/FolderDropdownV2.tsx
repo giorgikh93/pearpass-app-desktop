@@ -1,13 +1,15 @@
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 
 import {
+  Button,
   ContextMenu,
   MultiSlotInput,
   NavbarListItem,
   SelectField,
+  rawTokens,
   useTheme
 } from '@tetherto/pearpass-lib-ui-kit'
-import { CreateNewFolder, Folder, KeyboardArrowBottom } from '@tetherto/pearpass-lib-ui-kit/icons'
+import { Close, CreateNewFolder, Folder, KeyboardArrowBottom } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { useFolders } from '@tetherto/pearpass-lib-vault'
 
 import { CreateFolderModalContentV2 } from '../../containers/Modal/CreateFolderModalContentV2/CreateFolderModalContentV2'
@@ -60,7 +62,29 @@ export const FolderDropdownV2 = ({
             placeholder={t('Choose Folder')}
             testID='createoredit-select-folder-v2'
             rightSlot={
-              <KeyboardArrowBottom color={theme.colors.colorTextPrimary} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: rawTokens.spacing6 }}>
+                {selectedFolder && (
+                  <Button
+                    variant='tertiary'
+                    size='small'
+                    type='button'
+                    aria-label={t('Clear folder')}
+                    iconBefore={
+                      <Close
+                        width={16}
+                        height={16}
+                        color={theme.colors.colorTextPrimary}
+                      />
+                    }
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onFolderSelect(selectedFolder)
+                    }}
+                    data-testid='createoredit-folder-clear-v2'
+                  />
+                )}
+                <KeyboardArrowBottom color={theme.colors.colorTextPrimary} />
+              </div>
             }
           />
         </MultiSlotInput>
@@ -99,3 +123,4 @@ export const FolderDropdownV2 = ({
     </ContextMenu>
   )
 }
+
