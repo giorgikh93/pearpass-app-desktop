@@ -71,10 +71,23 @@ export const PassPhraseDetailsFormV2 = ({
   const hasPassPhrase = !!values.passPhrase?.length
   const hasNote = !!values.note?.length
   const hasCustomFields = !!values.customFields?.length
+  const hasFolder = !!values.folder?.length
 
   return (
     <div style={styles.container}>
       {hasPassPhrase && <PassPhraseV2 value={values.passPhrase} />}
+
+      {hasFolder && (
+        <MultiSlotInput testID="folder-multi-slot-input">
+          <InputField
+            label={t('Folder')}
+            value={values.folder ?? ''}
+            readOnly
+            isGrouped
+            testID="folder-multi-slot-input-slot-0"
+          />
+        </MultiSlotInput>
+      )}
 
       {hasNote && (
         <MultiSlotInput testID="comments-multi-slot-input">

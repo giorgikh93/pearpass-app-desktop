@@ -292,6 +292,7 @@ export const IdentityDetailsFormV2 = ({
 
   const hasNote = !!values.note?.length
   const hasCustomFields = !!values.customFields?.length
+  const hasFolder = !!values.folder?.length
 
   const handleAttachmentPress = (attachment: Attachment) => {
     if (!attachment?.buffer || !attachment?.name) return
@@ -698,22 +699,36 @@ export const IdentityDetailsFormV2 = ({
           </MultiSlotInput>
         </div>
       )}
-      {hasNote && (
+      {(hasFolder || hasNote) && (
         <div style={styles.section}>
           <Text variant="caption">{t('Additional')}</Text>
 
-          <MultiSlotInput testID="comments-multi-slot-input">
-            <InputField
-              label={t('Comment')}
-              placeholder={t('Enter Comment')}
-              readOnly
-              copyable
-              onCopy={copyToClipboard}
-              isGrouped
-              testID="comments-multi-slot-input-slot-0"
-              {...toReadOnlyFieldProps(register('note'))}
-            />
-          </MultiSlotInput>
+          {hasFolder && (
+            <MultiSlotInput testID="folder-multi-slot-input">
+              <InputField
+                label={t('Folder')}
+                value={values.folder ?? ''}
+                readOnly
+                isGrouped
+                testID="folder-multi-slot-input-slot-0"
+              />
+            </MultiSlotInput>
+          )}
+
+          {hasNote && (
+            <MultiSlotInput testID="comments-multi-slot-input">
+              <InputField
+                label={t('Comment')}
+                placeholder={t('Enter Comment')}
+                readOnly
+                copyable
+                onCopy={copyToClipboard}
+                isGrouped
+                testID="comments-multi-slot-input-slot-0"
+                {...toReadOnlyFieldProps(register('note'))}
+              />
+            </MultiSlotInput>
+          )}
         </div>
       )}
 

@@ -3,6 +3,7 @@ import { useEffect, useMemo } from 'react'
 import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import {
   AttachmentField,
+  InputField,
   MultiSlotInput,
   PasswordField,
   Text,
@@ -90,6 +91,7 @@ export const CustomDetailsFormV2 = ({
 
   const hasCustomFields = !!values.customFields?.length
   const hasAttachments = !!values.attachments?.length
+  const hasFolder = !!values.folder?.length
 
   const handleAttachmentPress = (attachment: Attachment) => {
     if (!attachment?.buffer || !attachment?.name) return
@@ -119,11 +121,23 @@ export const CustomDetailsFormV2 = ({
 
   return (
     <div style={styles.container}>
-      {(hasAttachments || hasCustomFields) && (
+      {(hasFolder || hasAttachments || hasCustomFields) && (
         <div style={styles.section}>
           <Text variant="caption" color={theme.colors.colorTextSecondary}>
             {t('Additional')}
           </Text>
+
+          {hasFolder && (
+            <MultiSlotInput testID="folder-multi-slot-input">
+              <InputField
+                label={t('Folder')}
+                value={values.folder ?? ''}
+                readOnly
+                isGrouped
+                testID="folder-multi-slot-input-slot-0"
+              />
+            </MultiSlotInput>
+          )}
 
           {hasAttachments && (
             <MultiSlotInput testID="attachments-multi-slot-input">
