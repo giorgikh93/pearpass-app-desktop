@@ -16,9 +16,8 @@ function isSnapRuntime(options = {}) {
 
 function getSnapRealHome(options = {}) {
   const env = options.env || process.env
-  // Inside snap, $HOME is remapped to ~/snap/<name>/<rev>. The user's real
-  // home (where host-side browsers read NativeMessagingHosts) is exposed as
-  // SNAP_REAL_HOME by snapd. Fall back to HOME outside the sandbox.
+  // $HOME is remapped to ~/snap/<name>/<rev> inside the sandbox; snapd
+  // exposes the real home as SNAP_REAL_HOME.
   if (!isSnapRuntime(options)) return env.HOME || ''
   return env.SNAP_REAL_HOME || env.HOME || ''
 }

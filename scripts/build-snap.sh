@@ -133,15 +133,12 @@ parse_args() {
 
 stage_sources() {
     mkdir -p "$LOCAL_DIR"
-    # Clean any previous staging so the picked branch in snapcraft.yaml is
-    # deterministic (presence of unpacked/ wins over PearPass.AppImage).
+    # Clean stale staging so unpacked/ wins deterministically over PearPass.AppImage.
     rm -rf "$LOCAL_DIR/unpacked" "$LOCAL_DIR/PearPass.AppImage"
 
     if [[ -n "$UNPACKED_PATH" ]]; then
         log_info "Staging unpacked Electron payload into snap/local/unpacked/ ..."
-        # Hard-link tree to avoid duplicating ~1 GB on the same filesystem.
-        # Snapcraft copies sources into the build env, so it picks up files
-        # by content; the link form just keeps the host disk footprint low.
+        # Hard-link to avoid duplicating ~1 GB on the same filesystem.
         cp -al "$UNPACKED_PATH" "$LOCAL_DIR/unpacked"
     else
         log_info "Staging AppImage into snap/local/ ..."
@@ -155,15 +152,8 @@ build_snap() {
     mkdir -p "$BUILD_DIR"
 
     cd "$PROJECT_DIR"
-    # Run pack from PROJECT_DIR. Two reasons we glob the result instead of
-    # hard-coding the filename:
-    #   1. `--output <abs-path>` is inconsistent across snapcraft+LXD versions
-    #      — snapcraft announces creation, but the host-side copy-back does
-    #      not always honor an absolute path outside PROJECT_DIR.
-    #   2. snapcraft.yaml uses `adopt-info: pearpass` to pull the version
-    #      from flatpak/com.pears.pass.metainfo.xml, which can lag behind
-    #      package.json. Globbing the actual produced snap avoids the
-    #      mismatch.
+    # `--output <abs-path>` is unreliable across snapcraft+LXD versions,
+    # so we glob the result in PROJECT_DIR instead.
     snapcraft pack
     local OUT
     OUT="$(ls -1t "$PROJECT_DIR"/pearpass_*_"${ARCH}".snap 2>/dev/null | head -n1)"

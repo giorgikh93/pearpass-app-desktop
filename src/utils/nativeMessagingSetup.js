@@ -162,8 +162,8 @@ set ELECTRON_RUN_AS_NODE=1
  */
 export const getNativeMessagingLocations = () => {
   const platform = os.platform()
-  // Under flatpak/snap, os.homedir() is the per-app sandbox home; browsers
-  // on the host read manifests from the real host home. Use that instead.
+  // Under flatpak/snap, os.homedir() is the sandbox home; host browsers
+  // read manifests from the real home.
   let home
   if (platform === 'linux' && isFlatpakRuntime()) {
     home = getHostHome()
@@ -561,10 +561,9 @@ export const setupNativeMessaging = async ({
     const { platform, executablePath } =
       getNativeHostExecutableInfo(userDataPath)
 
-    // Host-installed browsers and other snaps both lack a path through our
-    // snap's user-data dir, so the manifest points at /snap/bin/<snap>.<app>
-    // directly (no wrapper). Derive <snap> from SNAP_NAME so a future rename
-    // doesn't silently produce a manifest pointing at a non-existent binary.
+    // Host browsers and other snaps can't reach our user-data dir, so
+    // the manifest points at /snap/bin/<snap>.<app> directly (no wrapper).
+    // SNAP_NAME-driven so a snap rename can't silently break installs.
     const useSnapDirect = platform === 'linux' && isSnapRuntime()
     const manifestExecPath = useSnapDirect
       ? `/snap/bin/${process.env.SNAP_NAME}.native-host`

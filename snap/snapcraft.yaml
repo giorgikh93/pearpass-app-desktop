@@ -46,17 +46,12 @@ apps:
       - network
       - network-bind
 
-# Directory-scoped, not file-scoped (KeePassXC's pattern). File scope
-# expands to `<file>{,/,/**}` in AppArmor, which does not let the snap
-# mkdir the immediate parent. Verified empirically against host + snap
-# Firefox 150 and against Mozilla's NativeManifests.sys.mjs source:
-# browsers never create NativeMessagingHosts/native-messaging-hosts/
-# themselves (only `IOUtils.readJSON`, no writes), so on a fresh user
-# system the snap must mkdir the dir before writing the manifest.
-# Within each granted directory the snap only ever writes
-# com.pears.pass.json. The brave/current entry follows the symlink the
-# snap-Brave runtime exposes; smoke-tested with snap-Firefox, not
-# snap-Brave — re-verify when a snap-Brave smoke test is run.
+# Directory-scoped (not file-scoped): file scope's AppArmor expansion
+# `<file>{,/,/**}` blocks mkdir of the parent, and browsers don't create
+# NativeMessagingHosts/ themselves (verified for host + snap Firefox 150).
+# Snap only writes com.pears.pass.json inside each granted dir.
+# brave/current resolves via snap-Brave's revision symlink — smoke-tested
+# with Firefox, retest under snap-Brave.
 plugs:
   browser-native-messaging:
     interface: personal-files
@@ -74,23 +69,21 @@ parts:
   pearpass:
     plugin: nil
     source: snap/local
-    parse-info:
-      - usr/share/metainfo/com.pears.pass.metainfo.xml
-    # The unpacked Electron payload bundles its own libffmpeg / libGL /
-    # libvulkan / etc. Other system libs (libnss3, libgbm1, libdbus,
-    # libgtk-3) come from the gnome extension / core22 base. We deliberately
-    # keep stage-packages empty for now; the snap is intended for smoke
-    # testing on an aarch64 host. If a missing-symbol error shows up at
-    # runtime, add the specific .so to stage-packages here.
+    build-packages:
+      - jq
+    # stage-packages intentionally empty: Electron bundles ffmpeg/GL/vulkan,
+    # the gnome extension + core22 base provide GTK/NSS/dbus. Add specific
+    # .so files here if a missing-symbol error surfaces at runtime.
     override-build: |
       set -eux
 
-      # build-snap.sh stages the Electron payload in one of two forms:
-      #   1. snap/local/unpacked/  — pre-extracted (electron-builder
-      #      `linux-arm64-unpacked` / `linux-unpacked`).  Preferred — no
-      #      mksquashfs dependency.
-      #   2. snap/local/PearPass.AppImage — falls back to AppImage extraction
-      #      via the bundled AppRun.
+      # Snap version follows package.json; `adopt-info: pearpass` lets
+      # this part publish the value via craftctl.
+      craftctl set version="$(jq -r .version "${CRAFT_PROJECT_DIR}/package.json")"
+
+      # build-snap.sh stages the Electron payload as either snap/local/unpacked/
+      # (preferred, pre-extracted from electron-builder) or snap/local/PearPass.AppImage
+      # (fallback, extracted here via AppRun).
       UNPACKED="${CRAFT_PART_SRC}/unpacked"
       APPIMAGE="${CRAFT_PART_SRC}/PearPass.AppImage"
 
@@ -149,8 +142,8 @@ parts:
       NMHOST
       chmod +x "${CRAFT_PART_INSTALL}/usr/bin/pearpass-native-host"
 
-      # Reuse the flatpak desktop entry + appstream metadata + icon. Patch
-      # Exec/Icon to point at snap-resolved paths.
+      # Reuse flatpak desktop entry + metainfo + icon; sed below patches
+      # Exec/Icon for snap-resolved paths.
       install -Dm644 "${CRAFT_PROJECT_DIR}/flatpak/com.pears.pass.desktop" \
         "${CRAFT_PART_INSTALL}/usr/share/applications/com.pears.pass.desktop"
       install -Dm644 "${CRAFT_PROJECT_DIR}/flatpak/com.pears.pass.metainfo.xml" \
