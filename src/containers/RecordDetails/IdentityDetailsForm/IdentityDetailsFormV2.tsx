@@ -729,25 +729,25 @@ export const IdentityDetailsFormV2 = ({
               />
             </MultiSlotInput>
           )}
-        </div>
-      )}
 
-      {hasCustomFields && (
-        <MultiSlotInput testID="hidden-messages-multi-slot-input">
-          {(values.customFields as CustomField[]).map((field, index) => (
-            <PasswordField
-              key={`${field.type}-${index}`}
-              label={t('Hidden Message')}
-              value={field.note ?? ''}
-              placeholder={t('Enter Hidden Message')}
-              readOnly
-              copyable
-              onCopy={copyToClipboard}
-              isGrouped
-              testID={`hidden-messages-multi-slot-input-slot-${index}`}
-            />
-          ))}
-        </MultiSlotInput>
+          {hasCustomFields && (
+            <MultiSlotInput testID="hidden-messages-multi-slot-input">
+              {(values.customFields as CustomField[]).map((field, index) => (
+                <PasswordField
+                  key={`${field.type}-${index}`}
+                  label={t('Hidden Message')}
+                  value={field.note ?? ''}
+                  placeholder={t('Enter Hidden Message')}
+                  readOnly
+                  copyable
+                  onCopy={copyToClipboard}
+                  isGrouped
+                  testID={`hidden-messages-multi-slot-input-slot-${index}`}
+                />
+              ))}
+            </MultiSlotInput>
+          )}
+        </div>
       )}
     </div>
   )
