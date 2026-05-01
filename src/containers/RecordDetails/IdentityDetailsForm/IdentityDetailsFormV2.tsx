@@ -699,7 +699,7 @@ export const IdentityDetailsFormV2 = ({
           </MultiSlotInput>
         </div>
       )}
-      {(hasFolder || hasNote) && (
+      {(hasFolder || hasNote || hasCustomFields) && (
         <div style={styles.section}>
           <Text variant="caption">{t('Additional')}</Text>
 
