@@ -164,7 +164,7 @@ export const CardCreateMasterPasswordV2 = () => {
                 </div>
                 <Text as="span" variant="caption">
                   {t(
-                    "Strong passwords are usually at least 8 characters long, hard to guess, use a mix of letters, numbers, and symbols, and aren't based on personal information."
+                    "Strong passwords are usually at least 8 characters long, hard to guess, use a mix of uppercase and lowercase letters, numbers, and symbols, and aren’t based on personal information."
                   )}
                 </Text>
               </div>
