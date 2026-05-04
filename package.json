@@ -204,7 +204,7 @@
     "patch-package": "^8.0.1",
     "pear-build": "^1.1.0",
     "pear-interface": "1.0.0",
-    "pear-runtime-updater": "^2.0.2",
+    "pear-runtime-updater": "^3.0.10",
     "prettier": "3.4.2",
     "typescript": "5.9.3",
     "wait-on": "^8.0.0",
