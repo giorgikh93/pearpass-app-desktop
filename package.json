@@ -252,7 +252,7 @@
     "pear-electron": "1.7.25-rc.0",
     "pear-ipc": "6.4.0",
     "pear-run": "1.0.5",
-    "pear-runtime": "^0.5.0",
+    "pear-runtime": "^1.1.1",
     "pear-runtime-legacy-storage": "^1.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
