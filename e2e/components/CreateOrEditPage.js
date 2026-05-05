@@ -129,23 +129,18 @@ class CreateOrEditPage {
   }
 
   getCreateOrEditInputField(field) {
-    const v2FieldMap = {
-      title: 'createoredit-input-title-v2',
-      username: 'createoredit-input-username-v2',
-      password: 'createoredit-input-password-v2',
+    // Irregular test IDs that don't follow the standard pattern
+    const overrides = {
       website: 'createoredit-input-website-v2-0',
-      comment: 'createoredit-input-comment-v2',
       attachment: 'createoredit-attachment-upload-v2',
-      // Credit card v2 fields
-      'creditcard-title': 'createoredit-creditcard-input-title-v2',
-      'creditcard-name': 'createoredit-creditcard-input-name-v2',
-      'creditcard-number': 'createoredit-creditcard-input-number-v2',
-      'creditcard-expiredate': 'createoredit-creditcard-input-expiredate-v2',
-      'creditcard-securitycode': 'createoredit-creditcard-input-securitycode-v2',
-      'creditcard-pincode': 'createoredit-creditcard-input-pincode-v2',
-      'creditcard-comment': 'createoredit-creditcard-input-comment-v2',
     }
-    const testId = v2FieldMap[field] ?? `createoredit-input-${field}`
+    // Principle: '{category}-{field}' => 'createoredit-{category}-input-{field}-v2'
+    //            '{field}'            => 'createoredit-input-{field}-v2'
+    const dashIndex = field.indexOf('-')
+    const testId = overrides[field] ??
+      (dashIndex !== -1
+        ? `createoredit-${field.slice(0, dashIndex)}-input-${field.slice(dashIndex + 1)}-v2`
+        : `createoredit-input-${field}-v2`)
     // v2 InputField/PasswordField renders testID on wrapper div; drill into actual input
     return this.root.getByTestId(testId).locator('input').first()
   }
@@ -167,15 +162,11 @@ class CreateOrEditPage {
   }
 
   get customNoteInput() {
-    return this.root.getByTestId('customfields-input-note-0').last()
+    return this.root.getByTestId('createoredit-custom-input-customfield-v2-0').locator('input').first()
   }
 
-  // get customNoteInput_first() {
-  //   return this.root.getByTestId('customfields-input-note-0').first()
-  // }
-
   get customNoteInput_first() {
-    return this.root.getByTestId('customfields-input-note-0')
+    return this.root.getByTestId(/^createoredit-custom-input-customfield-v2-/)
   }
 
   // TODO: need to change customfields-input-note-0 to createoredit-input-note-0
@@ -194,7 +185,7 @@ class CreateOrEditPage {
   }
 
   get deleteCustomNoteItem() {
-    return this.root.getByTestId('customfields-button-remove')
+    return this.root.getByTestId('createoredit-custom-button-removecustomfield-v2-0')
   }
 
   get dropdownFolderMenu() {
@@ -210,11 +201,12 @@ class CreateOrEditPage {
   }
 
   getCreateOrEditButton(name) {
-    const buttonMap = {
-      'creditcard-save': 'createoredit-creditcard-button-save-v2',
-      'creditcard-discard': 'createoredit-creditcard-button-discard-v2',
-    }
-    const testId = buttonMap[name] ?? `createoredit-button-${name}-v2`
+    // Principle: '{category}-{action}' => 'createoredit-{category}-button-{action}-v2'
+    //            '{action}'            => 'createoredit-button-{action}-v2'
+    const dashIndex = name.indexOf('-')
+    const testId = dashIndex !== -1
+      ? `createoredit-${name.slice(0, dashIndex)}-button-${name.slice(dashIndex + 1)}-v2`
+      : `createoredit-button-${name}-v2`
     return this.root.getByTestId(testId)
   }
 
@@ -314,7 +306,7 @@ class CreateOrEditPage {
   }
 
   get passPhrasePasteButton() {
-    return this.root.getByTestId(`passphrase-button-paste`)
+    return this.root.getByRole('button', { name: 'Paste recovery phrase' }).first()
   }
 
   // ==== ACTIONS ====
@@ -389,8 +381,9 @@ class CreateOrEditPage {
   }
 
   async deleteCustomNote() {
-    await expect(this.deleteCustomNoteItem).toBeVisible()
-    await this.deleteCustomNoteItem.click()
+    const input = this.customNoteInput
+    await input.waitFor({ state: 'visible' })
+    await input.fill('')
   }
 
   async clickShowHidePasswordButtonFirst() {

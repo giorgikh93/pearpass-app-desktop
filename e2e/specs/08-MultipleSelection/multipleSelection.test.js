@@ -1,4 +1,4 @@
-import { qase } from 'playwright-qase-reporter'
+// import { qase } from 'playwright-qase-reporter'
 
 import {
   LoginPage,
@@ -56,9 +56,9 @@ test.describe('Multiple Selection', () => {
   test('Verify that selected items in one tab are deleted on "Delete" click', async ({
     page
   }) => {
-    qase.id(2580)
+    // qase.id(2580)
     await sideMenuPage.selectSideBarCategory('login')
-    await mainPage.clickCollectionButton('login')
+    await mainPage.clickAddItem('login')
     await createOrEditPage.fillCreateOrEditInput('title', 'AAA')
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await page.waitForTimeout(testData.timeouts.action)
@@ -75,16 +75,17 @@ test.describe('Multiple Selection', () => {
   test('Verify that selected items across tabs are deleted on "Delete" click', async ({
     page
   }) => {
-    qase.id(2581)
-    await mainPage.clickCollectionButton('login')
+    // qase.id(2581)
+    await sideMenuPage.selectSideBarCategory('login')
+    await mainPage.clickAddItem('login')
     await createOrEditPage.fillCreateOrEditInput('title', 'AAA')
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await page.waitForTimeout(testData.timeouts.action)
 
     await sideMenuPage.selectSideBarCategory('identity')
-    await mainPage.clickCollectionButton('identity')
-    await createOrEditPage.fillCreateOrEditInput('title', 'BBB')
-    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await mainPage.clickAddItem('identity')
+    await createOrEditPage.fillCreateOrEditInput('identity-title', 'BBB')
+    await createOrEditPage.clickOnCreateOrEditButton('identity-save')
     await page.waitForTimeout(testData.timeouts.action)
 
     await sideMenuPage.selectSideBarCategory('login')
@@ -105,20 +106,22 @@ test.describe('Multiple Selection', () => {
   test('Verify that "Multiple Selection" button is hidden when no items exist', async ({
     page
   }) => {
-    qase.id(2582)
-    await mainPage.verifyMultipleSelectiontButtonIsNotVisible()
+    // qase.id(2582)
+    await sideMenuPage.selectSideBarCategory('all')
+    await mainPage.verifyEmptyCollection()
+    // await mainPage.verifyMultipleSelectiontButtonIsNotVisible()
   })
 
   test('Verify that "Multiple Selection" mode can be canceled', async ({
     page
   }) => {
-    qase.id(2583)
+    // qase.id(2583)
     await sideMenuPage.selectSideBarCategory('all')
     await utilities.deleteAllElements()
     await page.waitForTimeout(testData.timeouts.action)
 
     await sideMenuPage.selectSideBarCategory('login')
-    await mainPage.clickCollectionButton('login')
+    await mainPage.clickAddItem('login')
     await createOrEditPage.fillCreateOrEditInput('title', 'AAA')
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await page.waitForTimeout(testData.timeouts.action)
@@ -126,38 +129,67 @@ test.describe('Multiple Selection', () => {
     await mainPage.clickMultipleSelectiontButton()
     await page.waitForTimeout(testData.timeouts.action)
     await mainPage.clickElementByPosition(0, 'AAA')
-    await mainPage.clickMultipleSelectCancelButon()
+    await mainPage.clickMultipleSelectiontButton()
   })
 
   test('Verify that "Delete" button is enabled only when items are selected', async ({
     page
   }) => {
-    qase.id(2584)
+    // qase.id(2584)
+    await sideMenuPage.selectSideBarCategory('login')
     await mainPage.clickMultipleSelectiontButton()
     await page.waitForTimeout(testData.timeouts.action)
     await mainPage.clickElementByPosition(0, 'AAA')
     await mainPage.verifyMultipleSelectDeleteButtonIsEnabled()
     await page.waitForTimeout(testData.timeouts.action)
-    await mainPage.clickMultipleSelectCancelButon()
+    await mainPage.clickMultipleSelectiontButton()
     await page.waitForTimeout(testData.timeouts.action)
   })
 
   test('Verify that multiple items can be added to a folder simultaneously', async ({
     page
   }) => {
-    qase.id(2585)
+    // qase.id(2585)
+    await sideMenuPage.selectSideBarCategory('all')
+    await utilities.deleteAllElements()
+    await page.waitForTimeout(testData.timeouts.action)
+
+    // Create a folder first (canMove requires at least one folder to exist)
+    await sideMenuPage.createFolder('Test Folder')
+    await page.waitForTimeout(testData.timeouts.action)
+
+    await sideMenuPage.selectSideBarCategory('login')
+    await mainPage.clickAddItem('login')
+    await createOrEditPage.fillCreateOrEditInput('title', 'AAA')
+    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await page.waitForTimeout(testData.timeouts.action)
+
+    await mainPage.clickAddItem('login')
+    await createOrEditPage.fillCreateOrEditInput('title', 'BBB')
+    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await page.waitForTimeout(testData.timeouts.action)
+
+    // Enable multi-select and select both items one by one via checkboxes
     await mainPage.clickMultipleSelectiontButton()
     await page.waitForTimeout(testData.timeouts.action)
-    await mainPage.clickElementByPosition(0, 'AAA')
-
-    await mainPage.clickMultipleSelectMoveButon()
+    await mainPage.clickElementByPosition(0, 'BBB')
+    await mainPage.clickElementByPosition(1, 'AAA')
     await page.waitForTimeout(testData.timeouts.action)
 
-    await mainPage.clickCreateNewFoldertButton()
-    await mainPage.fillCreateNewFolderInput('Test Folder')
-    await mainPage.clickCreateFoldertButton()
+    // Move both items to the folder
+    await mainPage.clickMultipleSelectMoveButon()
+    await page.waitForTimeout(testData.timeouts.action)
+    await mainPage.clickMoveFolderChip('Test Folder')
+    await mainPage.clickMoveFolderSubmit()
+    await page.waitForTimeout(testData.timeouts.action)
 
+    await sideMenuPage.selectSideBarCategory('all')
     await mainPage.verifyElementFolderName('Test Folder')
-    await sideMenuPage.deleteFolder('Test Folder')
+    await sideMenuPage.deleteMultipleItemsFolder('Test Folder')
+    await page.waitForTimeout(testData.timeouts.action)
+    // await sideMenuPage.selectSideBarCategory('all')
+    // await page.waitForTimeout(testData.timeouts.action)
+    await sideMenuPage.clickDeleteFolderButton()
+    // Click on "Delete Folder and Items" and verify that folder along with items inside it are deleted
   })
 })

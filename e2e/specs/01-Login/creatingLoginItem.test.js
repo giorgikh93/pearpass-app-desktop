@@ -35,6 +35,11 @@ test.describe('Creating Login Item', () => {
 
     await sideMenuPage.selectSideBarCategory('login')
     await utilities.deleteAllElements()
+    try {
+      await sideMenuPage.deleteFolder('Test Folder')
+    } catch (e) {
+      // folder may not exist from a previous run
+    }
     await mainPage.clickAddItem('login')
 
     await page.waitForTimeout(testData.timeouts.action)
@@ -53,6 +58,11 @@ test.describe('Creating Login Item', () => {
 
   test.afterAll(async () => {
     await utilities.deleteAllElements()
+    try {
+      await sideMenuPage.deleteFolder('Test Folder')
+    } catch (e) {
+      // folder may not exist if tests didn't create it
+    }
     await sideMenuPage.clickSidebarExitButton()
   })
 
@@ -183,7 +193,6 @@ test.describe('Creating Login Item', () => {
 
   test('View uploaded file in Edit mode', async ({ page }) => {
     // qase.id(1940)
-
     await detailsPage.editElement()
     await createOrEditPage.clickOnAttachment()
     await createOrEditPage.uploadFile()
@@ -192,7 +201,6 @@ test.describe('Creating Login Item', () => {
 
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await page.waitForTimeout(testData.timeouts.action)
-
 
     await detailsPage.verifyUploadedFileIsVisible()
     

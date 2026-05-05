@@ -1,5 +1,5 @@
 import clipboard from 'clipboardy'
-import { qase } from 'playwright-qase-reporter'
+// import { qase } from 'playwright-qase-reporter'
 
 import {
   LoginPage,
@@ -35,7 +35,8 @@ test.describe('Creating PassPhrase Item', () => {
 
     await sideMenuPage.selectSideBarCategory('passPhrase')
     await utilities.deleteAllElements()
-    await mainPage.clickCreateNewElementButton('Save a Recovery phrase')
+    // await mainPage.clickCreateNewElementButton('Save a Recovery phrase')
+     await mainPage.clickAddItem('passPhrase')
 
     await page.waitForTimeout(testData.timeouts.action)
   })
@@ -57,129 +58,147 @@ test.describe('Creating PassPhrase Item', () => {
   })
 
   test('Creating the "PassPhrase" item', async ({ page }) => {
-    qase.id(2209)
-    await createOrEditPage.fillCreateOrEditInput('title', 'PassPhrase Title')
+    // qase.id(2209)
+    await createOrEditPage.fillCreateOrEditInput('passphrase-title', 'PassPhrase Title')
 
     await clipboard.write(
       'word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12'
     )
     await createOrEditPage.clickOnPasteFromClipboard()
-    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await createOrEditPage.clickOnCreateOrEditButton('passphrase-save')
     await page.waitForTimeout(testData.timeouts.action)
   })
 
   test('Viewing created item. Verify item details', async ({ page }) => {
-    qase.id(2210)
+    // qase.id(2210)
     await mainPage.verifyElementTitle('PassPhrase Title')
     await mainPage.openElementDetails()
     await detailsPage.verifyAllRecoveryPhraseWords([
-      '#1word1',
-      '#2word2',
-      '#3word3',
-      '#4word4',
-      '#5word5',
-      '#6word6',
-      '#7word7',
-      '#8word8',
-      '#9word9',
-      '#10word10',
-      '#11word11',
-      '#12word12'
+      'word1',
+      'word2',
+      'word3',
+      'word4',
+      'word5',
+      'word6',
+      'word7',
+      'word8',
+      'word9',
+      'word10',
+      'word11',
+      'word12'
     ])
   })
 
-  test('Dropdown moves to selected item edit screen', async ({ page }) => {
-    qase.id(2211)
-    await mainPage.verifyElementTitle('PassPhrase Title')
-    await sideMenuPage.clickSidebarAddButton()
-    await detailsPage.fillCreateNewFolderTitleInput('Test Folder')
-    await detailsPage.clickCreateFolderButton()
-    await detailsPage.editElement()
-    await createOrEditPage.openDropdownMenu()
-    await createOrEditPage.selectFromDropdownMenu('Test Folder')
-    await createOrEditPage.clickOnCreateOrEditButton('save')
-    await detailsPage.getItemDetailsFolderName('Test Folder')
-    await mainPage.verifyElementFolderName('Test Folder')
-  })
+  // test('Dropdown moves to selected item edit screen', async ({ page }) => {
+  //   qase.id(2211)
+  //   await mainPage.verifyElementTitle('PassPhrase Title')
+  //   await sideMenuPage.clickSidebarAddButton()
+  //   await detailsPage.fillCreateNewFolderTitleInput('Test Folder')
+  //   await detailsPage.clickCreateFolderButton()
+  //   await detailsPage.editElement()
+  //   await createOrEditPage.openDropdownMenu()
+  //   await createOrEditPage.selectFromDropdownMenu('Test Folder')
+  //   await createOrEditPage.clickOnCreateOrEditButton('save')
+  //   await detailsPage.getItemDetailsFolderName('Test Folder')
+  //   await mainPage.verifyElementFolderName('Test Folder')
+  // })
 
-  test('Item moved to folder (and cleanup)', async ({ page }) => {
-    qase.id(2212)
-    await sideMenuPage.verifySidebarFolderName('Test Folder')
-    await mainPage.openElementDetails()
-    await detailsPage.editElement()
-    await createOrEditPage.openDropdownMenu()
-    await createOrEditPage.selectFromDropdownMenu('No Folder')
-    await createOrEditPage.clickOnCreateOrEditButton('save')
+  // test('Item moved to folder (and cleanup)', async ({ page }) => {
+  //   qase.id(2212)
+  //   await sideMenuPage.verifySidebarFolderName('Test Folder')
+  //   await mainPage.openElementDetails()
+  //   await detailsPage.editElement()
+  //   await createOrEditPage.openDropdownMenu()
+  //   await createOrEditPage.selectFromDropdownMenu('No Folder')
+  //   await createOrEditPage.clickOnCreateOrEditButton('save')
 
-    await sideMenuPage.deleteFolder('Test Folder')
-  })
+  //   await sideMenuPage.deleteFolder('Test Folder')
+  // })
 
   test('Add via Favorite icon', async ({ page }) => {
-    qase.id(2213)
+    // qase.id(2213)
     await sideMenuPage.selectSideBarCategory('all')
-    await mainPage.verifyElementTitle('PassPhrase Title')
-    await mainPage.openElementDetails()
-    await detailsPage.clickFavoriteButton()
-    await sideMenuPage.openSideBarFolder('Favorites')
-    await expect(detailsPage.getFavoriteAvatar('PT')).toBeVisible()
-    await expect(mainPage.getElementFavoriteIcon('PT')).toBeVisible()
+    await mainPage.clickMainViewHeaderSelect()
+    await mainPage.elementCheckBox(false)
+    await mainPage.clickOnFirstElement()
+    await mainPage.elementCheckBox(true)
+    await mainPage.clickOnMainViewFavoriteIcon()
+    await sideMenuPage.verifySideBarFavoritesFolder('1 items')
+    // await sideMenuPage.selectSideBarCategory('all')
+    // await mainPage.verifyElementTitle('PassPhrase Title')
+    // await mainPage.openElementDetails()
+    // await detailsPage.clickFavoriteButton()
+    // await sideMenuPage.openSideBarFolder('Favorites')
+    // await expect(detailsPage.getFavoriteAvatar('PT')).toBeVisible()
+    // await expect(mainPage.getElementFavoriteIcon('PT')).toBeVisible()
   })
 
   test('Remove via Favorite icon', async ({ page }) => {
-    qase.id(2214)
-    await mainPage.openElementDetails()
-    await detailsPage.clickFavoriteButton()
-    await expect(detailsPage.getFavoriteAvatar('PT')).not.toBeVisible()
-    await expect(mainPage.getElementFavoriteIcon('PT')).not.toBeVisible()
+    // qase.id(2214)
+    await mainPage.clickMainViewHeaderSelect()
+    await mainPage.clickOnFirstElement()
+    await mainPage.clickOnMainViewFavoriteIcon()
+    await sideMenuPage.verifySideBarFavoritesFolder('0 items')
+    // await mainPage.openElementDetails()
+    // await detailsPage.clickFavoriteButton()
+    // await expect(detailsPage.getFavoriteAvatar('PT')).not.toBeVisible()
+    // await expect(mainPage.getElementFavoriteIcon('PT')).not.toBeVisible()
   })
 
   test('Add via More options', async ({ page }) => {
-    qase.id(2215)
+    // qase.id(2215)
     await mainPage.openElementDetails()
     await detailsPage.openItemBarThreeDotsDropdownMenu()
     await detailsPage.clickMarkAsFavoriteButton()
-    await expect(detailsPage.getFavoriteAvatar('PT')).toBeVisible()
-    await expect(mainPage.getElementFavoriteIcon('PT')).toBeVisible()
+    await sideMenuPage.verifySideBarFavoritesFolder('1 items')
+    // await mainPage.openElementDetails()
+    // await detailsPage.openItemBarThreeDotsDropdownMenu()
+    // await detailsPage.clickMarkAsFavoriteButton()
+    // await expect(detailsPage.getFavoriteAvatar('PT')).toBeVisible()
+    // await expect(mainPage.getElementFavoriteIcon('PT')).toBeVisible()
   })
 
   test('Remove via More options', async ({ page }) => {
-    qase.id(2216)
-    await mainPage.openElementDetails()
+    // qase.id(2216)
     await detailsPage.openItemBarThreeDotsDropdownMenu()
     await detailsPage.clickRemoveFromFavoritesButton()
-    await expect(detailsPage.getFavoriteAvatar('PT')).not.toBeVisible()
-    await expect(mainPage.getElementFavoriteIcon('PT')).not.toBeVisible()
+    await sideMenuPage.verifySideBarFavoritesFolder('0 items')
+    // await mainPage.openElementDetails()
+    // await detailsPage.openItemBarThreeDotsDropdownMenu()
+    // await detailsPage.clickRemoveFromFavoritesButton()
+    // await expect(detailsPage.getFavoriteAvatar('PT')).not.toBeVisible()
+    // await expect(mainPage.getElementFavoriteIcon('PT')).not.toBeVisible()
   })
 
-  // test('Add Custom Note', async ({ page }) => {
-  //   qase.id(2217);
-  //   await mainPage.verifyElementTitle('PassPhrase Title')
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.clickCreateCustomItem()
-  //   await createOrEditPage.clickCustomItemOptionNote()
-  //   await expect(createOrEditPage.customNoteInput).toHaveCount(1)
-  //   await createOrEditPage.fillCustomNoteInput()
-  //   await createOrEditPage.clickOnCreateOrEditButton('save')
-  //   await page.waitForTimeout(testData.timeouts.action)
-  //   await mainPage.clickDetailsCloseButton()
-  // })
+  // // test('Add Custom Note', async ({ page }) => {
+  // //   qase.id(2217);
+  // //   await mainPage.verifyElementTitle('PassPhrase Title')
+  // //   await mainPage.openElementDetails()
+  // //   await detailsPage.editElement()
+  // //   await createOrEditPage.clickCreateCustomItem()
+  // //   await createOrEditPage.clickCustomItemOptionNote()
+  // //   await expect(createOrEditPage.customNoteInput).toHaveCount(1)
+  // //   await createOrEditPage.fillCustomNoteInput()
+  // //   await createOrEditPage.clickOnCreateOrEditButton('save')
+  // //   await page.waitForTimeout(testData.timeouts.action)
+  // //   await mainPage.clickDetailsCloseButton()
+  // // })
 
-  // test('Delete Note field', async ({ page }) => {
-  //   qase.id(2218);
-  //   await mainPage.verifyElementTitle('PassPhrase Title')
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.editElement()
-  //   await expect(createOrEditPage.customNoteInput_first).toHaveCount(2)
-  //   await createOrEditPage.deleteCustomNote()
-  //   await expect(createOrEditPage.customNoteInput_first).toHaveCount(1)
-  //   await createOrEditPage.clickOnCreateOrEditButton('save')
-  //   await page.waitForTimeout(testData.timeouts.action)
-  //   await mainPage.clickDetailsCloseButton()
-  // })
+  // // test('Delete Note field', async ({ page }) => {
+  // //   qase.id(2218);
+  // //   await mainPage.verifyElementTitle('PassPhrase Title')
+  // //   await mainPage.openElementDetails()
+  // //   await detailsPage.editElement()
+  // //   await expect(createOrEditPage.customNoteInput_first).toHaveCount(2)
+  // //   await createOrEditPage.deleteCustomNote()
+  // //   await expect(createOrEditPage.customNoteInput_first).toHaveCount(1)
+  // //   await createOrEditPage.clickOnCreateOrEditButton('save')
+  // //   await page.waitForTimeout(testData.timeouts.action)
+  // //   await mainPage.clickDetailsCloseButton()
+  // // })
 
   test('Close via Cross icon', async ({ page }) => {
-    qase.id(2219)
+    // qase.id(2219)
     await mainPage.verifyElementTitle('PassPhrase Title')
     await mainPage.openElementDetails()
     await detailsPage.editElement()

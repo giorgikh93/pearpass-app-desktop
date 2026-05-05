@@ -105,36 +105,43 @@ class MainPage {
   }
 
   get sortButon() {
-    return this.root.getByTestId('sort-dropdown-button')
+    return this.root.getByTestId('main-view-header-sort-menu')
   }
 
   getSortOption(option) {
-    return this.root.getByTestId(`sort-option-${option}`)
+    return this.root.getByTestId(`main-view-header-sort-${option}`) // main-view-header-sort
   }
+
+  // main-view-header-sort-title_az
+  // main-view-header-sort-last_updated_newest
+  // main-view-header-sort-last_updated_oldest
+  // main-view-header-sort-date_added_newest
+  // main-view-header-sort-date_added_oldest
 
   getElementByPosition(position) {
     return this.root
-      .getByTestId('recordList-record-container')
-      .nth(`${position}`)
+      .locator('[data-record-id]')
+      .nth(position)
       .locator('span')
+      .last()
   }
 
   getElementByPosition1(position) {
     return this.root
-      .getByTestId('recordList-record-container')
+      .locator('[data-record-id]')
       .nth(`${position}`)
   }
 
   get multipleSelectionButon() {
-    return this.root.getByTestId('multi-select-button')
+    return this.root.getByTestId('main-view-header-select')
   }
 
   get multipleSelectDeleteButon() {
-    return this.root.getByTestId('multi-select-delete-button')
+    return this.root.getByTestId('multi-select-delete')
   }
 
   get multipleSelectMoveButon() {
-    return this.root.getByTestId('multi-select-move-button')
+    return this.root.getByTestId('multi-select-move')
   }
 
   get multipleSelectCancelButon() {
@@ -243,6 +250,39 @@ class MainPage {
     return this.root.getByTestId(`emptycollection-button-create-${button_name}`)
   }
 
+  // Select a folder chip in the move folder modal
+  async clickMoveFolderChip(folderName) {
+    const chip = this.root.getByTestId(`movefolder-chip-${folderName}`)
+    await expect(chip).toBeVisible()
+    await chip.click()
+  }
+
+  // Confirm move in the move folder modal
+  async clickMoveFolderSubmit() {
+    const submitBtn = this.root.getByTestId('movefolder-submit-v2')
+    await expect(submitBtn).toBeVisible()
+    await expect(submitBtn).toBeEnabled()
+    await submitBtn.click()
+  }
+
+  // Select an item via right-click context menu → "Select Item"
+  // This activates multi-select mode AND selects the item
+  async selectItemByTitle(title) {
+    const row = this.root.locator('[data-record-id]').filter({ hasText: title })
+    await expect(row).toBeVisible()
+    await row.click({ button: 'right' })
+    const selectMenuItem = this.root.locator('[data-testid^="record-row-menu-select-"]')
+    await expect(selectMenuItem).toBeVisible()
+    await selectMenuItem.click()
+  }
+
+  // Click an item row by title (useful for checkbox click in multi-select mode)
+  async clickItemByTitle(title) {
+    const row = this.root.locator('[data-record-id]').filter({ hasText: title })
+    await expect(row).toBeVisible()
+    await row.click()
+  }
+
   // ==== ACTIONS ====
 
   async clickCollectionButton(button_id) {
@@ -278,6 +318,7 @@ class MainPage {
   async clickAddItem(type) {
     await expect(this.mainPlusButon).toBeVisible()
     await this.mainPlusButon.click()
+    
     const menuItem = this.root.getByTestId(`add-item-${type}`)
     await expect(menuItem).toBeVisible()
     await menuItem.click()
@@ -341,7 +382,7 @@ class MainPage {
   }
 
   async clickYesButton() {
-    await this.root.getByText('Yes').click()
+    await this.root.getByTestId('delete-records-submit-v2').click()
   }
 
   async verifyElementByPosition(position, element_name) {
@@ -355,7 +396,7 @@ class MainPage {
   }
 
   async clickYesButton() {
-    await this.root.getByText('Yes').click()
+    await this.root.getByTestId('delete-records-submit-v2').click()
   }
 }
 

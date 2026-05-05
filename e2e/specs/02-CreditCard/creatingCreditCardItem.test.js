@@ -193,21 +193,21 @@ test.describe('Creating Credit Card Item', async () => {
   test('View uploaded file in Edit mode', async ({ page }) => {
     // qase.id(2127)
     await detailsPage.editElement()
-        await createOrEditPage.clickOnAttachment()
-        await createOrEditPage.uploadFile()
-        await createOrEditPage.verifyUploadedFileIsVisible()
-        await createOrEditPage.clickOnUploadedFile()
-    
-        await createOrEditPage.clickOnCreateOrEditButton('creditcard-save')
-        await page.waitForTimeout(testData.timeouts.action)
-    
-    
-        await detailsPage.verifyUploadedFileIsVisible()
-        
-        await detailsPage.clickOnUploadedFile()
-        await detailsPage.verifyUploadedImageIsVisible()
-    
-        await createOrEditPage.clickElementItemCloseButton()
+    await createOrEditPage.clickOnAttachment()
+    await createOrEditPage.uploadFile()
+    await createOrEditPage.verifyUploadedFileIsVisible()
+    await createOrEditPage.clickOnUploadedFile()
+
+    await createOrEditPage.clickOnCreateOrEditButton('creditcard-save')
+    await page.waitForTimeout(testData.timeouts.action)
+
+
+    await detailsPage.verifyUploadedFileIsVisible()
+
+    await detailsPage.clickOnUploadedFile()
+    await detailsPage.verifyUploadedImageIsVisible()
+
+    await createOrEditPage.clickElementItemCloseButton()
   })
 
   // test('View uploaded file in View mode (and cleanup)', async ({ page }) => {

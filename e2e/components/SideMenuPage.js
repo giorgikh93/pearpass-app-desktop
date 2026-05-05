@@ -13,8 +13,7 @@ class SideMenuPage {
 
   getSideMenuFolder(folderName) {
     return this.root.getByRole('button', { name: folderName })
-      // .getByTestId('sidebar-folder')
-      // .getByText(folderName, { exact: true })
+      .and(this.root.locator('[data-testid^="sidebar-"]'))
   }
 
   async verifySideMenuFolderName(folderName) {
@@ -50,7 +49,16 @@ class SideMenuPage {
     return this.root.getByTestId('sidebar-settings-button')
   }
 
+  get deleteFolderButton() {
+    return this.root.getByTestId('deletefolder-submit-v2')
+  }
+
   // ==== ACTIONS ====
+
+  async clickDeleteFolderButton() {
+    await expect(this.deleteFolderButton).toBeVisible()
+    await this.deleteFolderButton.click()
+  }
 
   async clickSidebarSettingsButton() {
     await expect(this.sidebarSettingsButton).toBeVisible()
@@ -62,6 +70,21 @@ class SideMenuPage {
     await expect(category).toBeVisible()
     await expect(category).toBeEnabled()
     await category.click()
+  }
+
+  async deleteMultipleItemsFolder(foldername) {
+    const folder = this.getSideMenuFolder(foldername)
+    await expect(folder).toBeVisible()
+
+    await folder.click({ button: 'right' })
+
+    const deleteButton = this.root.getByText('Delete Folder', { exact: true })
+
+    await expect(deleteButton).toBeVisible()
+    await deleteButton.click()
+
+    // after click, menu should disappear
+    // await expect(deleteButton).toBeHidden()
   }
 
   async deleteFolder(foldername) {
@@ -126,6 +149,17 @@ class SideMenuPage {
   async clickSidebarAddButton() {
     await expect(this.sidebarAddButton).toBeVisible()
     await this.sidebarAddButton.click()
+  }
+
+  async createFolder(name) {
+    await this.clickSidebarAddButton()
+    const nameInput = this.root.getByTestId('createfolder-name-v2').locator('input')
+    await expect(nameInput).toBeVisible()
+    await nameInput.fill(name)
+    const saveBtn = this.root.getByTestId('createfolder-save-v2')
+    await expect(saveBtn).toBeVisible()
+    await saveBtn.click()
+    await expect(saveBtn).toBeHidden()
   }
 
   async clickSidebarExitButton() {

@@ -37,13 +37,11 @@ test.describe('Editing/Deleting Note Item', () => {
 
     await sideMenuPage.selectSideBarCategory('note')
     await utilities.deleteAllElements()
-    await mainPage.clickCreateNewElementButton('Create a note')
+    await mainPage.clickAddItem('note')
 
-    await createOrEditPage.fillCreateOrEditInput('title', 'Note Title')
-
-    await createOrEditPage.fillCreateOrEditTextArea('note', 'Test Note Text')
-
-    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await createOrEditPage.fillCreateOrEditInput('note-title', 'Note Title')
+    await createOrEditPage.fillCreateOrEditInput('note-comment', 'Test Note Text')
+    await createOrEditPage.clickOnCreateOrEditButton('note-save')
     await page.waitForTimeout(testData.timeouts.action)
   })
 
@@ -64,15 +62,12 @@ test.describe('Editing/Deleting Note Item', () => {
   })
 
   test('Verify that edited "Note" item fields are saved correctly', async () => {
-    qase.id(2262)
+    // qase.id(2262)
     await mainPage.openElementDetails()
     await detailsPage.editElement()
-    await createOrEditPage.fillCreateOrEditInput('title', 'EDITED Note Title')
-    await createOrEditPage.fillCreateOrEditTextArea(
-      'note',
-      'EDITED Test Note Text'
-    )
-    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await createOrEditPage.fillCreateOrEditInput('note-title', 'EDITED Note Title')
+    await createOrEditPage.fillCreateOrEditInput('note-comment', 'EDITED Test Note Text')
+    await createOrEditPage.clickOnCreateOrEditButton('note-save')
     await page.waitForTimeout(testData.timeouts.action)
     await mainPage.openElementDetails()
     await detailsPage.verifyTitle('EDITED Note Title')
@@ -101,13 +96,13 @@ test.describe('Editing/Deleting Note Item', () => {
   // });
 
   test('Verify that the "Login" item is removed after deletion', async () => {
-    qase.id(2265)
+    // qase.id(2265)
     await utilities.deleteAllElements()
     await mainPage.verifyElementIsNotVisible()
   })
 
   test('Verify that the empty collection view is displayed on the Home screen after deleting the last item', async () => {
-    qase.id(2266)
+    // qase.id(2266)
     await sideMenuPage.selectSideBarCategory('all')
     await expect(mainPage.emptyCollectionView).toBeVisible()
   })

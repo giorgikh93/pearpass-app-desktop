@@ -30,6 +30,24 @@ class SettingsPage {
     await expect(card_container).toBeVisible()
   }
 
+  getSettingsDropdownSection(section_name) {
+    return this.root.getByTestId(`section-${section_name}`)
+  }
+
+  async verifySettingsDropdownSectionIsVisible(section_name) {
+    const section_dropdown = this.getSettingsDropdownSection(section_name)
+    await expect(section_dropdown).toBeVisible()
+  }
+
+  getSettingsDropdownNavigation(section_navigation_name) {
+    return this.root.getByTestId(`settings-nav-${section_navigation_name}`)
+  }
+
+  async verifySettingsDropdownNavigationIsVisible(section_navigation_name) {
+    const section_navigation = this.getSettingsDropdownNavigation(section_navigation_name)
+    await expect(section_navigation).toBeVisible()
+  }
+
   //
 
   getPearPassFunction(pearpass_function_id) {
@@ -78,7 +96,7 @@ class SettingsPage {
   //
 
   getPearPassFunctionDropdownOption(dropdown_option) {
-    return this.root.getByTestId(`settings-auto-logout-${dropdown_option}`)
+    return this.root.getByTestId(`settings-auto-lock-option-${dropdown_option}`)
   }
 
   async verifyPearPassFunctionDropdownOptionIsVisible(dropdown_id) {
@@ -90,13 +108,17 @@ class SettingsPage {
 
   //
 
+  // get backSettingsButton() {
+  //   return this.root.getByTestId('button-round-icon')
+  // }
+
   get backSettingsButton() {
-    return this.root.getByTestId('button-round-icon')
+    return this.root.getByRole('button', { name: 'Go back' });
   }
 
   async clickBackSettingsButton() {
-    const back_button = this.backSettingsButton
-    await back_button.click()
+    await this.backSettingsButton.waitFor({ state: 'visible' });
+    await this.backSettingsButton.click();
   }
 }
 
