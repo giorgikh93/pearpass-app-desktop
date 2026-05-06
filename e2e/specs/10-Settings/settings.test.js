@@ -60,7 +60,6 @@ test.describe('Settings test', () => {
     await settingsPage.verifySettingsDropdownNavigationIsVisible('app-preferences')
     await settingsPage.verifySettingsDropdownNavigationIsVisible('master-password')
 
-    // Auto-Logout Dropdown
     await settingsPage.clickPearPassFunctionDropdown('auto-lock-select')
     await page.waitForTimeout(testData.timeouts.action)
     await settingsPage.getPearPassFunctionDropdownOption('seconds_30')

@@ -68,33 +68,6 @@ test.describe('Creating Custom Item', () => {
     await detailsPage.verifyTitle('Custom Field Title')
   })
 
-  // test('Dropdown moves to selected item edit screen', async ({ page }) => {
-  // qase.id(2248)
-  //   // NOTE: folder selector not yet implemented in custom item v2 modal
-  //   await mainPage.verifyElementTitle('Custom Field Title')
-  //   await sideMenuPage.clickSidebarAddButton()
-  //   await detailsPage.fillCreateNewFolderTitleInput('Test Folder')
-  //   await detailsPage.clickCreateFolderButton()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.openDropdownMenu()
-  //   await createOrEditPage.selectFromDropdownMenu('Test Folder')
-  //   await createOrEditPage.clickOnCreateOrEditButton('custom-save')
-  //   await detailsPage.getItemDetailsFolderName('Test Folder')
-  //   await mainPage.verifyElementFolderName('Test Folder')
-  // })
-
-  // test('Item moved to folder (and cleanup)', async ({ page }) => {
-  // qase.id(2249)
-  //   await sideMenuPage.verifySidebarFolderName('Test Folder')
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.openDropdownMenu()
-  //   await createOrEditPage.selectFromDropdownMenu('No Folder')
-  //   await createOrEditPage.clickOnCreateOrEditButton('custom-save')
-
-  //   await sideMenuPage.deleteFolder('Test Folder')
-  // })
-
   test('Add via Favorite icon', async ({ page }) => {
     qase.id(2250)
     await sideMenuPage.selectSideBarCategory('all')
@@ -108,8 +81,6 @@ test.describe('Creating Custom Item', () => {
     qase.id(2251)
     await mainPage.openElementDetails()
     await detailsPage.clickFavoriteButton()
-    // await expect(detailsPage.getFavoriteAvatar('CF')).not.toBeVisible()
-    // await expect(mainPage.getElementFavoriteIcon('CF')).not.toBeVisible()
   })
 
   test('Add via More options', async ({ page }) => {
@@ -182,20 +153,6 @@ test.describe('Creating Custom Item', () => {
     await createOrEditPage.clickElementItemCloseButton()
     await mainPage.clickDetailsCloseButton()
   })
-
-  // test('View uploaded file in View mode (and cleanup)', async ({ page }) => {
-  // qase.id(2258);
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.verifyUploadedFileIsVisible()
-  //   await detailsPage.clickOnUploadedFile()
-  //   await detailsPage.verifyUploadedImageIsVisible()
-  //   await detailsPage.clickElementItemCloseButton()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.clickOnCreateOrEditButton('deleteattachment') // button-single-input
-  //   await createOrEditPage.verifyUploadedImageIsNotVisible()
-  //   await createOrEditPage.clickElementItemCloseButton()
-  //   await mainPage.clickDetailsCloseButton()
-  // })
 
   // test('Empty fields not displayed in view mode', async ({ page }) => {
   // qase.id(2259);

@@ -136,17 +136,6 @@ test.describe('Editing/Deleting Identity Item', () => {
 
   })
 
-  // test('Verify that deleted custom "Note" fields are not saved in the edited "Identity" item', async () => {
-  // qase.id(2167)
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.clickCreateCustomItem()
-  //   await createOrEditPage.clickCustomItemOptionNote()
-  //   await expect(createOrEditPage.customNoteInput).toHaveCount(1)
-  //   await createOrEditPage.deleteCustomNote()
-  //   await expect(createOrEditPage.customNoteInput).toHaveCount(0)
-  //   await createOrEditPage.clickElementItemCloseButton()
-  // })
-
   test('Verify that the "Identity" item is removed after deletion', async () => {
     qase.id(2168)
     await utilities.deleteAllElements()

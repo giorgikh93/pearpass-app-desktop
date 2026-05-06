@@ -109,7 +109,6 @@ test.describe('Multiple Selection', () => {
     qase.id(2582)
     await sideMenuPage.selectSideBarCategory('all')
     await mainPage.verifyEmptyCollection()
-    // await mainPage.verifyMultipleSelectiontButtonIsNotVisible()
   })
 
   test('Verify that "Multiple Selection" mode can be canceled', async ({
@@ -154,7 +153,6 @@ test.describe('Multiple Selection', () => {
     await utilities.deleteAllElements()
     await page.waitForTimeout(testData.timeouts.action)
 
-    // Create a folder first (canMove requires at least one folder to exist)
     await sideMenuPage.createFolder('Test Folder')
     await page.waitForTimeout(testData.timeouts.action)
 
@@ -169,14 +167,12 @@ test.describe('Multiple Selection', () => {
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await page.waitForTimeout(testData.timeouts.action)
 
-    // Enable multi-select and select both items one by one via checkboxes
     await mainPage.clickMultipleSelectiontButton()
     await page.waitForTimeout(testData.timeouts.action)
     await mainPage.clickElementByPosition(0, 'BBB')
     await mainPage.clickElementByPosition(1, 'AAA')
     await page.waitForTimeout(testData.timeouts.action)
 
-    // Move both items to the folder
     await mainPage.clickMultipleSelectMoveButon()
     await page.waitForTimeout(testData.timeouts.action)
     await mainPage.clickMoveFolderChip('Test Folder')

@@ -88,32 +88,6 @@ test.describe('Creating PassPhrase Item', () => {
     ])
   })
 
-  // test('Dropdown moves to selected item edit screen', async ({ page }) => {
-  //   qase.id(2211)
-  //   await mainPage.verifyElementTitle('PassPhrase Title')
-  //   await sideMenuPage.clickSidebarAddButton()
-  //   await detailsPage.fillCreateNewFolderTitleInput('Test Folder')
-  //   await detailsPage.clickCreateFolderButton()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.openDropdownMenu()
-  //   await createOrEditPage.selectFromDropdownMenu('Test Folder')
-  //   await createOrEditPage.clickOnCreateOrEditButton('save')
-  //   await detailsPage.getItemDetailsFolderName('Test Folder')
-  //   await mainPage.verifyElementFolderName('Test Folder')
-  // })
-
-  // test('Item moved to folder (and cleanup)', async ({ page }) => {
-  //   qase.id(2212)
-  //   await sideMenuPage.verifySidebarFolderName('Test Folder')
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.openDropdownMenu()
-  //   await createOrEditPage.selectFromDropdownMenu('No Folder')
-  //   await createOrEditPage.clickOnCreateOrEditButton('save')
-
-  //   await sideMenuPage.deleteFolder('Test Folder')
-  // })
-
   test('Add via Favorite icon', async ({ page }) => {
     qase.id(2213)
     await sideMenuPage.selectSideBarCategory('all')

@@ -164,16 +164,6 @@ class CreateOrEditPage {
     await deleteButton.click()
   }
 
-  // get deleteFileButton() {
-  //   return this.root.getByTestId('createoredit-button-deleteattachment')
-  // }
-
-  // async clickOnDeleteFileButton() {
-  //   const deleteButton = this.deleteFileButton
-  //   await expect(deleteButton).toBeVisible()
-  //   await deleteButton.click()
-  // }
-
   get loadFile() {
     return this.root.getByTestId('createoredit-button-loadfile')
   }

@@ -74,27 +74,6 @@ test.describe('Editing/Deleting Note Item', () => {
     await detailsPage.verifyNoteText('EDITED Test Note Text')
   })
 
-  // test('Verify that custom "Note" fields are not saved in the edited "Note" item', async () => {
-  // qase.id(2263);
-  //   await detailsPage.editElement();
-  //   await createOrEditPage.clickCreateCustomItem();
-  //   await createOrEditPage.clickCustomItemOptionNote();
-  //   await expect(createOrEditPage.customNoteInput).toHaveCount(1);
-  //   await createOrEditPage.deleteCustomNote();
-  //   await expect(createOrEditPage.customNoteInput).toHaveCount(0);
-  // });
-
-  // test('Empty fields are not displayed in view mode', async () => {
-  // qase.id(2264);
-  //   await createOrEditPage.fillCreateOrEditTextArea('note', '');
-  //   await mainPage.openElementDetails();
-  //   await detailsPage.verifyItemDetailsValue('https://', '');
-  //   await detailsPage.verifyItemDetailsValueIsNotVisible('Email or username');
-  //   await detailsPage.verifyItemDetailsValueIsNotVisible('Password');
-  //   await detailsPage.verifyItemDetailsValueIsNotVisible('Add comment');
-  //   await mainPage.clickDetailsCloseButton();
-  // });
-
   test('Verify that the "Login" item is removed after deletion', async () => {
     qase.id(2265)
     await utilities.deleteAllElements()

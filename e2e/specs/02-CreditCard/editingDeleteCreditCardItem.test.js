@@ -90,22 +90,6 @@ test.describe('Editing/Deleting Credit Card Item', () => {
     await detailsPage.verifyCustomNoteText('Credit Card Note EDITED')
   })
 
-  // test('Verify that deleted "Website" and custom "Note" fields are not saved in the edited "Credit Card" item', async () => {
-  // qase.id(2035);
-  //   await detailsPage.editElement();
-
-  //   // Delete website field
-  //   await createOrEditPage.clickOnCreateOrEditButton('addwebsite');
-  //   await createOrEditPage.clickOnCreateOrEditButton('removewebsite');
-
-  //   // Delete custom note field
-  //   await createOrEditPage.clickCreateCustomItem();
-  //   await createOrEditPage.clickCustomItemOptionNote();
-  //   await expect(createOrEditPage.customNoteInput).toHaveCount(1);
-  //   await createOrEditPage.deleteCustomNote();
-  //   await expect(createOrEditPage.customNoteInput).toHaveCount(0);
-  // });
-
   test('Empty fields are not displayed in view mode', async ({ page }) => {
     qase.id(2131)
     await detailsPage.editElement()
@@ -125,19 +109,6 @@ test.describe('Editing/Deleting Credit Card Item', () => {
       await mainPage.clickDetailsCloseButton()
     })
   })
-
-  // test('Verify that deleted custom "Note" fields are not saved in the edited "Credit Card" item', async () => {
-  // qase.id(2132)
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.clickCreateCustomItem()
-  //   await createOrEditPage.clickCustomItemOptionNote()
-  //   await expect(createOrEditPage.customNoteInput).toHaveCount(1)
-  //   await createOrEditPage.deleteCustomNote()
-  //   await expect(createOrEditPage.customNoteInput).toHaveCount(0)
-  //   await createOrEditPage.clickElementItemCloseButton()
-  //   await mainPage.clickDetailsCloseButton()
-  // })
 
   test('Verify that the "Credit Card" item is removed after deletion', async () => {
     qase.id(2133)

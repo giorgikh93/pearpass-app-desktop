@@ -67,28 +67,14 @@ test.describe('Editing/Deleting WiFi Item', () => {
     await mainPage.openElementDetails()
     await detailsPage.editElement()
     await createOrEditPage.fillCreateOrEditInput('wifi-name', 'WiFi Title Edited')
-    // await createOrEditPage.fillCreateOrEditInput('wifi-password', 'WiFi Pass Edited')
     await createOrEditPage.fillCreateOrEditInput('wifi-comment', 'WiFi Note Edited')
     await createOrEditPage.clickOnCreateOrEditButton('wifi-save')
     await page.waitForTimeout(testData.timeouts.action)
 
     await mainPage.verifyElementTitle('WiFi Title Edited')
     await mainPage.openElementDetails()
-    // await detailsPage.verifyTitle('WiFi Title Edited')
-    // await detailsPage.verifyItemDetailsValue('Password', 'WiFi Pass Edited')
     await detailsPage.verifyItemDetailsValue('Add comment', 'WiFi Note Edited')
   })
-
-  // test('Verify that deleted custom "Note" fields are not saved in the edited "WiFi" item', async () => {
-  //   qase.id(2149)
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.clickCreateCustomItem()
-  //   await createOrEditPage.clickCustomItemOptionNote()
-  //   await expect(createOrEditPage.customNoteInput).toHaveCount(1)
-  //   await createOrEditPage.deleteCustomNote()
-  //   await expect(createOrEditPage.customNoteInput).toHaveCount(0)
-  //   await createOrEditPage.clickElementItemCloseButton()
-  // })
 
   test('Empty fields are not displayed in view mode', async () => {
     qase.id(2150)

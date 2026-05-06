@@ -92,33 +92,6 @@ test.describe('Creating Credit Card Item', async () => {
     await detailsPage.verifyPasswordFieldType('card-details-multi-slot-input-slot-3', 'text')
   })
 
-  // test('Dropdown moves to selected item edit screen', async ({ page }) => {
-  // qase.id(2118)
-  //   // NOTE: folder selector not yet implemented in credit card V2 modal
-  //   await mainPage.verifyElementTitle('Credit Card Title')
-  //   await sideMenuPage.clickSidebarAddButton()
-  //   await detailsPage.fillCreateNewFolderTitleInput('Test Folder')
-  //   await detailsPage.clickCreateFolderButton()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.openDropdownMenu()
-  //   await createOrEditPage.selectFromDropdownMenu('Test Folder')
-  //   await createOrEditPage.clickOnCreateOrEditButton('creditcard-save')
-  //   await expect(detailsPage.getItemDetailsFolderName('Test Folder')).toBeVisible()
-  //   await mainPage.verifyElementFolderName('Test Folder')
-  // })
-
-  // test('Item moved to folder (and cleanup)', async ({ page }) => {
-  // qase.id(2119)
-  //   await sideMenuPage.verifySidebarFolderName('Test Folder')
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.openDropdownMenu()
-  //   await createOrEditPage.selectFromDropdownMenu('Test Folder')
-  //   await createOrEditPage.clickOnCreateOrEditButton('save')
-
-  //   await sideMenuPage.deleteFolder('Test Folder')
-  // })
-
   test('Add via Favorite icon', async ({ page }) => {
     qase.id(2120)
     await sideMenuPage.selectSideBarCategory('all')
@@ -209,20 +182,6 @@ test.describe('Creating Credit Card Item', async () => {
 
     await createOrEditPage.clickElementItemCloseButton()
   })
-
-  // test('View uploaded file in View mode (and cleanup)', async ({ page }) => {
-  //   qase.id(2128)
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.verifyUploadedFileIsVisible()
-  //   await detailsPage.clickOnUploadedFile()
-  //   await detailsPage.verifyUploadedImageIsVisible()
-  //   await detailsPage.clickElementItemCloseButton()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.clickOnCreateOrEditButton('deleteattachment')
-  //   await createOrEditPage.verifyUploadedImageIsNotVisible()
-  //   await createOrEditPage.clickElementItemCloseButton()
-  //   await mainPage.clickDetailsCloseButton()
-  // })
 
   test('Empty fields not displayed in view mode', async ({ page }) => {
     qase.id(2129)

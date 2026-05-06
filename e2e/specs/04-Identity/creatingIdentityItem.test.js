@@ -109,31 +109,6 @@ test.describe('Creating Identity Item', () => {
     await detailsPage.verifyIdentityDetailsValue('note', 'Identity Driving License Note')
   })
 
-  // test('Dropdown moves to selected item edit screen', async ({ page }) => {
-  //   qase.id(2153)
-  //   await mainPage.verifyElementTitle('Identity Title')
-  //   await sideMenuPage.clickSidebarAddButton()
-  //   await detailsPage.fillCreateNewFolderTitleInput('Test Folder')
-  //   await detailsPage.clickCreateFolderButton()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.openDropdownMenu()
-  //   await createOrEditPage.selectFromDropdownMenu('Test Folder')
-  //   await createOrEditPage.clickOnCreateOrEditButton('save')
-  //   await detailsPage.getItemDetailsFolderName('Test Folder')
-  //   await mainPage.verifyElementFolderName('Test Folder')
-  // })
-
-  // test('Item moved to folder (and cleanup)', async ({ page }) => {
-  //   qase.id(2155)
-  //   await sideMenuPage.verifySidebarFolderName('Test Folder')
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.openDropdownMenu()
-  //   await createOrEditPage.selectFromDropdownMenu('No Folder')
-  //   await createOrEditPage.clickOnCreateOrEditButton('save')
-  //   await sideMenuPage.deleteFolder('Test Folder')
-  // })
-
   test('Add via Favorite icon', async ({ page }) => {
     qase.id(2156)
     await sideMenuPage.selectSideBarCategory('all')
@@ -222,20 +197,6 @@ test.describe('Creating Identity Item', () => {
 
     await createOrEditPage.clickElementItemCloseButton()
   })
-
-  // test('View uploaded file in View mode (and cleanup)', async ({ page }) => {
-  // qase.id(2164)
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.verifyUploadedFileIsVisible()
-  //   await detailsPage.clickOnUploadedFile()
-  //   await detailsPage.verifyUploadedImageIsVisible()
-  //   await detailsPage.clickElementItemCloseButton()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.clickOnCreateOrEditButton('deleteattachment')
-  //   await createOrEditPage.verifyUploadedImageIsNotVisible()
-  //   await createOrEditPage.clickElementItemCloseButton()
-  //   await mainPage.clickDetailsCloseButton()
-  // })
 
   test('Empty fields not displayed in view mode', async ({ page }) => {
     qase.id(2165)

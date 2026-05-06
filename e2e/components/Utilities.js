@@ -44,12 +44,10 @@ class Utilities {
   // --- Clipboard ---
 
   async pasteFromClipboard(locator, text) {
-    // Write text to clipboard
     await this.root.page().evaluate(async (t) => {
       await navigator.clipboard.writeText(t)
     }, text)
 
-    // Click and paste
     await locator.click()
     const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
     await this.root.page().keyboard.press(`${modifier}+v`)

@@ -80,31 +80,6 @@ test.describe('Creating WiFi Item', () => {
     await createOrEditPage.verifyPasswordType('text')
   })
 
-  // test('Dropdown moves to selected item edit screen', async ({ page }) => {
-  // qase.id(2138)
-  //   await mainPage.verifyElementTitle('WiFi Title')
-  //   await sideMenuPage.clickSidebarAddButton()
-  //   await detailsPage.fillCreateNewFolderTitleInput('Test Folder')
-  //   await detailsPage.clickCreateFolderButton()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.openDropdownMenu()
-  //   await createOrEditPage.selectFromDropdownMenu('Test Folder')
-  //   await createOrEditPage.clickOnCreateOrEditButton('save')
-  //   await detailsPage.getItemDetailsFolderName('Test Folder')
-  //   await mainPage.verifyElementFolderName('Test Folder')
-  // })
-
-  // test('Item moved to folder (and cleanup)', async ({ page }) => {
-  //   qase.id(2139)
-  //   await sideMenuPage.verifySidebarFolderName('Test Folder')
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.openDropdownMenu()
-  //   await createOrEditPage.selectFromDropdownMenu('No Folder')
-  //   await createOrEditPage.clickOnCreateOrEditButton('save')
-  //   await sideMenuPage.deleteFolder('Test Folder')
-  // })
-
   test('Add via Favorite icon', async ({ page }) => {
     qase.id(2140)
     await sideMenuPage.selectSideBarCategory('all')

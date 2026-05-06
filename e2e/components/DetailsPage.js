@@ -30,19 +30,16 @@ class DetailsPage {
   // --- Item details / multi-slot ---
 
   getElementItemDetails(labelOrPlaceholder) {
-    // v2: InputField renders testID on wrapper div; inner input holds the value
     const v2LabelMap = {
       'Email or username': 'credentials-multi-slot-input-slot-0',
       'Password': 'credentials-multi-slot-input-slot-1',
       'https://': 'website-multi-slot-input-slot-0',
-      // Credit card v2 fields
       'Name on card': 'card-details-multi-slot-input-slot-0',
       'Number on card': 'card-details-multi-slot-input-slot-1',
       'Date of expire': 'card-details-multi-slot-input-slot-2',
       'Security code': 'card-details-multi-slot-input-slot-3',
       'Pin code': 'card-details-multi-slot-input-slot-4',
       'Comment': 'comments-multi-slot-input-slot-0',
-      // Wi-Fi v2 fields
       'Wi-Fi Password': 'credentials-multi-slot-input-slot-0',
       'Add comment': 'comments-multi-slot-input-slot-0',
       'Other Field': 'custom-fields-multi-slot-input-slot-0',
@@ -51,7 +48,7 @@ class DetailsPage {
     if (v2TestId) {
       return this.root.getByTestId(v2TestId).locator('input').first()
     }
-    // v1 fallback
+
     return this.root
       .locator('input', {
         has: this.root.locator('[data-testid="details-header"]', {
@@ -96,17 +93,14 @@ class DetailsPage {
 
   getIdentityDetails(name) {
     const v2SlotMap = {
-      // Personal information
       fullname:               'personal-information-multi-slot-input-slot-0',
       email:                  'personal-information-multi-slot-input-slot-1',
       phone:                  'personal-information-multi-slot-input-slot-2',
-      // Address
       address:                'address-multi-slot-input-slot-0',
       zip:                    'address-multi-slot-input-slot-1',
       city:                   'address-multi-slot-input-slot-2',
       region:                 'address-multi-slot-input-slot-3',
       country:                'address-multi-slot-input-slot-4',
-      // Passport
       passportfullname:       'passport-multi-slot-input-slot-0',
       passportnumber:         'passport-multi-slot-input-slot-1',
       passportissuingcountry: 'passport-multi-slot-input-slot-2',
@@ -115,12 +109,10 @@ class DetailsPage {
       passportnationality:    'passport-multi-slot-input-slot-5',
       passportdob:            'passport-multi-slot-input-slot-6',
       passportgender:         'passport-multi-slot-input-slot-7',
-      // ID Card
       idcardnumber:           'identity-card-multi-slot-input-slot-0',
       idcarddateofissue:      'identity-card-multi-slot-input-slot-1',
       idcardexpirydate:       'identity-card-multi-slot-input-slot-2',
       idcardissuingcountry:   'identity-card-multi-slot-input-slot-3',
-      // Comment / note
       comment:                'comments-multi-slot-input-slot-0',
       note:                   'comments-multi-slot-input-slot-0',
     }
@@ -128,7 +120,6 @@ class DetailsPage {
     if (v2TestId) {
       return this.root.getByTestId(v2TestId).locator('input').first()
     }
-    // v1 fallback
     return this.root.getByTestId(`identitydetails-field-${name}`)
   }
 
@@ -250,10 +241,6 @@ class DetailsPage {
 
   // --- Folder management ---
 
-  // get createNewFolderButton() {
-  //   return this.root.locator('[data-testid="button-single-input"]')
-  // }
-
   getCreateNewFolderTitleInput() {
     return this.root.locator(
       'input[placeholder="Enter Name"]'
@@ -263,11 +250,6 @@ class DetailsPage {
   get createFolderButton() {
     return this.root.getByRole('button', { name: 'Create New Folder' });
   }
-
-  // async clickCreateNewFolder() {
-  //   await expect(this.createNewFolderButton).toBeVisible()
-  //   await this.createNewFolderButton.click()
-  // }
 
   async fillCreateNewFolderTitleInput(value) {
     await this.getCreateNewFolderTitleInput().fill(value)
@@ -280,7 +262,6 @@ class DetailsPage {
   }
 
   getItemDetailsFolderName(foldername) {
-    // v2: folder badge not shown in details panel; verify via sidebar folder item
     return this.root.getByTestId(`sidebar-folder-${foldername}`)
   }
 
@@ -294,18 +275,6 @@ class DetailsPage {
   get recordListContainer() {
     return this.root.getByTestId('recordList-record-container')
   }
-
-  // getFavoriteAvatar(initials) {
-  //   return this.recordListContainer
-  //     .getByTestId(`avatar-favorite-${initials}`)
-  //     .first()
-  // }
-
-  // getFavoriteAvatarLast(initials) {
-  //   return this.recordListContainer
-  //     .getByTestId(`avatar-favorite-${initials}`)
-  //     .last()
-  // }
 
   // --- Password visibility ---
 

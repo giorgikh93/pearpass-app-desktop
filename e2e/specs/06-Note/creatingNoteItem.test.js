@@ -73,32 +73,6 @@ test.describe('Creating Note Item', () => {
     await detailsPage.verifyNoteText('Test Note Text')
   })
 
-  // test('Dropdown moves to selected item edit screen', async ({ page }) => {
-    // qase.id(2250)
-  //   await mainPage.verifyElementTitle('Note Title')
-  //   await sideMenuPage.clickSidebarAddButton()
-  //   await detailsPage.fillCreateNewFolderTitleInput('Test Folder')
-  //   await detailsPage.clickCreateFolderButton()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.openDropdownMenu()
-  //   await createOrEditPage.selectFromDropdownMenu('Test Folder')
-  //   await createOrEditPage.clickOnCreateOrEditButton('save')
-  //   await detailsPage.getItemDetailsFolderName('Test Folder')
-  //   await mainPage.verifyElementFolderName('Test Folder')
-  // })
-
-  // test('Item moved to folder (and cleanup)', async ({ page }) => {
-    // qase.id(2251)
-  //   await sideMenuPage.verifySidebarFolderName('Test Folder')
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.openDropdownMenu()
-  //   await createOrEditPage.selectFromDropdownMenu('No Folder')
-  //   await createOrEditPage.clickOnCreateOrEditButton('save')
-
-  //   await sideMenuPage.deleteFolder('Test Folder')
-  // })
-
   test('Add via Favorite icon', async ({ page }) => {
     qase.id(2252)
     await sideMenuPage.selectSideBarCategory('all')
@@ -189,20 +163,6 @@ test.describe('Creating Note Item', () => {
 
     await createOrEditPage.clickElementItemCloseButton()
   })
-
-  // test('View uploaded file in View mode (and cleanup)', async ({ page }) => {
-  // qase.id(2260);
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.verifyUploadedFileIsVisible()
-  //   await detailsPage.clickOnUploadedFile()
-  //   await detailsPage.verifyUploadedImageIsVisible()
-  //   await detailsPage.clickElementItemCloseButton()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.clickOnCreateOrEditButton('deleteattachment') // button-single-input
-  //   await createOrEditPage.verifyUploadedImageIsNotVisible()
-  //   await createOrEditPage.clickElementItemCloseButton()
-  //   await mainPage.clickDetailsCloseButton()
-  // })
 
   test('Empty fields not displayed in view mode', async ({ page }) => {
     qase.id(2261)

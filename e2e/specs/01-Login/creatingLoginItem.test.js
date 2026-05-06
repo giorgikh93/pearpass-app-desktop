@@ -210,20 +210,6 @@ test.describe('Creating Login Item', () => {
     await createOrEditPage.clickElementItemCloseButton()
   })
 
-  // test('View uploaded file in View mode (and cleanup)', async ({ page }) => {
-  //   qase.id(1941)
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.verifyUploadedFileIsVisible()
-  //   await detailsPage.clickOnUploadedFile()
-  //   await detailsPage.verifyUploadedImageIsVisible()
-  //   await detailsPage.clickElementItemCloseButton()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.clickOnCreateOrEditButton('deleteattachment')
-  //   await createOrEditPage.verifyUploadedImageIsNotVisible()
-  //   await createOrEditPage.clickElementItemCloseButton()
-  //   await mainPage.clickDetailsCloseButton()
-  // })
-
   test('Empty fields not displayed in view mode', async ({ page }) => {
     qase.id(1942)
     await mainPage.verifyElementTitle('Login Title')

@@ -83,7 +83,6 @@ test.describe('Password', () => {
     await detailsPage.editElement()
     await createOrEditPage.openPasswordMenu()
 
-    // Verify default state: Random Characters selected, 8 chars, special chars ON, strength Strong
     await expect(root.getByRole('radio', { name: /Random Characters/i })).toBeChecked()
     await expect(root.getByText('8 chars')).toBeVisible()
     await expect(root.getByText('Special character')).toBeVisible()
@@ -91,17 +90,14 @@ test.describe('Password', () => {
     await expect(toggle).toHaveAttribute('aria-checked', 'true')
     await expect(root.getByText('Strong')).toBeVisible()
 
-    // Toggle special characters OFF → strength decreases
     await toggle.click()
     await expect(toggle).toHaveAttribute('aria-checked', 'false')
     await expect(root.getByText('Strong')).not.toBeVisible()
 
-    // Toggle special characters back ON → strength returns to Strong
     await toggle.click()
     await expect(toggle).toHaveAttribute('aria-checked', 'true')
     await expect(root.getByText('Strong')).toBeVisible()
 
-    // Close generator and discard edit
     await root.getByTestId('generatepassword-button-discard-v2').click()
     await createOrEditPage.clickOnCreateOrEditButton('discard')
     await mainPage.clickDetailsCloseButton()
