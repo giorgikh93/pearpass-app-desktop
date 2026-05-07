@@ -6,7 +6,8 @@ import path from 'path'
 import {
   MANIFEST_NAME,
   CHROMIUM_EXTENSION_ID,
-  FIREFOX_EXTENSION_ID
+  FIREFOX_EXTENSION_ID,
+  FIREFOX_NIGHTLY_EXTENSION_ID
 } from '@tetherto/pearpass-lib-constants'
 
 import { logger } from './logger'
@@ -599,7 +600,7 @@ export const setupNativeMessaging = async ({
       description: 'PearPass Native Messaging Host',
       path: manifestExecPath,
       type: 'stdio',
-      allowed_extensions: [FIREFOX_EXTENSION_ID]
+      allowed_extensions: [FIREFOX_EXTENSION_ID, FIREFOX_NIGHTLY_EXTENSION_ID]
     }
 
     const { browsers } = getNativeMessagingLocations()
