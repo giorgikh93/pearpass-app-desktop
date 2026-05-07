@@ -317,6 +317,7 @@ describe('nativeMessagingIPCServer', () => {
         expect(handlers.encryptionAdd).toBeUndefined()
         expect(handlers.vaultsList).toBeUndefined()
         expect(handlers.activeVaultList).toBeUndefined()
+        expect(handlers.removeVault).toBeUndefined()
       })
 
       it('should call nmGetAppIdentity handler correctly', async () => {
