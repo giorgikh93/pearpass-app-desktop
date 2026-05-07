@@ -23,6 +23,7 @@ const COMMAND_DEFINITIONS = [
   { id: 1008, name: 'vaultsList' },
   { id: 1009, name: 'vaultsAdd' },
   { id: 1010, name: 'vaultsClose' },
+  { id: 1044, name: 'removeVault' },
 
   // Active vault commands
   { id: 1011, name: 'activeVaultInit' },

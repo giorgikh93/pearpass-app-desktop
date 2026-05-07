@@ -64,6 +64,7 @@ const VAULT_METHODS = [
   'vaultsGet',
   'vaultsClose',
   'vaultsAdd',
+  'removeVault',
   'activeVaultGetFile',
   'activeVaultRemoveFile',
   'vaultsList',

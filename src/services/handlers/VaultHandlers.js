@@ -63,6 +63,11 @@ export class VaultHandlers {
     return { success: true }
   }
 
+  async removeVault(params) {
+    await this.client.removeVault(params.vaultId)
+    return { success: true }
+  }
+
   async vaultsClose() {
     await this.client.vaultsClose()
     return { success: true }

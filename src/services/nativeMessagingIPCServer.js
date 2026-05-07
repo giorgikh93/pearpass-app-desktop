@@ -226,6 +226,10 @@ export class NativeMessagingIPCServer {
       vaultHandlers.vaultsAdd.bind(vaultHandlers)
     )
     this.secureMethodRegistry.register(
+      'removeVault',
+      vaultHandlers.removeVault.bind(vaultHandlers)
+    )
+    this.secureMethodRegistry.register(
       'vaultsClose',
       vaultHandlers.vaultsClose.bind(vaultHandlers)
     )

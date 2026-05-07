@@ -12,15 +12,24 @@ import {
   Text,
   ToggleSwitch
 } from '@tetherto/pearpass-lib-ui-kit'
-import { useUserData, useVault } from '@tetherto/pearpass-lib-vault'
+import {
+  useUserData,
+  useVault,
+  type Vault
+} from '@tetherto/pearpass-lib-vault'
 import {
   clearBuffer,
   stringToBuffer
 } from '@tetherto/pearpass-lib-vault/src/utils/buffer'
 
 import { createStyles } from './DeleteVaultModalContentV2.styles'
+import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { useModal } from '../../../context/ModalContext'
+import { useRouter } from '../../../context/RouterContext'
+import { useToast } from '../../../context/ToastContext'
 import { useTranslation } from '../../../hooks/useTranslation'
+import { useVaultSwitch } from '../../../hooks/useVaultSwitch'
+import { logger } from '../../../utils/logger'
 import { PairedDevicesModalContent } from '../PairedDevicesModalContent'
 
 export type DeleteVaultModalContentV2Props = {
@@ -30,16 +39,20 @@ export type DeleteVaultModalContentV2Props = {
 }
 
 export const DeleteVaultModalContentV2 = ({
+  vaultId,
   vaultName,
   onClose
 }: DeleteVaultModalContentV2Props) => {
   const { t } = useTranslation()
   const styles = createStyles()
   const { closeModal, setModal } = useModal()
+  const { setToast } = useToast()
+  const { navigate } = useRouter()
+  const { switchVault } = useVaultSwitch()
 
   const handleClose = onClose ?? closeModal
 
-  const { data: vaultData } = useVault()
+  const { data: vaultData, deleteVaultLocal } = useVault()
   const devices = (vaultData as { devices?: unknown[] } | undefined)?.devices
   const deviceCount = Array.isArray(devices) ? devices.length : 0
 
@@ -73,20 +86,46 @@ export const DeleteVaultModalContentV2 = ({
 
     setSubmitError(null)
     const passwordBuffer = stringToBuffer(formValues.masterPassword)
+    setIsLoading(true)
 
     try {
-      setIsLoading(true)
-      await logIn({ password: passwordBuffer })
-      setIsLoading(false)
-      // TODO: master password validated. Run delete-vault flow:
-      // - eraseFromAllDevices=false → run deleteVaultLocal(vaultId)
-      // - eraseFromAllDevices=true  → write actions/queue/{writerKey}/... per
-      //   other device, then deleteVaultLocal(vaultId).
-    } catch {
-      setIsLoading(false)
-      setSubmitError(t('Invalid master password'))
+      try {
+        await logIn({ password: passwordBuffer })
+      } catch {
+        setSubmitError(t('Invalid master password'))
+        return
+      } finally {
+        clearBuffer(passwordBuffer)
+      }
+
+      // TODO: broadcast deleteVault action to other devices when toggle is on.
+
+      let remainingVaults: Vault[]
+      try {
+        remainingVaults = await deleteVaultLocal(vaultId)
+      } catch (error) {
+        logger.error(
+          'DeleteVaultModalContentV2',
+          'deleteVaultLocal failed:',
+          error
+        )
+        setSubmitError(t('Failed to delete vault'))
+        return
+      }
+
+      closeModal()
+      setToast({
+        message: t('"{vaultName}" was deleted from this device', { vaultName })
+      })
+
+      const nextVault = remainingVaults[0]
+      if (nextVault) {
+        await switchVault(nextVault)
+      } else {
+        navigate('welcome', { state: NAVIGATION_ROUTES.VAULTS })
+      }
     } finally {
-      clearBuffer(passwordBuffer)
+      setIsLoading(false)
     }
   }
 

@@ -131,6 +131,7 @@ jest.mock('./handlers/VaultHandlers', () => ({
     this.vaultsGet = jest.fn().mockResolvedValue({ data: {} })
     this.vaultsList = jest.fn().mockResolvedValue({ data: [] })
     this.vaultsAdd = jest.fn().mockResolvedValue({ success: true })
+    this.removeVault = jest.fn().mockResolvedValue({ success: true })
     this.vaultsClose = jest.fn().mockResolvedValue({ success: true })
     this.activeVaultInit = jest.fn().mockResolvedValue({ success: true })
     this.loadVaultMetadata = jest.fn().mockResolvedValue()
@@ -183,6 +184,7 @@ const mockPearpassClient = {
   vaultsGet: jest.fn(),
   vaultsList: jest.fn(),
   vaultsAdd: jest.fn(),
+  removeVault: jest.fn(),
   vaultsClose: jest.fn(),
   activeVaultInit: jest.fn(),
   activeVaultGetStatus: jest.fn(),
