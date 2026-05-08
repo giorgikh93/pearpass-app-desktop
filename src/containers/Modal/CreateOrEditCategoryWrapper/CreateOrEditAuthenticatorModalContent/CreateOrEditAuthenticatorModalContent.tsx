@@ -9,6 +9,7 @@ import {
   Form,
   InputField,
   MultiSlotInput,
+  PasswordField,
   Text,
   useTheme
 } from '@tetherto/pearpass-lib-ui-kit'
@@ -46,14 +47,13 @@ export type CreateOrEditAuthenticatorModalContentProps = {
   }
   selectedFolder?: string
   isFavorite?: boolean
-  onTypeChange: (type: string) => void
+  onTypeChange?: (type: string) => void
 }
 
 export const CreateOrEditAuthenticatorModalContent = ({
   initialRecord,
   selectedFolder,
   isFavorite,
-  onTypeChange: _onTypeChange
 }: CreateOrEditAuthenticatorModalContentProps) => {
   const { t } = useTranslation()
   const { closeModal, setModal } = useModal()
@@ -85,6 +85,7 @@ export const CreateOrEditAuthenticatorModalContent = ({
 
   const schema = Validator.object({
     title: Validator.string().required(t('Title is required')),
+    otpSecret: Validator.string(),
     note: Validator.string(),
     attachments: Validator.array().items(
       Validator.object({
@@ -97,6 +98,7 @@ export const CreateOrEditAuthenticatorModalContent = ({
   const { register, handleSubmit, values, setValue } = useForm({
     initialValues: {
       title: initialRecord?.data?.title ?? '',
+      otpSecret: initialRecord?.data?.otpInput ?? (initialRecord?.data?.otp as { secret?: string } | undefined)?.secret ?? '',
       note: initialRecord?.data?.note ?? '',
       attachments: initialRecord?.attachments ?? []
     },
@@ -111,15 +113,18 @@ export const CreateOrEditAuthenticatorModalContent = ({
   })
 
   const onSubmit = (formValues: Record<string, unknown>) => {
+    const otpInput = (formValues.otpSecret as string)?.trim() || undefined
+
     const data = {
-      type: RECORD_TYPES.LOGIN,
+      type: RECORD_TYPES.OTP,
       folder: selectedFolder ?? initialRecord?.folder,
       isFavorite: initialRecord?.isFavorite ?? isFavorite,
       data: {
         ...(initialRecord?.data ? initialRecord.data : {}),
         title: formValues.title,
         note: formValues.note,
-        attachments: formValues.attachments
+        attachments: formValues.attachments,
+        otpInput
       }
     }
 
@@ -148,6 +153,7 @@ export const CreateOrEditAuthenticatorModalContent = ({
   const isEdit = !!initialRecord
 
   const titleField = register('title')
+  const otpSecretField = register('otpSecret')
   const noteField = register('note')
 
   return (
@@ -198,6 +204,17 @@ export const CreateOrEditAuthenticatorModalContent = ({
           error={titleField.error || undefined}
           testID='createoredit-authenticator-input-title'
         />
+
+        <MultiSlotInput testID='createoredit-authenticator-otp-slot'>
+          <PasswordField
+            label={t('Authenticator Secret Key')}
+            placeholder={t('Enter Secret Key (TOTP)')}
+            value={otpSecretField.value}
+            onChange={(e) => otpSecretField.onChange(e.target.value)}
+            error={otpSecretField.error || undefined}
+            testID='createoredit-authenticator-input-otpsecret'
+          />
+        </MultiSlotInput>
 
         <div style={styles.sectionLabel}>
           <Text variant='caption' color={theme.colors.colorTextSecondary}>
