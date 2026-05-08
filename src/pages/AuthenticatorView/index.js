@@ -65,7 +65,7 @@ export const AuthenticatorView = () => {
     // Stay in authenticator view, just open the sidebar
     navigate('vault', {
       recordId: record.id,
-      recordType: 'authenticator'
+      recordType: RECORD_TYPES.OTP
     })
   }
 

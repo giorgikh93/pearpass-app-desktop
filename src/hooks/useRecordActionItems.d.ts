@@ -10,6 +10,7 @@ export function useRecordActionItems(params?: {
     string,
     unknown
   >
+  recordType?: string
   onSelect?: () => void
   onClose?: () => void
 }): {

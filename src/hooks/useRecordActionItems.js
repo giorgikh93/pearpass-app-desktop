@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { useLingui } from '@lingui/react'
-import { useRecords } from '@tetherto/pearpass-lib-vault'
+import { RECORD_TYPES, useRecords } from '@tetherto/pearpass-lib-vault'
 import { html } from 'htm/react'
 
 import { useCreateOrEditRecord } from './useCreateOrEditRecord'
@@ -32,6 +32,7 @@ import { isV2 } from '../utils/designVersion'
 export const useRecordActionItems = ({
   excludeTypes = [],
   record,
+  recordType,
   onSelect,
   onClose
 } = {}) => {
@@ -39,8 +40,24 @@ export const useRecordActionItems = ({
   const { setModal, closeModal } = useModal()
   const { data: routerData, navigate, currentPage } = useRouter()
 
-  const { deleteRecords, updateFavoriteState } = useRecords()
+  const { deleteRecords, updateRecords, updateFavoriteState } = useRecords()
   const { handleCreateOrEditRecord } = useCreateOrEditRecord()
+
+  const isOtpContext =
+    recordType === RECORD_TYPES.OTP ||
+    routerData?.recordType === RECORD_TYPES.OTP
+  const isAuthenticatorLoginRecord =
+    isOtpContext && record?.type === RECORD_TYPES.LOGIN
+  const handleStripOtp = () => {
+    const { otpInput, otp, ...restData } = record?.data ?? {}
+    const { otpPublic, ...recordWithoutOtp } = record ?? {}
+    const updatedRecord = { ...recordWithoutOtp, data: restData }
+    updateRecords([updatedRecord])
+    if (routerData?.recordId === record?.id) {
+      navigate(currentPage, { ...routerData, recordId: undefined })
+    }
+    closeModal?.()
+  }
 
   const handleDeleteConfirm = () => {
     if (routerData?.recordId === record?.id) {
@@ -54,7 +71,12 @@ export const useRecordActionItems = ({
 
   const handleDelete = () => {
     if (isV2()) {
-      setModal(<DeleteRecordsModalContentV2 records={[record]} />)
+      setModal(
+        <DeleteRecordsModalContentV2
+          records={[record]}
+          onConfirm={isAuthenticatorLoginRecord ? handleStripOtp : undefined}
+        />
+      )
     } else {
       setModal(
         <ConfirmationModalContent

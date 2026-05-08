@@ -6,6 +6,7 @@ import { useRouter } from '../context/RouterContext'
 import { isV2 } from '../utils/designVersion'
 
 const mockDeleteRecord = jest.fn()
+const mockUpdateRecords = jest.fn()
 const mockUpdateFavoriteState = jest.fn()
 
 jest.mock(
@@ -41,8 +42,10 @@ jest.mock('../context/RouterContext', () => ({
 }))
 
 jest.mock('@tetherto/pearpass-lib-vault', () => ({
+  RECORD_TYPES: { LOGIN: 'login', OTP: 'otp' },
   useRecords: () => ({
     deleteRecords: mockDeleteRecord,
+    updateRecords: mockUpdateRecords,
     updateFavoriteState: mockUpdateFavoriteState
   })
 }))
@@ -72,6 +75,7 @@ describe('useRecordActionItems', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    isV2.mockReturnValue(true)
 
     useModal.mockReturnValue({
       setModal: mockSetModal,
@@ -214,6 +218,65 @@ describe('useRecordActionItems', () => {
       recordId: undefined
     })
     expect(mockDeleteRecord).toHaveBeenCalledWith(['123'])
+    expect(mockCloseModal).toHaveBeenCalled()
+  })
+
+  test('strips OTP fields from login record when deleting in authenticator context', () => {
+    const otpLoginRecord = {
+      id: '123',
+      type: 'login',
+      isFavorite: false,
+      otpPublic: { currentCode: '169462', timeRemaining: 18 },
+      data: {
+        title: 'Test Account',
+        username: 'user@test.com',
+        otpInput: 'JBSWY3DPEHPK3PXP',
+        otp: {
+          secret: 'JBSWY3DPEHPK3PXP',
+          type: 'TOTP',
+          algorithm: 'SHA1',
+          digits: 6,
+          period: 30
+        }
+      }
+    }
+
+    useRouter.mockReturnValue({
+      data: { recordId: '123', recordType: 'otp' },
+      navigate: mockNavigate,
+      currentPage: 'vault'
+    })
+
+    const { result } = renderHook(() =>
+      useRecordActionItems({
+        record: otpLoginRecord,
+        onSelect: mockOnSelect,
+        onClose: mockOnClose
+      })
+    )
+
+    const deleteAction = result.current.actions.find(
+      (action) => action.type === 'delete'
+    )
+    deleteAction.click()
+
+    const onConfirm = mockSetModal.mock.calls[0][0].props.onConfirm
+    expect(onConfirm).toBeDefined()
+    onConfirm()
+
+    expect(mockUpdateRecords).toHaveBeenCalledTimes(1)
+    const updatedRecord = mockUpdateRecords.mock.calls[0][0][0]
+    expect(updatedRecord.data.otpInput).toBeUndefined()
+    expect(updatedRecord.data.otp).toBeUndefined()
+    expect(updatedRecord.otpPublic).toBeUndefined()
+    expect(updatedRecord.data.title).toBe('Test Account')
+    expect(updatedRecord.data.username).toBe('user@test.com')
+
+    expect(mockDeleteRecord).not.toHaveBeenCalled()
+    expect(mockNavigate).toHaveBeenCalledWith('vault', {
+      recordType: 'otp',
+      recordId: undefined
+    })
     expect(mockCloseModal).toHaveBeenCalled()
   })
 })

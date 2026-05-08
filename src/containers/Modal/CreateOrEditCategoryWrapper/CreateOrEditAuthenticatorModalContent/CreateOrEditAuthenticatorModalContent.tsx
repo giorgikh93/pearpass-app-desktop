@@ -116,7 +116,7 @@ export const CreateOrEditAuthenticatorModalContent = ({
     const otpInput = (formValues.otpSecret as string)?.trim() || undefined
 
     const data = {
-      type: RECORD_TYPES.OTP,
+      type: RECORD_TYPES.LOGIN,
       folder: selectedFolder ?? initialRecord?.folder,
       isFavorite: initialRecord?.isFavorite ?? isFavorite,
       data: {
