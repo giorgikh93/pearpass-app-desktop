@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import path from 'path'
 
 jest.mock('fs', () => ({
