@@ -6,6 +6,7 @@ import '@testing-library/jest-dom'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 
 import { BlindPeersContent } from './index'
+import { UnsavedChangesProvider } from '../../../../context/UnsavedChangesContext'
 
 jest.mock('../../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
@@ -188,7 +189,12 @@ jest.mock('@tetherto/pearpass-lib-ui-kit/icons', () => ({
 }))
 
 describe('BlindPeersContent', () => {
-  const renderView = () => render(<BlindPeersContent />)
+  const renderView = () =>
+    render(
+      <UnsavedChangesProvider>
+        <BlindPeersContent />
+      </UnsavedChangesProvider>
+    )
 
   beforeEach(() => {
     jest.clearAllMocks()

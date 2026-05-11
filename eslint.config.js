@@ -1,7 +1,14 @@
 import { eslintConfig } from '@tetherto/tether-dev-docs'
+import globals from 'globals'
 
 export default [
   ...eslintConfig,
+  {
+    files: ['**/*.test.{js,jsx,mjs,cjs,ts,tsx}'],
+    languageOptions: {
+      globals: globals.jest
+    }
+  },
   {
     files: ['**/*.{js,jsx,mjs,cjs}'],
     rules: {

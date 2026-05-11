@@ -97,25 +97,29 @@ jest.mock('@tetherto/pearpass-lib-ui-kit', () => {
   }
 })
 
-jest.mock('@tetherto/pearpass-lib-ui-kit/components/Pressable', () => {
-  const React = require('react')
-  return {
-    Pressable: ({
-      children,
-      onClick,
-      'data-testid': dataTestId
-    }: {
-      children: React.ReactNode
-      onClick?: () => void
-      'data-testid'?: string
-    }) =>
-      React.createElement(
-        'button',
-        { type: 'button', 'data-testid': dataTestId, onClick },
-        children
-      )
-  }
-})
+jest.mock(
+  '@tetherto/pearpass-lib-ui-kit/components/Pressable',
+  () => {
+    const React = require('react')
+    return {
+      Pressable: ({
+        children,
+        onClick,
+        'data-testid': dataTestId
+      }: {
+        children: React.ReactNode
+        onClick?: () => void
+        'data-testid'?: string
+      }) =>
+        React.createElement(
+          'button',
+          { type: 'button', 'data-testid': dataTestId, onClick },
+          children
+        )
+    }
+  },
+  { virtual: true }
+)
 
 const iconStub = () => null
 
