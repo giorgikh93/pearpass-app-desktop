@@ -84,6 +84,21 @@ export const useRecordActionItems = ({
         <DeleteRecordsModalContentV2
           records={[record]}
           onConfirm={isAuthenticatorLoginRecord ? handleStripOtp : undefined}
+          dialogTitle={
+            isAuthenticatorLoginRecord
+              ? i18n._('Remove Authenticator Code')
+              : undefined
+          }
+          confirmText={
+            isAuthenticatorLoginRecord
+              ? i18n._(
+                  'Are you sure you want to remove the authenticator code from this login record?'
+                )
+              : undefined
+          }
+          submitLabel={
+            isAuthenticatorLoginRecord ? i18n._('Remove') : undefined
+          }
         />
       )
     } else {

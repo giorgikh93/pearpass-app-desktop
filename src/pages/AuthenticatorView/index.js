@@ -141,6 +141,7 @@ export const AuthenticatorView = () => {
                             testId="authenticator-record-item"
                             dataId=${`${record.type}-list-item`}
                             record=${record}
+                            recordType=${RECORD_TYPES.OTP}
                             otpCode=${record.otpPublic?.currentCode ?? null}
                             onClick=${() => handleRecordClick(record)}
                             onSelect=${() => {}}

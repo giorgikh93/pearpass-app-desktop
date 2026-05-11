@@ -17,12 +17,18 @@ type DeleteRecordsModalContentV2Props = {
   records: VaultRecord[]
   onCompleted?: () => void
   onConfirm?: () => Promise<void> | void
+  dialogTitle?: string
+  confirmText?: string
+  submitLabel?: string
 }
 
 export const DeleteRecordsModalContentV2 = ({
   records,
   onCompleted,
-  onConfirm
+  onConfirm,
+  dialogTitle: dialogTitleOverride,
+  confirmText: confirmTextOverride,
+  submitLabel: submitLabelOverride
 }: DeleteRecordsModalContentV2Props) => {
   const { t } = useTranslation()
   const { theme } = useTheme()
@@ -41,17 +47,17 @@ export const DeleteRecordsModalContentV2 = ({
   const count = records.length
   const isSingle = count === 1
 
-  const dialogTitle = isSingle
+  const dialogTitle = dialogTitleOverride ?? (isSingle
     ? t('Delete 1 Item')
-    : t('Delete {count} Items', { count })
+    : t('Delete {count} Items', { count }))
 
-  const confirmText = isSingle
+  const confirmText = confirmTextOverride ?? (isSingle
     ? t('Are you sure to delete the selected item?')
-    : t('Are you sure to delete the selected items?')
+    : t('Are you sure to delete the selected items?'))
 
   const selectedLabel = isSingle ? t('Selected Item') : t('Selected Items')
 
-  const submitLabel = isSingle ? t('Delete Item') : t('Delete Items')
+  const submitLabel = submitLabelOverride ?? (isSingle ? t('Delete Item') : t('Delete Items'))
 
   const handleDelete = async () => {
     if (!count || isLoading) return
