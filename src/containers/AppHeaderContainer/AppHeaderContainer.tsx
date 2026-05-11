@@ -49,13 +49,6 @@ export const AppHeaderContainer = () => {
     return null
   }
 
-  if (
-    AUTHENTICATOR_ENABLED &&
-    routerData?.recordType === 'authenticator'
-  ) {
-    return null
-  }
-
   const isFavoritesView = isFavorite(routerData?.folder ?? '')
   const selectedFolder =
     routerData?.folder && !isFavoritesView ? routerData.folder : undefined
