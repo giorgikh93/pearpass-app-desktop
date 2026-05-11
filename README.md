@@ -14,6 +14,7 @@
 - [Features](#features)
 - [Installation](#installation)
 - [Usage Examples](#usage-examples)
+- [Logging](#logging)
 - [Testing](#testing)
 - [Staging to Dev](#staging-to-dev)
 - [Workspace Dependencies](#workspace-dependencies)
@@ -83,6 +84,20 @@ Visit the official PearPass documentation for step-by-step guides on setup, vaul
 **[docs.pass.pears.com](https://docs.pass.pears.com)**
 
 > ⚠️ Intel Mac Support: Intel-based Mac builds are deprecated and provided without official support or active testing. We're keeping them available for now, but use them at your own risk. If you run into issues, feel free to open a ticket. While we can't guarantee a fix, we'd like to know if these builds are still being used!
+
+---
+
+## Logging
+
+Off by default. When enabled, logs are written under `<userData>/logs/` — `main.log` from the host process and `core.log` from the vault worker. The worker's sink redacts known sensitive fields (passwords, keys, tokens, etc.) before writing to `core.log`. The host process logger does not redact, so treat anything passed to `logger.*` in `main.cjs` as on-disk-visible in `main.log`.
+
+Three ways to enable:
+
+- **In-app toggle** (Settings → Diagnostics → **Enable logs**). Persists across launches; toggling on/off resets existing log files for a clean session.
+- **Launch flag:** pass `--enable-logging` at startup. Forces logging on regardless of the toggle.
+- **Nightly builds** (`PearPass-nightly`): logging is on automatically and the in-app toggle is locked.
+
+When logging is on, **Open logs folder** in the same screen reveals the directory.
 
 ---
 
