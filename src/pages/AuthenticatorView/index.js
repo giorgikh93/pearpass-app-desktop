@@ -25,6 +25,7 @@ import {
   formatOtpCode,
   groupOtpRecords,
   isExpiring,
+  RECORD_TYPES,
   useFolders,
   useRecords
 } from '@tetherto/pearpass-lib-vault'
@@ -148,7 +149,7 @@ export const AuthenticatorView = () => {
       const isAlreadyOpen = routeData?.recordId === record.id
       navigate('vault', {
         recordId: isAlreadyOpen ? '' : record.id,
-        recordType: 'authenticator'
+        recordType: RECORD_TYPES.OTP
       })
     },
     [isMultiSelectOn, navigate, routeData?.recordId]

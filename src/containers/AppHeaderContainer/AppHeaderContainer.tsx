@@ -65,7 +65,7 @@ export const AppHeaderContainer = () => {
     { type: 'password',                 label: t('Password'),          icon: <Key color={iconColor} /> },
     { type: RECORD_TYPES.CUSTOM,        label: t('Other'),             icon: <GridView color={iconColor} /> },
     ...(AUTHENTICATOR_ENABLED
-      ? [{ type: 'authenticator', label: t('Authenticator Code'), icon: <QrCode color={iconColor} /> }]
+      ? [{ type: RECORD_TYPES.OTP, label: t('Authenticator Code'), icon: <QrCode color={iconColor} /> }]
       : [])
   ]
 

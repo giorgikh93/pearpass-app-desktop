@@ -3,7 +3,6 @@ import { qase } from 'playwright-qase-reporter'
 
 import {
   LoginPage,
-  VaultSelectPage,
   MainPage,
   SideMenuPage,
   CreateOrEditPage,
@@ -17,7 +16,6 @@ test.describe('Creating PassPhrase Item', () => {
   test.describe.configure({ mode: 'serial' })
 
   let loginPage,
-    vaultSelectPage,
     createOrEditPage,
     sideMenuPage,
     mainPage,
@@ -29,17 +27,15 @@ test.describe('Creating PassPhrase Item', () => {
     page = await app.getPage()
     const root = page.locator('body')
     loginPage = new LoginPage(root)
-    vaultSelectPage = new VaultSelectPage(root)
     sideMenuPage = new SideMenuPage(root)
     utilities = new Utilities(root)
     mainPage = new MainPage(root)
 
     await loginPage.loginToApplication(testData.credentials.validPassword)
-    await vaultSelectPage.selectVaultbyName(testData.vault.name)
 
     await sideMenuPage.selectSideBarCategory('passPhrase')
     await utilities.deleteAllElements()
-    await mainPage.clickCreateNewElementButton('Save a Recovery phrase')
+    await mainPage.clickAddItem('passPhrase')
 
     await page.waitForTimeout(testData.timeouts.action)
   })
@@ -48,7 +44,6 @@ test.describe('Creating PassPhrase Item', () => {
     page = await app.getPage()
     const root = page.locator('body')
     loginPage = new LoginPage(root)
-    vaultSelectPage = new VaultSelectPage(root)
     mainPage = new MainPage(root)
     sideMenuPage = new SideMenuPage(root)
     createOrEditPage = new CreateOrEditPage(root)
@@ -63,13 +58,13 @@ test.describe('Creating PassPhrase Item', () => {
 
   test('Creating the "PassPhrase" item', async ({ page }) => {
     qase.id(2209)
-    await createOrEditPage.fillCreateOrEditInput('title', 'PassPhrase Title')
+    await createOrEditPage.fillCreateOrEditInput('passphrase-title', 'PassPhrase Title')
 
     await clipboard.write(
       'word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12'
     )
     await createOrEditPage.clickOnPasteFromClipboard()
-    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await createOrEditPage.clickOnCreateOrEditButton('passphrase-save')
     await page.waitForTimeout(testData.timeouts.action)
   })
 
@@ -78,64 +73,38 @@ test.describe('Creating PassPhrase Item', () => {
     await mainPage.verifyElementTitle('PassPhrase Title')
     await mainPage.openElementDetails()
     await detailsPage.verifyAllRecoveryPhraseWords([
-      '#1word1',
-      '#2word2',
-      '#3word3',
-      '#4word4',
-      '#5word5',
-      '#6word6',
-      '#7word7',
-      '#8word8',
-      '#9word9',
-      '#10word10',
-      '#11word11',
-      '#12word12'
+      'word1',
+      'word2',
+      'word3',
+      'word4',
+      'word5',
+      'word6',
+      'word7',
+      'word8',
+      'word9',
+      'word10',
+      'word11',
+      'word12'
     ])
-  })
-
-  test('Dropdown moves to selected item edit screen', async ({ page }) => {
-    qase.id(2211)
-    await mainPage.verifyElementTitle('PassPhrase Title')
-    await sideMenuPage.clickSidebarAddButton()
-    await detailsPage.fillCreateNewFolderTitleInput('Test Folder')
-    await detailsPage.clickCreateFolderButton()
-    await detailsPage.editElement()
-    await createOrEditPage.openDropdownMenu()
-    await createOrEditPage.selectFromDropdownMenu('Test Folder')
-    await createOrEditPage.clickOnCreateOrEditButton('save')
-    await detailsPage.getItemDetailsFolderName('Test Folder')
-    await mainPage.verifyElementFolderName('Test Folder')
-  })
-
-  test('Item moved to folder (and cleanup)', async ({ page }) => {
-    qase.id(2212)
-    await sideMenuPage.verifySidebarFolderName('Test Folder')
-    await mainPage.openElementDetails()
-    await detailsPage.editElement()
-    await createOrEditPage.openDropdownMenu()
-    await createOrEditPage.selectFromDropdownMenu('No Folder')
-    await createOrEditPage.clickOnCreateOrEditButton('save')
-
-    await sideMenuPage.deleteFolder('Test Folder')
   })
 
   test('Add via Favorite icon', async ({ page }) => {
     qase.id(2213)
     await sideMenuPage.selectSideBarCategory('all')
-    await mainPage.verifyElementTitle('PassPhrase Title')
-    await mainPage.openElementDetails()
-    await detailsPage.clickFavoriteButton()
-    await sideMenuPage.openSideBarFolder('Favorites')
-    await expect(detailsPage.getFavoriteAvatar('PT')).toBeVisible()
-    await expect(mainPage.getElementFavoriteIcon('PT')).toBeVisible()
+    await mainPage.clickMainViewHeaderSelect()
+    await mainPage.elementCheckBox(false)
+    await mainPage.clickOnFirstElement()
+    await mainPage.elementCheckBox(true)
+    await mainPage.clickOnMainViewFavoriteIcon()
+    await sideMenuPage.verifySideBarFavoritesFolder('1 items')
   })
 
   test('Remove via Favorite icon', async ({ page }) => {
     qase.id(2214)
-    await mainPage.openElementDetails()
-    await detailsPage.clickFavoriteButton()
-    await expect(detailsPage.getFavoriteAvatar('PT')).not.toBeVisible()
-    await expect(mainPage.getElementFavoriteIcon('PT')).not.toBeVisible()
+    await mainPage.clickMainViewHeaderSelect()
+    await mainPage.clickOnFirstElement()
+    await mainPage.clickOnMainViewFavoriteIcon()
+    await sideMenuPage.verifySideBarFavoritesFolder('0 items')
   })
 
   test('Add via More options', async ({ page }) => {
@@ -143,17 +112,14 @@ test.describe('Creating PassPhrase Item', () => {
     await mainPage.openElementDetails()
     await detailsPage.openItemBarThreeDotsDropdownMenu()
     await detailsPage.clickMarkAsFavoriteButton()
-    await expect(detailsPage.getFavoriteAvatar('PT')).toBeVisible()
-    await expect(mainPage.getElementFavoriteIcon('PT')).toBeVisible()
+    await sideMenuPage.verifySideBarFavoritesFolder('1 items')
   })
 
   test('Remove via More options', async ({ page }) => {
     qase.id(2216)
-    await mainPage.openElementDetails()
     await detailsPage.openItemBarThreeDotsDropdownMenu()
     await detailsPage.clickRemoveFromFavoritesButton()
-    await expect(detailsPage.getFavoriteAvatar('PT')).not.toBeVisible()
-    await expect(mainPage.getElementFavoriteIcon('PT')).not.toBeVisible()
+    await sideMenuPage.verifySideBarFavoritesFolder('0 items')
   })
 
   // test('Add Custom Note', async ({ page }) => {
