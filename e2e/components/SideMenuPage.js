@@ -5,47 +5,32 @@ class SideMenuPage {
     this.root = root
   }
 
-  // ==== LOCATORS ====
+  // --- Exit / lock ---
 
   get sidebarExitButton() {
-    return this.root.getByTestId('sidebar-exit-button')
+    return this.root.getByTestId('sidebar-lock-app')
   }
 
-  getSideMenuFolder(folderName) {
-    return this.root
-      .getByTestId('sidebar-folder')
-      .getByText(folderName, { exact: true })
+  async clickSidebarExitButton() {
+    await expect(this.sidebarExitButton).toBeVisible()
+    await this.sidebarExitButton.click()
   }
 
-  async verifySideMenuFolderName(folderName) {
-    await expect(this.getSideMenuFolder(folderName)).toBeVisible()
-  }
-
-  getSidebarCategory(categoryname) {
-    return this.root.getByTestId(`sidebar-category-${categoryname}`)
-  }
-
-  get sidebarAddButton() {
-    return this.root.getByTestId('sidebarfolder-button-add')
-  }
-
-  get confirmButton() {
-    return this.root.getByTestId('button-primary')
-  }
-
-  get favoritesFolder() {
-    return this.root.getByTestId('sidebar-folder-favorites')
-  }
+  // --- Settings ---
 
   get sidebarSettingsButton() {
     return this.root.getByTestId('sidebar-settings-button')
   }
 
-  // ==== ACTIONS ====
-
   async clickSidebarSettingsButton() {
     await expect(this.sidebarSettingsButton).toBeVisible()
     await this.sidebarSettingsButton.click()
+  }
+
+  // --- Categories ---
+
+  getSidebarCategory(categoryname) {
+    return this.root.getByTestId(`sidebar-category-${categoryname}`)
   }
 
   async selectSideBarCategory(name) {
@@ -55,23 +40,34 @@ class SideMenuPage {
     await category.click()
   }
 
-  async deleteFolder(foldername) {
-    const folder = this.getSideMenuFolder(foldername)
-    await expect(folder).toBeVisible()
+  // --- Favorites folder ---
 
-    await folder
-      .getByText(foldername)
-      .locator('..')
-      .locator('div')
-      .first()
-      .click()
+  get favoritesFolder() {
+    return this.root.getByTestId('sidebar-folder-favorites').locator('span').last()
+  }
 
-    const deleteButton = folder
-      .locator('..')
-      .getByText('Delete', { exact: true })
-    await deleteButton.click()
-    await expect(this.confirmButton).toBeVisible()
-    await this.confirmButton.click()
+  async verifySideBarFavoritesFolder(items) {
+    await expect(this.favoritesFolder).toBeVisible()
+    await expect(this.favoritesFolder).toHaveAttribute('aria-label', items)
+  }
+
+  // --- Folders ---
+
+  getSideMenuFolder(folderName) {
+    return this.root.getByRole('button', { name: folderName })
+      .and(this.root.locator('[data-testid^="sidebar-"]'))
+  }
+
+  get sidebarAddButton() {
+    return this.root.getByTestId('sidebar-folder-add')
+  }
+
+  get confirmButton() {
+    return this.root.getByTestId('button-primary')
+  }
+
+  get deleteFolderButton() {
+    return this.root.getByTestId('deletefolder-submit-v2')
   }
 
   async clickSidebarAddButton() {
@@ -79,9 +75,15 @@ class SideMenuPage {
     await this.sidebarAddButton.click()
   }
 
-  async clickSidebarExitButton() {
-    await expect(this.sidebarExitButton).toBeVisible()
-    await this.sidebarExitButton.click()
+  async createFolder(name) {
+    await this.clickSidebarAddButton()
+    const nameInput = this.root.getByTestId('createfolder-name-v2').locator('input')
+    await expect(nameInput).toBeVisible()
+    await nameInput.fill(name)
+    const saveBtn = this.root.getByTestId('createfolder-save-v2')
+    await expect(saveBtn).toBeVisible()
+    await saveBtn.click()
+    await expect(saveBtn).toBeHidden()
   }
 
   async openSideBarFolder(foldername) {
@@ -89,28 +91,33 @@ class SideMenuPage {
     await this.getSideMenuFolder(foldername).click()
   }
 
-  getFavoriteFileName() {
-    return this.root.locator(
-      'input[data-testid="sidebar-folder-favorites"][placeholder="Insert folder name"]'
-    )
+  async deleteMultipleItemsFolder(foldername) {
+    const folder = this.getSideMenuFolder(foldername)
+    await expect(folder).toBeVisible()
+    await folder.click({ button: 'right' })
+    const deleteButton = this.root.getByText('Delete Folder', { exact: true })
+    await expect(deleteButton).toBeVisible()
+    await deleteButton.click()
   }
 
-  // ==== VERIFICATIONS ====
+  async deleteFolder(foldername) {
+    const folder = this.getSideMenuFolder(foldername)
+    await expect(folder).toBeVisible()
+    await folder.click({ button: 'right' })
+    const deleteButton = this.root.getByText('Delete Folder', { exact: true })
+    await expect(deleteButton).toBeVisible()
+    await deleteButton.click()
+    await expect(deleteButton).toBeHidden()
+  }
+
+  async clickDeleteFolderButton() {
+    await expect(this.deleteFolderButton).toBeVisible()
+    await this.deleteFolderButton.click()
+  }
 
   async verifySidebarFolderName(foldername) {
     const folder = this.getSideMenuFolder(foldername)
     await expect(folder).toBeVisible()
-  }
-
-  async verifyFavoriteFolderIsNotVisible(foldername) {
-    const folder = this.getSideMenuFolder(foldername)
-    await expect(folder).not.toBeVisible()
-  }
-
-  async verifyFavoriteFileIsVisible(foldername, filename) {
-    const folder = this.getSideMenuFolder(foldername)
-    await expect(folder).toBeVisible()
-    await expect(folder).toContainText(filename)
   }
 }
 

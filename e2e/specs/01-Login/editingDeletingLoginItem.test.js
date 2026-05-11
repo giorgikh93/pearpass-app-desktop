@@ -2,7 +2,6 @@ import { qase } from 'playwright-qase-reporter'
 
 import {
   LoginPage,
-  VaultSelectPage,
   MainPage,
   SideMenuPage,
   CreateOrEditPage,
@@ -16,7 +15,6 @@ test.describe('Editing/Deleting Login Item', () => {
   test.describe.configure({ mode: 'serial' })
 
   let loginPage,
-    vaultSelectPage,
     createOrEditPage,
     sideMenuPage,
     mainPage,
@@ -29,7 +27,6 @@ test.describe('Editing/Deleting Login Item', () => {
     const root = page.locator('body')
 
     loginPage = new LoginPage(root)
-    vaultSelectPage = new VaultSelectPage(root)
     mainPage = new MainPage(root)
     sideMenuPage = new SideMenuPage(root)
     createOrEditPage = new CreateOrEditPage(root)
@@ -37,21 +34,18 @@ test.describe('Editing/Deleting Login Item', () => {
     detailsPage = new DetailsPage(root)
 
     await loginPage.loginToApplication(testData.credentials.validPassword)
-    await vaultSelectPage.selectVaultbyName(testData.vault.name)
 
     await sideMenuPage.selectSideBarCategory('login')
     await utilities.deleteAllElements()
-    await mainPage.clickCreateNewElementButton('Create a login')
+    await mainPage.clickAddItem('login')
 
     await createOrEditPage.fillCreateOrEditInput('title', 'Login Title')
     await createOrEditPage.fillCreateOrEditInput('username', 'Test User')
     await createOrEditPage.fillCreateOrEditInput('password', 'Test Pass')
-    await createOrEditPage.fillCreateOrEditInput(
-      'website',
-      'https://www.website.co'
-    )
-    await createOrEditPage.fillCreateOrEditInput('note', 'Test Note')
+    await createOrEditPage.fillCreateOrEditInput('website', 'https://www.website.co')
+    await createOrEditPage.fillCreateOrEditInput('comment', 'Test Note')
     await createOrEditPage.clickOnCreateOrEditButton('save')
+    await page.waitForTimeout(testData.timeouts.action)
 
     await page.waitForTimeout(testData.timeouts.action)
   })
@@ -60,7 +54,6 @@ test.describe('Editing/Deleting Login Item', () => {
     page = await app.getPage()
     const root = page.locator('body')
     loginPage = new LoginPage(root)
-    vaultSelectPage = new VaultSelectPage(root)
     mainPage = new MainPage(root)
     sideMenuPage = new SideMenuPage(root)
     createOrEditPage = new CreateOrEditPage(root)
@@ -80,51 +73,44 @@ test.describe('Editing/Deleting Login Item', () => {
     await createOrEditPage.fillCreateOrEditInput('title', 'Login Title EDITED')
     await createOrEditPage.fillCreateOrEditInput('username', 'Test User EDITED')
     await createOrEditPage.fillCreateOrEditInput('password', 'Test Pass EDITED')
-    await createOrEditPage.fillCreateOrEditInput(
-      'website',
-      'https://www.website1.co'
-    )
-    await createOrEditPage.fillCreateOrEditInput('note', 'Test Note EDITED')
+    await createOrEditPage.fillCreateOrEditInput('website', 'https://www.website1.co')
+    await createOrEditPage.fillCreateOrEditInput('comment', 'Test Note EDITED')
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await page.waitForTimeout(testData.timeouts.action)
+
+    await mainPage.verifyElementTitle('Login Title EDITED')
     await mainPage.openElementDetails()
-    await detailsPage.verifyItemDetailsValue(
-      'Email or username',
-      'Test User EDITED'
-    )
+    await detailsPage.verifyItemDetailsValue('Email or username', 'Test User EDITED')
     await detailsPage.verifyItemDetailsValue('Password', 'Test Pass EDITED')
-    await detailsPage.verifyItemDetailsValue(
-      'https://',
-      'https://www.website1.co'
-    )
-    await detailsPage.verifyItemDetailsValue('Add comment', 'Test Note EDITED')
+    await detailsPage.verifyItemDetailsValue('https://', 'https://www.website1.co')
+    await detailsPage.verifyCustomNoteText('Test Note EDITED')
   })
 
   test('Verify that deleted "Website" and custom "Note" fields are not saved in the edited "Login" item', async () => {
     qase.id(2035)
     await detailsPage.editElement()
-    await createOrEditPage.clickOnCreateOrEditButton('addwebsite')
-    await createOrEditPage.clickOnCreateOrEditButton('removewebsite')
-    await createOrEditPage.clickCreateCustomItem()
-    await createOrEditPage.clickCustomItemOptionNote()
-    await expect(createOrEditPage.customNoteInput).toHaveCount(1)
-    await createOrEditPage.deleteCustomNote()
-    await expect(createOrEditPage.customNoteInput).toHaveCount(0)
+    await createOrEditPage.fillCreateOrEditInput('website', '')
+    await createOrEditPage.fillCreateOrEditInput('comment', '')
+
+    await createOrEditPage.clickOnCreateOrEditButton('save')
+
+    await detailsPage.verifyItemDetailsValue('Email or username', 'Test User EDITED')
+    await detailsPage.verifyItemDetailsValue('Password', 'Test Pass EDITED')
+
+    await createOrEditPage.verifyDetailsWebsiteCount(0)
+    await createOrEditPage.verifyDetailsCommentCount(0)
   })
 
   test('Empty fields are not displayed in view mode', async () => {
     qase.id(2036)
+    await detailsPage.editElement()
     await createOrEditPage.fillCreateOrEditInput('username', '')
     await createOrEditPage.fillCreateOrEditInput('password', '')
-    await createOrEditPage.fillCreateOrEditInput('website', '')
-    await createOrEditPage.fillCreateOrEditInput('note', '')
+
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await mainPage.openElementDetails()
-    await detailsPage.verifyItemDetailsValue('https://', '')
-    await detailsPage.verifyItemDetailsValueIsNotVisible('Email or username')
-    await detailsPage.verifyItemDetailsValueIsNotVisible('Password')
-    await detailsPage.verifyItemDetailsValueIsNotVisible('Add comment')
-    await mainPage.clickDetailsCloseButton()
+
+    await detailsPage.verifyDetailsNoItems()
   })
 
   test('Verify that the "Login" item is removed after deletion', async () => {

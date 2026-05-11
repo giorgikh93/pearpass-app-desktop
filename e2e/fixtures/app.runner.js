@@ -87,6 +87,11 @@ async function launchApp(appDir) {
 
   const electronBin = resolveElectronBinary(appDir)
 
+  // ELECTRON_RUN_AS_NODE=1 makes Electron behave as plain Node.js, which
+  // prevents require('electron') from returning the built-in API (app, BrowserWindow, etc.)
+  const env = { ...process.env }
+  delete env.ELECTRON_RUN_AS_NODE
+
   let proc
   if (isWindows) {
     proc = spawn(
@@ -95,7 +100,8 @@ async function launchApp(appDir) {
       {
         cwd: appDir,
         stdio: 'inherit',
-        windowsHide: false
+        windowsHide: false,
+        env
       }
     )
   } else {
@@ -106,7 +112,8 @@ async function launchApp(appDir) {
       {
         cwd: appDir,
         stdio: 'inherit',
-        detached: true
+        detached: true,
+        env
       }
     )
     proc.unref()
