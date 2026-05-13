@@ -504,6 +504,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1440,
     height: 1024,
+    minWidth: 816,
     ...(isMac && isV2
       ? {
           titleBarStyle: 'hidden',

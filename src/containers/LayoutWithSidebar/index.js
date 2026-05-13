@@ -32,17 +32,27 @@ export const LayoutWithSidebar = ({ mainView, sideView, isSideViewOpen }) => {
 
   const v2SideViewStyle = {
     flexBasis: 0,
-    flexShrink: 1,
+    flexShrink: isSideViewOpen ? 0 : 1,
     flexGrow: isSideViewOpen ? 1 : 0,
-    minWidth: 0,
+    minWidth: isSideViewOpen ? '250px' : 0,
     overflowX: 'hidden',
     overflowY: isSideViewOpen ? 'auto' : 'hidden',
     backgroundColor: theme.colors.colorSurfacePrimary,
     borderLeftWidth: isSideViewOpen ? 1 : 0,
     borderLeftStyle: 'solid',
     borderLeftColor: theme.colors.colorBorderPrimary,
-    transition: 'flex-grow 150ms ease, border-left-width 150ms ease'
+    transition:
+      'flex-grow 150ms ease, border-left-width 150ms ease, min-width 150ms ease'
   }
+
+  const v2MainViewStyle =
+    isV2Design && isSideViewOpen
+      ? {
+          flex: '0 1 350px',
+          minWidth: '300px',
+          transition: 'flex 150ms ease'
+        }
+      : {}
 
   return html`
     <${LayoutWrapper}>
@@ -50,7 +60,7 @@ export const LayoutWithSidebar = ({ mainView, sideView, isSideViewOpen }) => {
         ${isV2Design ? html`<${SidebarV2} />` : html`<${Sidebar} />`}
       <//>
 
-      <${VersionBasedContentWrapper}> ${mainView} <//>
+      <${VersionBasedContentWrapper} style=${v2MainViewStyle}> ${mainView} <//>
 
       ${isV2Design
         ? sideView && html`<div style=${v2SideViewStyle}>${sideView}</div>`

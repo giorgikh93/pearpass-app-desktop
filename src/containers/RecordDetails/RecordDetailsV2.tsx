@@ -5,9 +5,11 @@ import {
   ContextMenu,
   ItemScreenHeader,
   NavbarListItem,
+  rawTokens,
   useTheme
 } from '@tetherto/pearpass-lib-ui-kit'
 import {
+  KeyboardTab,
   ContentCopy,
   DriveFileMoveOutlined,
   EditOutlined,
@@ -32,7 +34,10 @@ type RecordAction = {
   click?: () => void
 }
 
-const ACTION_ICON_BY_TYPE: Record<string, React.ComponentType<{ color?: string }>> = {
+const ACTION_ICON_BY_TYPE: Record<
+  string,
+  React.ComponentType<{ color?: string }>
+> = {
   copy: ContentCopy,
   move: DriveFileMoveOutlined,
   edit: EditOutlined,
@@ -79,7 +84,10 @@ export const RecordDetailsV2 = () => {
   const { actions } = useRecordActionItems({
     excludeTypes: ['select', 'pin'],
     record,
-    recordType: routerData?.recordType === RECORD_TYPES.OTP ? RECORD_TYPES.OTP : undefined,
+    recordType:
+      routerData?.recordType === RECORD_TYPES.OTP
+        ? RECORD_TYPES.OTP
+        : undefined,
     onClose: () => setIsMenuOpen(false)
   })
 
@@ -104,57 +112,71 @@ export const RecordDetailsV2 = () => {
   )
 
   const headerActions = (
-    <ContextMenu
-      open={isMenuOpen}
-      onOpenChange={setIsMenuOpen}
-      trigger={
-        <Button
-          variant="tertiary"
-          size="small"
-          aria-label={t('More actions')}
-          iconBefore={
-            <MoreVert
-              color={theme.colors.colorTextPrimary}
-            />
-          }
-          data-testid="details-button-actions-v2"
-        />
-      }
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: `${rawTokens.spacing8}px`
+      }}
     >
-      {(actions as RecordAction[]).map((action, index, list) => (
-        <NavbarListItem
-          key={action.name}
-          label={action.name}
-          icon={getActionIcon(
-            action,
-            !!record?.isFavorite,
-            theme.colors.colorTextPrimary,
-            theme.colors.colorSurfaceDestructiveElevated
-          )}
-          variant={action.type === 'delete' ? 'destructive' : 'default'}
-          showDivider={list[index + 1]?.type === 'delete'}
-          onClick={() => {
-            setIsMenuOpen(false)
-            action.click?.()
-          }}
-          testID={`details-actions-item-${action.type}-v2`}
-        />
-      ))}
-    </ContextMenu>
+      <ContextMenu
+        open={isMenuOpen}
+        onOpenChange={setIsMenuOpen}
+        trigger={
+          <Button
+            variant="tertiary"
+            size="small"
+            aria-label={t('More actions')}
+            iconBefore={<MoreVert color={theme.colors.colorTextPrimary} />}
+            data-testid="details-button-actions-v2"
+          />
+        }
+      >
+        {(actions as RecordAction[]).map((action, index, list) => (
+          <NavbarListItem
+            key={action.name}
+            label={action.name}
+            icon={getActionIcon(
+              action,
+              !!record?.isFavorite,
+              theme.colors.colorTextPrimary,
+              theme.colors.colorSurfaceDestructiveElevated
+            )}
+            variant={action.type === 'delete' ? 'destructive' : 'default'}
+            showDivider={list[index + 1]?.type === 'delete'}
+            onClick={() => {
+              setIsMenuOpen(false)
+              action.click?.()
+            }}
+            testID={`details-actions-item-${action.type}-v2`}
+          />
+        ))}
+      </ContextMenu>
+      <Button
+        variant="tertiary"
+        size="small"
+        aria-label={t('Close')}
+        iconBefore={<KeyboardTab color={theme.colors.colorTextPrimary} />}
+        onClick={handleCollapse}
+        data-testid="details-button-close-v2"
+      />
+    </div>
   )
 
   return (
     <div style={styles.root} data-testid="details-header-v2">
       <div style={styles.header}>
-        <ItemScreenHeader
-          title={title}
-          icon={avatar}
-          actions={headerActions}
-        />
+        <ItemScreenHeader title={title} icon={avatar} actions={headerActions} />
       </div>
 
       <div style={styles.body}>
-        <RecordDetailsContent record={record as unknown as Parameters<typeof RecordDetailsContent>[0]['record']} />
+        <RecordDetailsContent
+          record={
+            record as unknown as Parameters<
+              typeof RecordDetailsContent
+            >[0]['record']
+          }
+        />
       </div>
     </div>
   )
