@@ -2,7 +2,6 @@ import { qase } from 'playwright-qase-reporter'
 
 import {
   LoginPage,
-  VaultSelectPage,
   MainPage,
   SideMenuPage,
   CreateOrEditPage,
@@ -16,7 +15,6 @@ test.describe('Creating Note Item', () => {
   test.describe.configure({ mode: 'serial' })
 
   let loginPage,
-    vaultSelectPage,
     createOrEditPage,
     sideMenuPage,
     mainPage,
@@ -28,17 +26,18 @@ test.describe('Creating Note Item', () => {
     page = await app.getPage()
     const root = page.locator('body')
     loginPage = new LoginPage(root)
-    vaultSelectPage = new VaultSelectPage(root)
     sideMenuPage = new SideMenuPage(root)
+    createOrEditPage = new CreateOrEditPage(root)
     utilities = new Utilities(root)
     mainPage = new MainPage(root)
+    detailsPage = new DetailsPage(root)
 
     await loginPage.loginToApplication(testData.credentials.validPassword)
-    await vaultSelectPage.selectVaultbyName(testData.vault.name)
 
-    await sideMenuPage.selectSideBarCategory('note')
+    await sideMenuPage.selectSideBarCategory('all')
     await utilities.deleteAllElements()
-    await mainPage.clickCreateNewElementButton('Create a note')
+    await sideMenuPage.selectSideBarCategory('note')
+    await mainPage.clickAddItem('note')
 
     await page.waitForTimeout(testData.timeouts.action)
   })
@@ -47,7 +46,6 @@ test.describe('Creating Note Item', () => {
     page = await app.getPage()
     const root = page.locator('body')
     loginPage = new LoginPage(root)
-    vaultSelectPage = new VaultSelectPage(root)
     mainPage = new MainPage(root)
     sideMenuPage = new SideMenuPage(root)
     createOrEditPage = new CreateOrEditPage(root)
@@ -62,9 +60,9 @@ test.describe('Creating Note Item', () => {
 
   test('Creating the "Note" item', async ({ page }) => {
     qase.id(2248)
-    await createOrEditPage.fillCreateOrEditInput('title', 'Note Title')
-    await createOrEditPage.fillCreateOrEditTextArea('note', 'Test Note Text')
-    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await createOrEditPage.fillCreateOrEditInput('note-title', 'Note Title')
+    await createOrEditPage.fillCreateOrEditInput('note-comment', 'Test Note Text')
+    await createOrEditPage.clickOnCreateOrEditButton('note-save')
     await page.waitForTimeout(testData.timeouts.action)
   })
 
@@ -75,49 +73,23 @@ test.describe('Creating Note Item', () => {
     await detailsPage.verifyNoteText('Test Note Text')
   })
 
-  test('Dropdown moves to selected item edit screen', async ({ page }) => {
-    qase.id(2250)
-    await mainPage.verifyElementTitle('Note Title')
-    await sideMenuPage.clickSidebarAddButton()
-    await detailsPage.fillCreateNewFolderTitleInput('Test Folder')
-    await detailsPage.clickCreateFolderButton()
-    await detailsPage.editElement()
-    await createOrEditPage.openDropdownMenu()
-    await createOrEditPage.selectFromDropdownMenu('Test Folder')
-    await createOrEditPage.clickOnCreateOrEditButton('save')
-    await detailsPage.getItemDetailsFolderName('Test Folder')
-    await mainPage.verifyElementFolderName('Test Folder')
-  })
-
-  test('Item moved to folder (and cleanup)', async ({ page }) => {
-    qase.id(2251)
-    await sideMenuPage.verifySidebarFolderName('Test Folder')
-    await mainPage.openElementDetails()
-    await detailsPage.editElement()
-    await createOrEditPage.openDropdownMenu()
-    await createOrEditPage.selectFromDropdownMenu('No Folder')
-    await createOrEditPage.clickOnCreateOrEditButton('save')
-
-    await sideMenuPage.deleteFolder('Test Folder')
-  })
-
   test('Add via Favorite icon', async ({ page }) => {
     qase.id(2252)
     await sideMenuPage.selectSideBarCategory('all')
-    await mainPage.verifyElementTitle('Note Title')
-    await mainPage.openElementDetails()
-    await detailsPage.clickFavoriteButton()
-    await sideMenuPage.openSideBarFolder('Favorites')
-    await expect(detailsPage.getFavoriteAvatar('NT')).toBeVisible()
-    await expect(mainPage.getElementFavoriteIcon('NT')).toBeVisible()
+    await mainPage.clickMainViewHeaderSelect()
+    await mainPage.elementCheckBox(false)
+    await mainPage.clickOnFirstElement()
+    await mainPage.elementCheckBox(true)
+    await mainPage.clickOnMainViewFavoriteIcon()
+    await sideMenuPage.verifySideBarFavoritesFolder('1 items')
   })
 
   test('Remove via Favorite icon', async ({ page }) => {
     qase.id(2253)
-    await mainPage.openElementDetails()
-    await detailsPage.clickFavoriteButton()
-    await expect(detailsPage.getFavoriteAvatar('NT')).not.toBeVisible()
-    await expect(mainPage.getElementFavoriteIcon('NT')).not.toBeVisible()
+    await mainPage.clickMainViewHeaderSelect()
+    await mainPage.clickOnFirstElement()
+    await mainPage.clickOnMainViewFavoriteIcon()
+    await sideMenuPage.verifySideBarFavoritesFolder('0 items')
   })
 
   test('Add via More options', async ({ page }) => {
@@ -125,17 +97,14 @@ test.describe('Creating Note Item', () => {
     await mainPage.openElementDetails()
     await detailsPage.openItemBarThreeDotsDropdownMenu()
     await detailsPage.clickMarkAsFavoriteButton()
-    await expect(detailsPage.getFavoriteAvatar('NT')).toBeVisible()
-    await expect(mainPage.getElementFavoriteIcon('NT')).toBeVisible()
+    await sideMenuPage.verifySideBarFavoritesFolder('1 items')
   })
 
   test('Remove via More options', async ({ page }) => {
     qase.id(2255)
-    await mainPage.openElementDetails()
     await detailsPage.openItemBarThreeDotsDropdownMenu()
     await detailsPage.clickRemoveFromFavoritesButton()
-    await expect(detailsPage.getFavoriteAvatar('NT')).not.toBeVisible()
-    await expect(mainPage.getElementFavoriteIcon('NT')).not.toBeVisible()
+    await sideMenuPage.verifySideBarFavoritesFolder('0 items')
   })
 
   // test('Add Custom Note', async ({ page }) => {
@@ -177,44 +146,31 @@ test.describe('Creating Note Item', () => {
 
   test('View uploaded file in Edit mode', async ({ page }) => {
     qase.id(2259)
-    await mainPage.verifyElementTitle('Note Title')
-    await mainPage.openElementDetails()
     await detailsPage.editElement()
-    await createOrEditPage.clickOnCreateOrEditButton('loadfile')
+    await createOrEditPage.clickOnAttachment()
     await createOrEditPage.uploadFile()
     await createOrEditPage.verifyUploadedFileIsVisible()
     await createOrEditPage.clickOnUploadedFile()
-    await createOrEditPage.verifyUploadedImageIsVisible()
-    await createOrEditPage.clickElementItemCloseButton()
-    await createOrEditPage.clickOnCreateOrEditButton('save')
-    await page.waitForTimeout(testData.timeouts.action)
-    await mainPage.clickDetailsCloseButton()
-  })
 
-  // test('View uploaded file in View mode (and cleanup)', async ({ page }) => {
-  // qase.id(2260);
-  //   await mainPage.openElementDetails()
-  //   await detailsPage.verifyUploadedFileIsVisible()
-  //   await detailsPage.clickOnUploadedFile()
-  //   await detailsPage.verifyUploadedImageIsVisible()
-  //   await detailsPage.clickElementItemCloseButton()
-  //   await detailsPage.editElement()
-  //   await createOrEditPage.clickOnCreateOrEditButton('deleteattachment') // button-single-input
-  //   await createOrEditPage.verifyUploadedImageIsNotVisible()
-  //   await createOrEditPage.clickElementItemCloseButton()
-  //   await mainPage.clickDetailsCloseButton()
-  // })
+    await createOrEditPage.clickOnCreateOrEditButton('note-save')
+    await page.waitForTimeout(testData.timeouts.action)
+
+
+    await detailsPage.verifyUploadedFileIsVisible()
+
+    await detailsPage.clickOnUploadedFile()
+    await detailsPage.verifyUploadedImageIsVisible()
+
+    await createOrEditPage.clickElementItemCloseButton()
+  })
 
   test('Empty fields not displayed in view mode', async ({ page }) => {
     qase.id(2261)
     await mainPage.verifyElementTitle('Note Title')
     await mainPage.openElementDetails()
     await detailsPage.editElement()
-    await createOrEditPage.fillCreateOrEditTextArea('note', '')
-    await createOrEditPage.clickOnCreateOrEditButton('save')
-    await mainPage.openElementDetails()
+    await createOrEditPage.fillCreateOrEditInput('note-comment', '')
+    await createOrEditPage.clickOnCreateOrEditButton('note-save')
     await detailsPage.verifyItemDetailsValueIsNotVisible('Add comment')
-
-    await mainPage.clickDetailsCloseButton()
   })
 })

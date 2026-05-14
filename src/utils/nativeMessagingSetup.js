@@ -13,7 +13,8 @@ import {
 import { logger } from './logger'
 import flatpakPaths from '../../electron/flatpak-paths.cjs'
 
-const { isFlatpakRuntime, getHostHome } = flatpakPaths
+const { isFlatpakRuntime, isSnapRuntime, getHostHome, getSnapRealHome } =
+  flatpakPaths
 
 const FLATPAK_APP_ID = 'com.pears.pass'
 const FLATPAK_NATIVE_HOST_COMMAND = 'pearpass-native-host'
@@ -162,10 +163,16 @@ set ELECTRON_RUN_AS_NODE=1
  */
 export const getNativeMessagingLocations = () => {
   const platform = os.platform()
-  // Under flatpak, os.homedir() is the per-app sandbox home; browsers on the
-  // host read manifests from the real host home. Use that path instead.
-  const home =
-    platform === 'linux' && isFlatpakRuntime() ? getHostHome() : os.homedir()
+  // Under flatpak/snap, os.homedir() is the sandbox home; host browsers
+  // read manifests from the real home.
+  let home
+  if (platform === 'linux' && isFlatpakRuntime()) {
+    home = getHostHome()
+  } else if (platform === 'linux' && isSnapRuntime()) {
+    home = getSnapRealHome()
+  } else {
+    home = os.homedir()
+  }
   const manifestFile = `${MANIFEST_NAME}.json`
   const browsers = []
 
@@ -402,6 +409,20 @@ export const getNativeMessagingLocations = () => {
             'native-messaging-hosts',
             manifestFile
           )
+        },
+        {
+          name: 'Firefox (Snap)',
+          isFirefox: true,
+          browserDir: null,
+          manifestPath: path.join(
+            home,
+            'snap',
+            'firefox',
+            'common',
+            '.mozilla',
+            'native-messaging-hosts',
+            manifestFile
+          )
         }
       )
       break
@@ -538,21 +559,27 @@ export const setupNativeMessaging = async ({
   bridgePath
 }) => {
   try {
-    // Determine platform-specific executable path and names
     const { platform, executablePath } =
       getNativeHostExecutableInfo(userDataPath)
 
-    // Ensure directory for executable exists
-    await fs.mkdir(path.dirname(executablePath), { recursive: true })
+    // Host browsers and other snaps can't reach our user-data dir, so
+    // the manifest points at /snap/bin/<snap>.<app> directly (no wrapper).
+    // SNAP_NAME-driven so a snap rename can't silently break installs.
+    const useSnapDirect = platform === 'linux' && isSnapRuntime()
+    const manifestExecPath = useSnapDirect
+      ? `/snap/bin/${process.env.SNAP_NAME}.native-host`
+      : executablePath
 
-    // Generate the native messaging executable wrapper
-    const execResult = await generateNativeHostExecutable(
-      executablePath,
-      execPath,
-      bridgePath
-    )
-    if (!execResult.success) {
-      throw new Error(execResult.message)
+    if (!useSnapDirect) {
+      await fs.mkdir(path.dirname(executablePath), { recursive: true })
+      const execResult = await generateNativeHostExecutable(
+        executablePath,
+        execPath,
+        bridgePath
+      )
+      if (!execResult.success) {
+        throw new Error(execResult.message)
+      }
     }
 
     const extensionId =
@@ -562,7 +589,7 @@ export const setupNativeMessaging = async ({
     const chromiumManifest = {
       name: MANIFEST_NAME,
       description: 'PearPass Native Messaging Host',
-      path: executablePath,
+      path: manifestExecPath,
       type: 'stdio',
       allowed_origins: [`chrome-extension://${extensionId}/`]
     }
@@ -571,7 +598,7 @@ export const setupNativeMessaging = async ({
     const firefoxManifest = {
       name: MANIFEST_NAME,
       description: 'PearPass Native Messaging Host',
-      path: executablePath,
+      path: manifestExecPath,
       type: 'stdio',
       allowed_extensions: [FIREFOX_EXTENSION_ID, FIREFOX_NIGHTLY_EXTENSION_ID]
     }

@@ -2,7 +2,6 @@ import { qase } from 'playwright-qase-reporter'
 
 import {
   LoginPage,
-  VaultSelectPage,
   MainPage,
   SideMenuPage,
   CreateOrEditPage,
@@ -16,7 +15,6 @@ test.describe('Password', () => {
   test.describe.configure({ mode: 'serial' })
 
   let loginPage,
-    vaultSelectPage,
     createOrEditPage,
     sideMenuPage,
     mainPage,
@@ -29,7 +27,6 @@ test.describe('Password', () => {
     const root = page.locator('body')
 
     loginPage = new LoginPage(root)
-    vaultSelectPage = new VaultSelectPage(root)
     mainPage = new MainPage(root)
     sideMenuPage = new SideMenuPage(root)
     createOrEditPage = new CreateOrEditPage(root)
@@ -37,29 +34,23 @@ test.describe('Password', () => {
     detailsPage = new DetailsPage(root)
 
     await loginPage.loginToApplication(testData.credentials.validPassword)
-    await vaultSelectPage.selectVaultbyName(testData.vault.name)
 
     await sideMenuPage.selectSideBarCategory('login')
     await utilities.deleteAllElements()
-    await mainPage.clickCreateNewElementButton('Create a login')
+    await mainPage.clickAddItem('login')
 
     await createOrEditPage.fillCreateOrEditInput('title', 'Login Title')
     await createOrEditPage.fillCreateOrEditInput('username', 'Test User')
     await createOrEditPage.fillCreateOrEditInput('password', 'Test Pass')
-    await createOrEditPage.fillCreateOrEditInput(
-      'website',
-      'https://www.website.co'
-    )
-    await createOrEditPage.fillCreateOrEditInput('note', 'Test Note')
+    await createOrEditPage.fillCreateOrEditInput('website', 'https://www.website.co')
+    await createOrEditPage.fillCreateOrEditInput('comment', 'Test Note')
     await createOrEditPage.clickOnCreateOrEditButton('save')
-
     await page.waitForTimeout(testData.timeouts.action)
   })
 
   test.beforeEach(async () => {
     const root = page.locator('body')
     loginPage = new LoginPage(root)
-    vaultSelectPage = new VaultSelectPage(root)
     mainPage = new MainPage(root)
     sideMenuPage = new SideMenuPage(root)
     createOrEditPage = new CreateOrEditPage(root)
@@ -79,28 +70,36 @@ test.describe('Password', () => {
     await createOrEditPage.openPasswordMenu()
     await createOrEditPage.clickInsertPasswordButton()
     await createOrEditPage.clickShowHidePasswordButtonLast()
-    await createOrEditPage.verifyPasswordToNotHaveValue('Test Password')
+    await createOrEditPage.verifyPasswordToNotHaveValue('Test Pass')
+    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await page.waitForTimeout(testData.timeouts.action)
+    await mainPage.clickDetailsCloseButton()
   })
 
   test('Verify that password strength updates when the "special characters" switch is toggled', async () => {
     qase.id(2001)
+    const root = page.locator('body')
+    await mainPage.openElementDetails()
+    await detailsPage.editElement()
     await createOrEditPage.openPasswordMenu()
 
-    await createOrEditPage.verifyRadioButtonPasswordState('active')
-    await createOrEditPage.verifyRadioButtonPassphraseState('inactive')
-    await createOrEditPage.verifyCharsliderByPositionNumber('8')
-    await createOrEditPage.verifySpecialCharactersSwitchByState('on')
-    await createOrEditPage.verifyPasswordStrenght('success', 'success', 'Safe')
+    await expect(root.getByRole('radio', { name: /Random Characters/i })).toBeChecked()
+    await expect(root.getByText('8 chars')).toBeVisible()
+    await expect(root.getByText('Special character')).toBeVisible()
+    const toggle = root.locator('[role="switch"]')
+    await expect(toggle).toHaveAttribute('aria-checked', 'true')
+    await expect(root.getByText('Strong')).toBeVisible()
 
-    await createOrEditPage.clickSwitchByState('on')
-    await createOrEditPage.verifySpecialCharactersSwitchByState('off')
-    await createOrEditPage.verifyPasswordStrenght('warning', 'warning', 'Weak')
+    await toggle.click()
+    await expect(toggle).toHaveAttribute('aria-checked', 'false')
+    await expect(root.getByText('Strong')).not.toBeVisible()
 
-    await createOrEditPage.clickSwitchByState('off')
-    await createOrEditPage.verifySpecialCharactersSwitchByState('on')
-    await createOrEditPage.verifyPasswordStrenght('success', 'success', 'Safe')
+    await toggle.click()
+    await expect(toggle).toHaveAttribute('aria-checked', 'true')
+    await expect(root.getByText('Strong')).toBeVisible()
 
-    await createOrEditPage.clickElementItemCloseButton()
-    await createOrEditPage.clickElementItemCloseButton()
+    await root.getByTestId('generatepassword-button-discard-v2').click()
+    await createOrEditPage.clickOnCreateOrEditButton('discard')
+    await mainPage.clickDetailsCloseButton()
   })
 })

@@ -2,7 +2,6 @@ import { qase } from 'playwright-qase-reporter'
 
 import {
   LoginPage,
-  VaultSelectPage,
   MainPage,
   SideMenuPage,
   CreateOrEditPage,
@@ -16,7 +15,6 @@ test.describe('Editing/Deleting Custom Item', () => {
   test.describe.configure({ mode: 'serial' })
 
   let loginPage,
-    vaultSelectPage,
     createOrEditPage,
     sideMenuPage,
     mainPage,
@@ -29,7 +27,6 @@ test.describe('Editing/Deleting Custom Item', () => {
     const root = page.locator('body')
 
     loginPage = new LoginPage(root)
-    vaultSelectPage = new VaultSelectPage(root)
     mainPage = new MainPage(root)
     sideMenuPage = new SideMenuPage(root)
     createOrEditPage = new CreateOrEditPage(root)
@@ -37,18 +34,15 @@ test.describe('Editing/Deleting Custom Item', () => {
     detailsPage = new DetailsPage(root)
 
     await loginPage.loginToApplication(testData.credentials.validPassword)
-    await vaultSelectPage.selectVaultbyName(testData.vault.name)
 
     await sideMenuPage.selectSideBarCategory('custom')
     await utilities.deleteAllElements()
-    await mainPage.clickCreateNewElementButton('Create a custom element')
+    await mainPage.clickAddItem('custom')
 
-    await createOrEditPage.fillCreateOrEditInput('title', 'Custom Field Title')
-    await createOrEditPage.clickCreateCustomItem()
-    await createOrEditPage.clickCustomItemOptionNote()
+    await createOrEditPage.fillCreateOrEditInput('custom-title', 'Custom Field Title')
     await createOrEditPage.fillCustomNoteInput()
 
-    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await createOrEditPage.clickOnCreateOrEditButton('custom-save')
 
     await page.waitForTimeout(testData.timeouts.action)
   })
@@ -57,7 +51,6 @@ test.describe('Editing/Deleting Custom Item', () => {
     page = await app.getPage()
     const root = page.locator('body')
     loginPage = new LoginPage(root)
-    vaultSelectPage = new VaultSelectPage(root)
     mainPage = new MainPage(root)
     sideMenuPage = new SideMenuPage(root)
     createOrEditPage = new CreateOrEditPage(root)
@@ -75,19 +68,19 @@ test.describe('Editing/Deleting Custom Item', () => {
     await mainPage.openElementDetails()
     await detailsPage.editElement()
     await createOrEditPage.fillCreateOrEditInput(
-      'title',
+      'custom-title',
       'EDITED Custom Field Title'
     )
     await createOrEditPage.fillCustomNoteInput()
     await page.waitForTimeout(testData.timeouts.action)
 
-    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await createOrEditPage.clickOnCreateOrEditButton('custom-save')
     await page.waitForTimeout(testData.timeouts.action)
 
     await mainPage.openElementDetails()
     await page.waitForTimeout(testData.timeouts.action)
     await mainPage.verifyElementTitle('EDITED Custom Field Title')
-    await detailsPage.verifyItemDetailsValue('Add comment', 'Custom Note')
+    await detailsPage.verifyItemDetailsValue('Other Field', 'Custom Note')
     // Verify Note
   })
 
@@ -95,8 +88,8 @@ test.describe('Editing/Deleting Custom Item', () => {
     qase.id(2573)
     await detailsPage.editElement()
     await createOrEditPage.deleteCustomNote()
-    await createOrEditPage.clickOnCreateOrEditButton('save')
-    await detailsPage.verifyItemDetailsValueIsNotVisible('Add comment')
+    await createOrEditPage.clickOnCreateOrEditButton('custom-save')
+    await detailsPage.verifyItemDetailsValueIsNotVisible('Other Field')
   })
 
   test('Verify that the "Custom Field" item is removed after deletion', async () => {

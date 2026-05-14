@@ -19,6 +19,11 @@ declare global {
       vaultOnUpdate: (cb: () => void) => () => void
       vaultOnMasterUpdate: (cb: () => void) => () => void
       openExternal: (url: string) => Promise<void>
+      openLogsFolder: () => Promise<void>
+      isLoggingEnabled: () => Promise<{ enabled: boolean; forced: boolean }>
+      setLogging: (
+        enabled: boolean
+      ) => Promise<{ enabled: boolean; forced: boolean }>
     }
   }
 }

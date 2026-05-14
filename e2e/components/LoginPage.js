@@ -5,32 +5,20 @@ class LoginPage {
     this.root = root
   }
 
-  // ==== LOCATORS ====
+  // --- Title / ready state ---
 
   get title() {
-    return this.root.getByTestId('login-title')
+    return this.root.locator('h1', { hasText: 'Enter Your Master Password' })
   }
-
-  get passwordInput() {
-    return this.root.getByTestId('login-password-input')
-  }
-
-  get continueButton() {
-    return this.root.getByTestId('login-continue-button')
-  }
-
-  get errorMessage() {
-    return this.root.locator('text=Invalid password')
-  }
-
-  // ==== ACTIONS ====
 
   async waitForReady(timeout = 30000) {
     await expect(this.title).toBeVisible({ timeout })
   }
 
-  async isVisible() {
-    return await this.title.isVisible().catch(() => false)
+  // --- Password ---
+
+  get passwordInput() {
+    return this.root.getByTestId('login-password-input-v2').locator('input')
   }
 
   async enterPassword(password) {
@@ -38,22 +26,18 @@ class LoginPage {
     await this.passwordInput.fill(password)
   }
 
+  // --- Continue button ---
+
+  get continueButton() {
+    return this.root.getByTestId('login-continue-button-v2')
+  }
+
   async clickContinue() {
     await this.continueButton.click()
   }
 
-  async login(password) {
-    await this.enterPassword(password)
-    await this.clickContinue()
-  }
-
-  async hasError() {
-    return await this.errorMessage.isVisible().catch(() => false)
-  }
-
   async loginToApplication(password) {
     await this.waitForReady()
-    await expect(this.title).toHaveText('Enter your Master password')
     await this.enterPassword(password)
     await this.clickContinue()
   }

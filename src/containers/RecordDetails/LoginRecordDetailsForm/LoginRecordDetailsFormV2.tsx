@@ -15,7 +15,7 @@ import {
 import { OpenInNew } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { html } from 'htm/react'
 
-import { OtpCodeField } from '../../../components/OtpCodeField'
+import { OtpCodeFieldV2 } from '../../../components/OtpCodeFieldV2'
 import { ATTACHMENTS_FIELD_KEY } from '../../../constants/formFields'
 import { useModal } from '../../../context/ModalContext'
 import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard.electron'
@@ -168,7 +168,7 @@ export const LoginRecordDetailsFormV2 = ({
   return (
     <div style={styles.container}>
       <div style={styles.topContent}>
-        {(hasUsername || hasPassword) && (
+        {(hasUsername || hasPassword || !!initialRecord?.otpPublic) && (
           <MultiSlotInput testID="credentials-multi-slot-input">
             {hasUsername && (
               <InputField
@@ -193,6 +193,19 @@ export const LoginRecordDetailsFormV2 = ({
                 isGrouped
                 testID="credentials-multi-slot-input-slot-1"
                 {...toReadOnlyFieldProps(register('password'))}
+              />
+            )}
+
+            {!!initialRecord?.otpPublic && !!initialRecord?.id && (
+              <OtpCodeFieldV2
+                key={initialRecord.id}
+                recordId={initialRecord.id}
+                otpPublic={
+                  initialRecord.otpPublic as Parameters<
+                    typeof OtpCodeFieldV2
+                  >[0]['otpPublic']
+                }
+                isGrouped
               />
             )}
           </MultiSlotInput>
@@ -239,16 +252,6 @@ export const LoginRecordDetailsFormV2 = ({
               />
             </MultiSlotInput>
           ))}
-
-        {!!initialRecord?.otpPublic && !!initialRecord?.id && (
-          <MultiSlotInput testID="otp-multi-slot-input">
-            <OtpCodeField
-              key={initialRecord.id}
-              recordId={initialRecord.id}
-              otpPublic={initialRecord.otpPublic as Parameters<typeof OtpCodeField>[0]['otpPublic']}
-            />
-          </MultiSlotInput>
-        )}
 
         {hasPasskey && (
           <InputField

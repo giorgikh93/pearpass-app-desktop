@@ -34,7 +34,7 @@ export const App = () => {
   useOnExtensionExit()
   useOnExtensionLockOut()
 
-  const { triggerAccessRevoked } = useVaultAccessRevoked()
+  useVaultAccessRevoked()
   const { data: vaultsForDevTrigger, refetch: refetchVaults } = useVaults()
   const { data: activeVault } = useVault()
   const { switchVault } = useVaultSwitch()
@@ -77,33 +77,6 @@ export const App = () => {
       navigate('vault', { recordType: 'all' })
     }
   }, [activeVault?.id, vaultsForDevTrigger, switchVault, navigate])
-
-  useEffect(() => {
-    // Dev hook: action-bus mechanism is not implemented yet, so for now the
-    // delete handler is fired manually from devtools or tests.
-    if (typeof window === 'undefined') return
-    const list = vaultsForDevTrigger ?? []
-    const devTrigger = (vaultIdOrName, deviceName) => {
-      const match =
-        list.find((v) => v.id === vaultIdOrName) ??
-        list.find((v) => v.name === vaultIdOrName)
-      if (!match) {
-        // eslint-disable-next-line no-console
-        console.error(
-          `[pearpassTriggerAccessRevoked] no vault matched "${vaultIdOrName}". Available:`,
-          list.map((v) => ({ id: v.id, name: v.name }))
-        )
-        return
-      }
-      return triggerAccessRevoked(match.id, deviceName)
-    }
-    // eslint-disable-next-line no-underscore-dangle
-    window.__pearpassTriggerAccessRevoked = devTrigger
-    return () => {
-      // eslint-disable-next-line no-underscore-dangle
-      delete window.__pearpassTriggerAccessRevoked
-    }
-  }, [triggerAccessRevoked, vaultsForDevTrigger])
 
   const handleLoadingComplete = useCallback(() => {
     setIsLoadingPageComplete(true)

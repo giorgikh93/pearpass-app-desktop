@@ -47,30 +47,6 @@
       ],
       "artifactName": "${productName}.${ext}"
     },
-    "snap": {
-      "base": "core22",
-      "confinement": "classic",
-      "grade": "stable",
-      "summary": "A fully local, open-source password manager for privacy and control",
-      "artifactName": "${productName}_${version}_${arch}.${ext}",
-      "plugs": [
-        "default",
-        {
-          "dot-config-pear": {
-            "interface": "personal-files",
-            "write": [
-              "$HOME/.config/pear"
-            ]
-          }
-        },
-        {
-          "shmem": {
-            "interface": "shared-memory",
-            "private": true
-          }
-        }
-      ]
-    },
     "toolsets": {
       "appimage": "1.0.2"
     },
@@ -91,7 +67,8 @@
     "gui": {
       "backgroundColor": "#1F2430",
       "height": "1024",
-      "width": "1440"
+      "width": "1440",
+      "minWidth": "816"
     },
     "links": [
       "https://hooks.slack.com/services/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",
@@ -231,7 +208,7 @@
     "@tetherto/pearpass-lib-ui-kit": "git+https://github.com/tetherto/pearpass-lib-ui-react-native-components.git#design-system-v2",
     "@tetherto/pearpass-lib-ui-theme-provider": "git+https://github.com/tetherto/pearpass-lib-ui-theme-provider.git",
     "@tetherto/pearpass-lib-vault": "git+https://github.com/tetherto/pearpass-lib-vault.git",
-    "@tetherto/pearpass-lib-vault-core": "git+https://github.com/tetherto/pearpass-lib-vault-core.git",
+    "@tetherto/pearpass-lib-vault-core": "git+https://github.com/tetherto/pearpass-lib-vault-core.git#de5403042d35c6f200c37c10c28adfc3c82151b1",
     "@tetherto/pearpass-utils-password-check": "git+https://github.com/tetherto/pearpass-utils-password-check.git",
     "@tetherto/pearpass-utils-password-generator": "git+https://github.com/tetherto/pearpass-utils-password-generator.git",
     "autopass": "~3.3.0",

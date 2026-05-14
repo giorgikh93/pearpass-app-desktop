@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { DESKTOP_2FA_IMPORTS_ENABLED } from '@tetherto/pearpass-lib-constants'
 import {
   Button,
   NavbarListItem,
@@ -24,7 +25,9 @@ import {
   SettingsApplicationsFilled,
   Sync,
   SystemSecurityUpdateFilled,
-  Translate
+  TerminalTone,
+  Translate,
+  TwoFactorAuthenticationOutlined
 } from '@tetherto/pearpass-lib-ui-kit/icons'
 
 import { UnsavedChangesModalContent } from '../../containers/Modal/UnsavedChangesModalContent'
@@ -41,12 +44,14 @@ import {
   AppPreferencesContent,
   AppVersionContent,
   BlindPeersContent,
+  DiagnosticsContent,
   ExportItemsContent,
+  ImportCodesContent,
   ImportItemsContent,
   LanguageContent,
   MasterPasswordContent,
-  YourDevicesContent,
-  ReportAProblemContent
+  ReportAProblemContent,
+  YourDevicesContent
 } from './content'
 import { YourVaultsContent } from './content/YourVaultsContent'
 
@@ -58,8 +63,10 @@ export enum SettingsItemKey {
   YourVaults = 'your-vaults',
   ImportItems = 'import-items',
   ExportItems = 'export-items',
+  ImportCodes = 'import-codes',
   Language = 'language',
   ReportAProblem = 'report-a-problem',
+  Diagnostics = 'diagnostics',
   AppVersion = 'app-version'
 }
 
@@ -95,8 +102,12 @@ const renderActiveContent = (
       return <ImportItemsContent />
     case SettingsItemKey.ExportItems:
       return <ExportItemsContent />
+    case SettingsItemKey.ImportCodes:
+      return <ImportCodesContent />
     case SettingsItemKey.ReportAProblem:
       return <ReportAProblemContent currentVersion={currentVersion} />
+    case SettingsItemKey.Diagnostics:
+      return <DiagnosticsContent />
     case SettingsItemKey.Language:
       return <LanguageContent />
     case SettingsItemKey.AppVersion:
@@ -172,6 +183,22 @@ const SettingsViewV2Body = () => {
           }
         ]
       },
+      ...(DESKTOP_2FA_IMPORTS_ENABLED
+        ? [
+            {
+              key: 'authenticator',
+              title: t('Authenticator'),
+              icon: TwoFactorAuthenticationOutlined,
+              items: [
+                {
+                  key: SettingsItemKey.ImportCodes,
+                  label: t('Import Codes'),
+                  icon: Login
+                }
+              ]
+            }
+          ]
+        : []),
       {
         key: 'appearance',
         title: t('Appearance'),
@@ -193,6 +220,11 @@ const SettingsViewV2Body = () => {
             key: SettingsItemKey.ReportAProblem,
             label: t('Report a problem'),
             icon: BugReportFilled
+          },
+          {
+            key: SettingsItemKey.Diagnostics,
+            label: t('Diagnostics'),
+            icon: TerminalTone
           },
           {
             key: SettingsItemKey.AppVersion,

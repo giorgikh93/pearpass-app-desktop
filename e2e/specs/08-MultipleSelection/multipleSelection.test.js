@@ -2,7 +2,6 @@ import { qase } from 'playwright-qase-reporter'
 
 import {
   LoginPage,
-  VaultSelectPage,
   MainPage,
   SideMenuPage,
   CreateOrEditPage,
@@ -16,7 +15,6 @@ test.describe('Multiple Selection', () => {
   test.describe.configure({ mode: 'serial' })
 
   let loginPage,
-    vaultSelectPage,
     createOrEditPage,
     sideMenuPage,
     mainPage,
@@ -28,13 +26,11 @@ test.describe('Multiple Selection', () => {
     page = await app.getPage()
     const root = page.locator('body')
     loginPage = new LoginPage(root)
-    vaultSelectPage = new VaultSelectPage(root)
     sideMenuPage = new SideMenuPage(root)
     utilities = new Utilities(root)
     mainPage = new MainPage(root)
 
     await loginPage.loginToApplication(testData.credentials.validPassword)
-    await vaultSelectPage.selectVaultbyName(testData.vault.name)
 
     await sideMenuPage.selectSideBarCategory('all')
     await utilities.deleteAllElements()
@@ -45,7 +41,6 @@ test.describe('Multiple Selection', () => {
     page = await app.getPage()
     const root = page.locator('body')
     loginPage = new LoginPage(root)
-    vaultSelectPage = new VaultSelectPage(root)
     mainPage = new MainPage(root)
     sideMenuPage = new SideMenuPage(root)
     createOrEditPage = new CreateOrEditPage(root)
@@ -63,7 +58,7 @@ test.describe('Multiple Selection', () => {
   }) => {
     qase.id(2580)
     await sideMenuPage.selectSideBarCategory('login')
-    await mainPage.clickCollectionButton('login')
+    await mainPage.clickAddItem('login')
     await createOrEditPage.fillCreateOrEditInput('title', 'AAA')
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await page.waitForTimeout(testData.timeouts.action)
@@ -81,15 +76,16 @@ test.describe('Multiple Selection', () => {
     page
   }) => {
     qase.id(2581)
-    await mainPage.clickCollectionButton('login')
+    await sideMenuPage.selectSideBarCategory('login')
+    await mainPage.clickAddItem('login')
     await createOrEditPage.fillCreateOrEditInput('title', 'AAA')
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await page.waitForTimeout(testData.timeouts.action)
 
     await sideMenuPage.selectSideBarCategory('identity')
-    await mainPage.clickCollectionButton('identity')
-    await createOrEditPage.fillCreateOrEditInput('title', 'BBB')
-    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await mainPage.clickAddItem('identity')
+    await createOrEditPage.fillCreateOrEditInput('identity-title', 'BBB')
+    await createOrEditPage.clickOnCreateOrEditButton('identity-save')
     await page.waitForTimeout(testData.timeouts.action)
 
     await sideMenuPage.selectSideBarCategory('login')
@@ -111,7 +107,8 @@ test.describe('Multiple Selection', () => {
     page
   }) => {
     qase.id(2582)
-    await mainPage.verifyMultipleSelectiontButtonIsNotVisible()
+    await sideMenuPage.selectSideBarCategory('all')
+    await mainPage.verifyEmptyCollection()
   })
 
   test('Verify that "Multiple Selection" mode can be canceled', async ({
@@ -123,7 +120,7 @@ test.describe('Multiple Selection', () => {
     await page.waitForTimeout(testData.timeouts.action)
 
     await sideMenuPage.selectSideBarCategory('login')
-    await mainPage.clickCollectionButton('login')
+    await mainPage.clickAddItem('login')
     await createOrEditPage.fillCreateOrEditInput('title', 'AAA')
     await createOrEditPage.clickOnCreateOrEditButton('save')
     await page.waitForTimeout(testData.timeouts.action)
@@ -131,19 +128,20 @@ test.describe('Multiple Selection', () => {
     await mainPage.clickMultipleSelectiontButton()
     await page.waitForTimeout(testData.timeouts.action)
     await mainPage.clickElementByPosition(0, 'AAA')
-    await mainPage.clickMultipleSelectCancelButon()
+    await mainPage.clickMultipleSelectiontButton()
   })
 
   test('Verify that "Delete" button is enabled only when items are selected', async ({
     page
   }) => {
     qase.id(2584)
+    await sideMenuPage.selectSideBarCategory('login')
     await mainPage.clickMultipleSelectiontButton()
     await page.waitForTimeout(testData.timeouts.action)
     await mainPage.clickElementByPosition(0, 'AAA')
     await mainPage.verifyMultipleSelectDeleteButtonIsEnabled()
     await page.waitForTimeout(testData.timeouts.action)
-    await mainPage.clickMultipleSelectCancelButon()
+    await mainPage.clickMultipleSelectiontButton()
     await page.waitForTimeout(testData.timeouts.action)
   })
 
@@ -151,18 +149,41 @@ test.describe('Multiple Selection', () => {
     page
   }) => {
     qase.id(2585)
+    await sideMenuPage.selectSideBarCategory('all')
+    await utilities.deleteAllElements()
+    await page.waitForTimeout(testData.timeouts.action)
+
+    await sideMenuPage.createFolder('Test Folder')
+    await page.waitForTimeout(testData.timeouts.action)
+
+    await sideMenuPage.selectSideBarCategory('login')
+    await mainPage.clickAddItem('login')
+    await createOrEditPage.fillCreateOrEditInput('title', 'AAA')
+    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await page.waitForTimeout(testData.timeouts.action)
+
+    await mainPage.clickAddItem('login')
+    await createOrEditPage.fillCreateOrEditInput('title', 'BBB')
+    await createOrEditPage.clickOnCreateOrEditButton('save')
+    await page.waitForTimeout(testData.timeouts.action)
+
     await mainPage.clickMultipleSelectiontButton()
     await page.waitForTimeout(testData.timeouts.action)
-    await mainPage.clickElementByPosition(0, 'AAA')
+    await mainPage.clickElementByPosition(0, 'BBB')
+    await mainPage.clickElementByPosition(1, 'AAA')
+    await page.waitForTimeout(testData.timeouts.action)
 
     await mainPage.clickMultipleSelectMoveButon()
     await page.waitForTimeout(testData.timeouts.action)
+    await mainPage.clickMoveFolderChip('Test Folder')
+    await mainPage.clickMoveFolderSubmit()
+    await page.waitForTimeout(testData.timeouts.action)
 
-    await mainPage.clickCreateNewFoldertButton()
-    await mainPage.fillCreateNewFolderInput('Test Folder')
-    await mainPage.clickCreateFoldertButton()
-
+    await sideMenuPage.selectSideBarCategory('all')
     await mainPage.verifyElementFolderName('Test Folder')
-    await sideMenuPage.deleteFolder('Test Folder')
+    await sideMenuPage.deleteMultipleItemsFolder('Test Folder')
+    await page.waitForTimeout(testData.timeouts.action)
+
+    await sideMenuPage.clickDeleteFolderButton()
   })
 })

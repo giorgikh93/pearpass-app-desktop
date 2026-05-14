@@ -46,6 +46,20 @@ export const createStyles = (colors: ThemeColors) => ({
     width: '100%'
   },
 
+  staticSectionHeader: {
+    display: 'flex' as const,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: `${rawTokens.spacing4}px`,
+    paddingBlock: `${rawTokens.spacing8}px`,
+    paddingInline: `${rawTokens.spacing4}px`,
+    background: 'transparent',
+    border: 'none',
+    userSelect: 'none' as const,
+    color: colors.colorTextPrimary,
+    width: '100%'
+  },
+
   sectionHeaderChevron: {
     width: 16,
     height: 16,

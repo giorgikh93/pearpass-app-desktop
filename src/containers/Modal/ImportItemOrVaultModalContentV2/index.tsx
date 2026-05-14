@@ -1,4 +1,3 @@
-import os from 'os'
 import type { ChangeEvent } from 'react'
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
@@ -62,9 +61,7 @@ export const ImportItemOrVaultModalContentV2 = () => {
 
         await refetchVault(vaultId)
 
-        await addDevice(
-          os.hostname() + ' ' + os.platform() + ' ' + os.release()
-        )
+        await addDevice()
 
         setModal(<ImportVaultPreviewModalContent />, {
           replace: true

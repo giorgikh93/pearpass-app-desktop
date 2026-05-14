@@ -51,7 +51,7 @@ declare module '@tetherto/pearpass-lib-vault' {
       }
     ) => Promise<Vault | void>
     isVaultProtected: (vaultId: string | undefined) => Promise<boolean>
-    addDevice: (deviceName: string) => Promise<void>
+    addDevice: (deviceName?: string) => Promise<void>
     resetState: () => void
     updateUnprotectedVault: (
       vaultId: string,
@@ -109,6 +109,31 @@ declare module '@tetherto/pearpass-lib-vault' {
   export function createAlignedInterval(callback: () => void): () => void
   export function isExpiring(timeRemaining: number | null): boolean
   export const EXPIRY_THRESHOLD_SECONDS: number
+
+  export function validateOtpInput(
+    input: string | undefined | null
+  ): string | null
+
+  export function parseOtpInput(input: string | undefined | null): {
+    secret: string
+    type: 'TOTP' | 'HOTP'
+    algorithm: string
+    digits: number
+    period?: number
+    counter?: number
+    issuer?: string
+    label?: string
+  } | null
+
+  export function matchLoginRecords<
+    R extends { id: string; data?: Record<string, unknown> }
+  >(
+    parsedOtp: { issuer?: string; label?: string } | null | undefined,
+    loginRecords: R[]
+  ): Array<{
+    record: R
+    reasons: Array<'issuer-domain' | 'label-username'>
+  }>
 
   const otherExports: any
   export default otherExports
@@ -230,6 +255,24 @@ declare module '@tetherto/pearpass-lib-vault' {
   export const useRecords: any
   export const useBlindMirrors: any
 
+  export const ACTION_TYPES: {
+    DELETE_VAULT: 'delete-vault'
+    [key: string]: string
+  }
+
+  export function broadcastAction(action: {
+    type: string
+    payload?: unknown
+  }): Promise<{
+    results: Array<{
+      targetDeviceId: string
+      timestamp: string
+      actionId: string
+      key: string
+    }>
+    failures: Array<{ targetDeviceId: string; error: Error }>
+  }>
+
   export function closeAllInstances(): Promise<void>
 
   export function useRecordCountsByType(): {
@@ -296,6 +339,13 @@ declare module '@tetherto/pearpass-lib-vault/src/utils/buffer' {
   export const stringToBuffer: (value: string) => any
 }
 
+declare module '@tetherto/pearpass-lib-vault/src/instances' {
+  export const pearpassVaultClient: {
+    on?: (event: string, handler: (...args: any[]) => void) => void
+    off?: (event: string, handler: (...args: any[]) => void) => void
+  }
+}
+
 declare module '@tetherto/pearpass-lib-constants' {
   export const BLIND_PEERS_LIMIT: number
   export const BLIND_PEER_TYPE: {
@@ -313,6 +363,7 @@ declare module '@tetherto/pearpass-lib-constants' {
   export const DELETE_VAULT_ENABLED: boolean
   export const AUTHENTICATOR_ENABLED: boolean
   export const DESKTOP_DESIGN_VERSION: number
+  export const DESKTOP_2FA_IMPORTS_ENABLED: boolean
   export const DATE_FORMAT: string
   export const MAX_IMPORT_RECORDS: number
   export const NATIVE_MESSAGING_BRIDGE_PEAR_LINK_PRODUCTION: string

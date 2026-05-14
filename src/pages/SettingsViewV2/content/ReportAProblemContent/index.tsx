@@ -8,7 +8,7 @@ import {
   Button,
   Form,
   TextArea,
-  PageHeader,
+  PageHeader
 } from '@tetherto/pearpass-lib-ui-kit'
 import { Send } from '@tetherto/pearpass-lib-ui-kit/icons'
 
@@ -39,7 +39,9 @@ type ReportAProblemContentProps = {
   currentVersion?: string
 }
 
-export const ReportAProblemContent = ({ currentVersion = '' }: ReportAProblemContentProps) => {
+export const ReportAProblemContent = ({
+  currentVersion = ''
+}: ReportAProblemContentProps) => {
   const { t } = useTranslation()
   const { setToast } = useToast()
   const styles = createStyles()
@@ -131,8 +133,11 @@ export const ReportAProblemContent = ({ currentVersion = '' }: ReportAProblemCon
 
   return (
     <div data-testid={TEST_IDS.root} style={styles.root}>
-      <PageHeader title={t('Report a problem')}
-        subtitle={t('Please describe the problem you’re experiencing. Our team reviews every report to help improve the app.')}
+      <PageHeader
+        title={t('Report a problem')}
+        subtitle={t(
+          'Please describe the problem you’re experiencing. Our team reviews every report to help improve the app.'
+        )}
       />
       <Form
         testID="settings-report-problem-form"

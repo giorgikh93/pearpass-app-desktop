@@ -10,7 +10,7 @@ export function useRecordActionItems(params?: {
     string,
     unknown
   >
-  onSelect?: () => void
+onSelect?: () => void
   onClose?: () => void
 }): {
   actions: RecordActionItem[]

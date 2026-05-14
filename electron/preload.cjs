@@ -52,5 +52,9 @@ window.electronAPI = {
     ipcRenderer.on('vault:master-update', sub)
     return () => ipcRenderer.removeListener('vault:master-update', sub)
   },
-  openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url)
+  openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url),
+  openLogsFolder: () => ipcRenderer.invoke('vault:openLogsFolder'),
+  isLoggingEnabled: () => ipcRenderer.invoke('vault:isLoggingEnabled'),
+  setLogging: (enabled) =>
+    ipcRenderer.invoke('vault:setLogging', { enabled: !!enabled })
 }

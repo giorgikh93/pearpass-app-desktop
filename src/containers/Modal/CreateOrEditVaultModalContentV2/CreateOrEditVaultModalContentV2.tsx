@@ -9,7 +9,6 @@ import { createStyles } from './CreateOrEditVaultModalContentV2.styles'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
-import { getDeviceName } from '../../../utils/getDeviceName'
 import { logger } from '../../../utils/logger'
 
 export type CreateOrEditVaultModalContentV2Props = {
@@ -91,7 +90,7 @@ export const CreateOrEditVaultModalContentV2 = ({
         password: ''
       })
 
-      await addDevice(getDeviceName())
+      await addDevice()
 
       onSuccess?.()
       if(shouldRedirectToMain) {

@@ -35,7 +35,6 @@ import { LOCAL_STORAGE_KEYS } from '../../../constants/localStorage'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
-import { getDeviceName } from '../../../utils/getDeviceName'
 import { logger } from '../../../utils/logger'
 import { STRENGTH_MAP } from '../../../constants/password'
 
@@ -121,7 +120,7 @@ export const CardCreateMasterPasswordV2 = () => {
       await logIn({ password: loginBuffer })
       await initVaults({ password: loginBuffer })
       await createVault({ name: t('Personal') })
-      await addDevice(getDeviceName())
+      await addDevice()
       navigate('vault', { recordType: 'all' })
       setIsLoading(false)
     } catch (error) {
