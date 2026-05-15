@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 
 import {
   useCreateVault,
@@ -14,17 +14,12 @@ import { useModal } from '../context/ModalContext'
 import { useRouter } from '../context/RouterContext'
 import { useToast } from '../context/ToastContext'
 import { useTranslation } from './useTranslation'
-import { getDeviceName } from '../utils/getDeviceName'
 import { logger } from '../utils/logger'
 
 /**
  * Receive-side handler for "another device removed me from this vault".
  * Wipes local data, recovers to a fresh "Personal" vault when nothing
  * remains, and shows the access-removed modal.
- *
- * Triggered by the 'vault-access-revoked' event the lib emits from its
- * delete-vault action handler when an entry lands in this device's
- * actions queue (see pearpass-lib-vault/src/actions/index.js).
  */
 export const useVaultAccessRevoked = () => {
   const { t } = useTranslation()
@@ -36,12 +31,51 @@ export const useVaultAccessRevoked = () => {
   const { switchVault } = useVaultSwitch()
   const { createVault } = useCreateVault()
 
+  const latest = useRef({
+    vaults,
+    activeVault,
+    deleteVaultLocal,
+    addDevice,
+    switchVault,
+    createVault,
+    setModal,
+    setToast,
+    navigate,
+    t
+  })
+  latest.current = {
+    vaults,
+    activeVault,
+    deleteVaultLocal,
+    addDevice,
+    switchVault,
+    createVault,
+    setModal,
+    setToast,
+    navigate,
+    t
+  }
+
   const handleAccessRevoked = useCallback(
-    async ({ vaultId, actor }: { vaultId: string; actor?: string } = {} as {
-      vaultId: string
-      actor?: string
-    }) => {
+    async (
+      { vaultId, actor }: { vaultId: string; actor?: string } = {} as {
+        vaultId: string
+        actor?: string
+      }
+    ) => {
       if (!vaultId) return
+      const {
+        vaults,
+        activeVault,
+        deleteVaultLocal,
+        addDevice,
+        switchVault,
+        createVault,
+        setModal,
+        setToast,
+        navigate,
+        t
+      } = latest.current
 
       const vault = (vaults ?? []).find((v: Vault) => v.id === vaultId)
       const vaultName = vault?.name ?? vaultId
@@ -58,6 +92,12 @@ export const useVaultAccessRevoked = () => {
           'deleteVaultLocal failed:',
           error
         )
+        setModal(
+          <AccessRemovedModalContent
+            vaultName={vaultName}
+            deviceName={deviceName}
+          />
+        )
         return
       }
 
@@ -68,7 +108,7 @@ export const useVaultAccessRevoked = () => {
         } else {
           try {
             await createVault({ name: t('Personal') })
-            await addDevice(getDeviceName())
+            await addDevice()
             navigate('vault', { recordType: 'all' })
             setToast({
               message: t('A new "Personal" vault was created')
@@ -90,18 +130,7 @@ export const useVaultAccessRevoked = () => {
         />
       )
     },
-    [
-      vaults,
-      activeVault?.id,
-      deleteVaultLocal,
-      switchVault,
-      createVault,
-      addDevice,
-      navigate,
-      setModal,
-      setToast,
-      t
-    ]
+    []
   )
 
   useEffect(() => {
@@ -112,13 +141,15 @@ export const useVaultAccessRevoked = () => {
           off?: (event: string, handler: (payload: unknown) => void) => void
         }
     if (!client?.on) return
-    client.on('vault-access-revoked', handleAccessRevoked as (
-      payload: unknown
-    ) => void)
+    client.on(
+      'vault-access-revoked',
+      handleAccessRevoked as (payload: unknown) => void
+    )
     return () => {
-      client.off?.('vault-access-revoked', handleAccessRevoked as (
-        payload: unknown
-      ) => void)
+      client.off?.(
+        'vault-access-revoked',
+        handleAccessRevoked as (payload: unknown) => void
+      )
     }
   }, [handleAccessRevoked])
 }
