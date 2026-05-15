@@ -11,7 +11,6 @@ import { MoveFolderModalContent } from '../containers/Modal/MoveFolderModalConte
 import { MoveFolderModalContentV2 } from '../containers/Modal/MoveFolderModalContentV2/MoveFolderModalContentV2'
 import { useModal } from '../context/ModalContext'
 import { useRouter } from '../context/RouterContext'
-import { useToast } from '../context/ToastContext'
 import { isV2 } from '../utils/designVersion'
 
 /**
@@ -39,31 +38,9 @@ export const useRecordActionItems = ({
   const { i18n } = useLingui()
   const { setModal, closeModal } = useModal()
   const { data: routerData, navigate, currentPage } = useRouter()
-  const { setToast } = useToast()
 
-  const { deleteRecords, updateRecords, updateFavoriteState } = useRecords()
+  const { deleteRecords, updateFavoriteState } = useRecords()
   const { handleCreateOrEditRecord } = useCreateOrEditRecord()
-
-  const isOtpContext = routerData?.recordType === RECORD_TYPES.OTP
-  const isAuthenticatorLoginRecord =
-    isOtpContext && record?.type === RECORD_TYPES.LOGIN
-
-  const handleStripOtp = async () => {
-    const { otpInput, otp, ...restData } = record?.data ?? {}
-    const { otpPublic, ...recordWithoutOtp } = record ?? {}
-    const updatedRecord = { ...recordWithoutOtp, data: restData }
-    try {
-      await updateRecords([updatedRecord])
-      if (routerData?.recordId === record?.id) {
-        navigate(currentPage, { ...routerData, recordId: undefined })
-      }
-      closeModal?.()
-    } catch (err) {
-      setToast({
-        message: err?.message ?? i18n._('Failed to remove authenticator code')
-      })
-    }
-  }
 
   const handleDeleteConfirm = () => {
     if (routerData?.recordId === record?.id) {
@@ -77,27 +54,7 @@ export const useRecordActionItems = ({
 
   const handleDelete = () => {
     if (isV2()) {
-      setModal(
-        <DeleteRecordsModalContentV2
-          records={[record]}
-          onConfirm={isAuthenticatorLoginRecord ? handleStripOtp : undefined}
-          dialogTitle={
-            isAuthenticatorLoginRecord
-              ? i18n._('Remove Authenticator Code')
-              : undefined
-          }
-          confirmText={
-            isAuthenticatorLoginRecord
-              ? i18n._(
-                  'Are you sure you want to remove the authenticator code from this login record?'
-                )
-              : undefined
-          }
-          submitLabel={
-            isAuthenticatorLoginRecord ? i18n._('Remove') : undefined
-          }
-        />
-      )
+      setModal(<DeleteRecordsModalContentV2 records={[record]} />)
     } else {
       setModal(
         <ConfirmationModalContent
@@ -127,7 +84,10 @@ export const useRecordActionItems = ({
 
   const handleEdit = () => {
     handleCreateOrEditRecord({
-      recordType: isOtpContext ? RECORD_TYPES.OTP : record?.type,
+      recordType:
+        routerData?.recordType === RECORD_TYPES.OTP
+          ? RECORD_TYPES.OTP
+          : record?.type,
       initialRecord: record
     })
 

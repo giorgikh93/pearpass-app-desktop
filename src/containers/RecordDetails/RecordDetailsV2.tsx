@@ -19,7 +19,7 @@ import {
   TrashOutlined
 } from '@tetherto/pearpass-lib-ui-kit/icons'
 // @ts-expect-error - declaration file is incomplete
-import { RECORD_TYPES, useRecordById } from '@tetherto/pearpass-lib-vault'
+import { useRecordById } from '@tetherto/pearpass-lib-vault'
 
 import { RecordItemIcon } from '../../components/RecordItemIcon'
 import { useRouter } from '../../context/RouterContext'
