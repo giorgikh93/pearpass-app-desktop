@@ -121,7 +121,9 @@ const VAULT_METHODS = [
   'personalSwarmGetTopic',
   'personalSwarmSend',
   'vaultsRemove',
-  'vaultsFind'
+  'vaultsFind',
+  'signMessage',
+  'verifySignature'
 ]
 
 /**
