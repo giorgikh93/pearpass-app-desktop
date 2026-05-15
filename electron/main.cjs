@@ -363,6 +363,12 @@ async function startRuntime() {
     }
   })
 
+  vaultClient.on('personal-swarm-envelope', (msg) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('vault:personal-swarm-envelope', msg)
+    }
+  })
+
   pearRuntime.updater.on('updating', () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       logger.info('runtime:updating', 'sending updating event')
@@ -475,6 +481,12 @@ async function startWorkletOnly() {
   vaultClient.on('master-update', () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('vault:master-update')
+    }
+  })
+
+  vaultClient.on('personal-swarm-envelope', (msg) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('vault:personal-swarm-envelope', msg)
     }
   })
 }

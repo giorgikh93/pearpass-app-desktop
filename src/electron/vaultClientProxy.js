@@ -115,7 +115,13 @@ const VAULT_METHODS = [
   'fetchFavicon',
   'decryptExportData',
   'activeVaultFind',
-  'activeVaultGetWriterKey'
+  'activeVaultGetWriterKey',
+  'personalSwarmInit',
+  'personalSwarmClose',
+  'personalSwarmGetTopic',
+  'personalSwarmSend',
+  'vaultsRemove',
+  'vaultsFind'
 ]
 
 /**
@@ -130,6 +136,9 @@ export function createElectronVaultClientProxy(api) {
       super()
       api.vaultOnUpdate(() => this.emit('update'))
       api.vaultOnMasterUpdate?.(() => this.emit('master-update'))
+      api.vaultOnPersonalSwarmEnvelope?.((msg) =>
+        this.emit('personal-swarm-envelope', fromSerializableData(msg))
+      )
       for (const method of VAULT_METHODS) {
         this[method] = async (...args) => {
           const serialized = args.map(toSerializableArg)
