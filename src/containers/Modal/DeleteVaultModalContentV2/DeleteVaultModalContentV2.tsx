@@ -245,7 +245,10 @@ export const DeleteVaultModalContentV2 = ({
                 onClick={() => setModal(<PairedDevicesModalContent />)}
                 data-testid="delete-vault-eraseall-link-v2"
               >
-                {t('{count} other devices', { count: otherDeviceCount })}
+                {t(
+                  '{count, plural, one {# other device} other {# other devices}}',
+                  { count: otherDeviceCount }
+                )}
               </Link>
             </span>
             <Text as="span" variant="label">
