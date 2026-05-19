@@ -290,6 +290,14 @@ declare module '@tetherto/pearpass-lib-vault' {
     data: Record<string, number> | undefined
     isLoading: boolean
   }
+
+  export function useFindOtpDuplicates(params?: {
+    secret?: string | null
+    excludeRecordId?: string
+  }): {
+    data: Array<{ id: string; title: string }>
+    isLoading: boolean
+  }
 }
 
 declare module '@tetherto/pearpass-utils-password-check' {

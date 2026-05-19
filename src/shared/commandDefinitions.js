@@ -79,6 +79,7 @@ const COMMAND_DEFINITIONS = [
   { id: 1041, name: 'generateHotpNext' },
   { id: 1042, name: 'addOtpToRecord' },
   { id: 1043, name: 'removeOtpFromRecord' },
+  { id: 1047, name: 'findOtpDuplicates' },
 
   // Server-pushed events (fire-and-forget, server -> bridge)
   { id: 1045, name: 'onVaultAccessRevoked', send: true }

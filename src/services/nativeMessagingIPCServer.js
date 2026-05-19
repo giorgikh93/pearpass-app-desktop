@@ -333,6 +333,11 @@ export class NativeMessagingIPCServer {
       vaultHandlers.removeOtpFromRecord.bind(vaultHandlers),
       { requiresStatus: ['encryption', 'vaults', 'activeVault'] }
     )
+    this.secureMethodRegistry.register(
+      'findOtpDuplicates',
+      vaultHandlers.findOtpDuplicates.bind(vaultHandlers),
+      { requiresStatus: ['encryption', 'vaults', 'activeVault'] }
+    )
   }
 
   /**

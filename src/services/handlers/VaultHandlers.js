@@ -241,4 +241,11 @@ export class VaultHandlers {
     await this.client.removeOtpFromRecord(params.recordId)
     return { success: true }
   }
+
+  async findOtpDuplicates(params) {
+    return await this.client.findOtpDuplicates({
+      secret: params.secret,
+      excludeRecordId: params.excludeRecordId
+    })
+  }
 }
