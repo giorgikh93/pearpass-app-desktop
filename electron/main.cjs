@@ -785,7 +785,7 @@ function registerIPC() {
       return { enabled: true, forced: false }
     }
 
-    // Toggle OFF: stop worklet writes first, then close main, then delete
+    // Toggle OFF: stop worklet writes first, then close main.
     if (vaultClient) {
       try {
         await vaultClient.setLogOptions({ logFile: null })
@@ -794,7 +794,6 @@ function registerIPC() {
       }
     }
     logger.clearLogPath()
-    removeLogFiles(getStorageDir())
     return { enabled: false, forced: false }
   })
 }
