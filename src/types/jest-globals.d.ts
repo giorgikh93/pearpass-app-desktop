@@ -18,6 +18,11 @@ declare function test(
 declare function beforeEach(fn: () => void | Promise<void>): void
 declare function afterEach(fn: () => void | Promise<void>): void
 
+interface AsyncMatchers {
+  toThrow(expected?: string | RegExp | Error): Promise<void>
+  not: AsyncMatchers
+}
+
 interface Matchers<R = void> {
   toBe(expected: unknown): R
   toEqual(expected: unknown): R
@@ -40,7 +45,9 @@ interface Matchers<R = void> {
   toBeDisabled(): R
   toBeChecked(): R
   toHaveValue(expected?: string | number | string[]): R
+  toThrow(expected?: string | RegExp | Error): R
   not: Matchers<R>
+  rejects: AsyncMatchers
 }
 
 declare function expect<T = unknown>(actual: T): Matchers<void>
