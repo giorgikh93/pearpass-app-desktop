@@ -50,7 +50,6 @@ import {
   NoticeText,
   SmallArrowIcon
 } from '../../../lib-react-components'
-import { getDeviceName } from '../../../utils/getDeviceName'
 import { logger } from '../../../utils/logger'
 import { ModalContent } from '../ModalContent'
 
@@ -168,7 +167,7 @@ export const CreateVaultModalContent = ({ onClose, onSuccess }) => {
         password: values.password
       })
 
-      await addDevice(getDeviceName())
+      await addDevice()
 
       onSuccess?.()
       navigate('vault', { recordType: 'all' })

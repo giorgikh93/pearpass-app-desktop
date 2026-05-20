@@ -51,8 +51,7 @@ export const Record = ({
   onSelect,
   testId,
   dataId,
-  otpCode,
-  recordType
+  otpCode
 }) => {
   const [isOpen, setIsOpen] = useState()
 
@@ -60,7 +59,6 @@ export const Record = ({
 
   const { actions } = useRecordActionItems({
     record,
-    recordType,
     onSelect,
     excludeTypes: ['edit'],
     onClose: () => {

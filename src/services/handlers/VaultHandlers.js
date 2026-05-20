@@ -63,6 +63,11 @@ export class VaultHandlers {
     return { success: true }
   }
 
+  async removeVault(params) {
+    await this.client.removeVault(params.vaultId)
+    return { success: true }
+  }
+
   async vaultsClose() {
     await this.client.vaultsClose()
     return { success: true }
@@ -156,6 +161,10 @@ export class VaultHandlers {
     return { success: true }
   }
 
+  async activeVaultGetWriterKey() {
+    return await this.client.activeVaultGetWriterKey()
+  }
+
   async pairActiveVault(params) {
     return await this.client.pairActiveVault(params.inviteCode)
   }
@@ -231,5 +240,12 @@ export class VaultHandlers {
   async removeOtpFromRecord(params) {
     await this.client.removeOtpFromRecord(params.recordId)
     return { success: true }
+  }
+
+  async findOtpDuplicates(params) {
+    return await this.client.findOtpDuplicates({
+      secret: params.secret,
+      excludeRecordId: params.excludeRecordId
+    })
   }
 }

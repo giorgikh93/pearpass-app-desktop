@@ -51,7 +51,7 @@ declare module '@tetherto/pearpass-lib-vault' {
       }
     ) => Promise<Vault | void>
     isVaultProtected: (vaultId: string | undefined) => Promise<boolean>
-    addDevice: (deviceName: string) => Promise<void>
+    addDevice: () => Promise<void>
     resetState: () => void
     updateUnprotectedVault: (
       vaultId: string,
@@ -61,9 +61,11 @@ declare module '@tetherto/pearpass-lib-vault' {
       vaultId: string,
       vaultUpdate: { name: string; password: string; currentPassword: string }
     ) => Promise<void>
+    deleteVaultLocal: (vaultId: string) => Promise<Vault[]>
   }
 
   export const setPearpassVaultClient: any
+  export function setCurrentDeviceName(name: string | null): void
   export const VaultProvider: any
   export function useVaults(options?: {
     onCompleted?: (payload: Vault[]) => void
@@ -108,6 +110,31 @@ declare module '@tetherto/pearpass-lib-vault' {
   export function createAlignedInterval(callback: () => void): () => void
   export function isExpiring(timeRemaining: number | null): boolean
   export const EXPIRY_THRESHOLD_SECONDS: number
+
+  export function validateOtpInput(
+    input: string | undefined | null
+  ): string | null
+
+  export function parseOtpInput(input: string | undefined | null): {
+    secret: string
+    type: 'TOTP' | 'HOTP'
+    algorithm: string
+    digits: number
+    period?: number
+    counter?: number
+    issuer?: string
+    label?: string
+  } | null
+
+  export function matchLoginRecords<
+    R extends { id: string; data?: Record<string, unknown> }
+  >(
+    parsedOtp: { issuer?: string; label?: string } | null | undefined,
+    loginRecords: R[]
+  ): Array<{
+    record: R
+    reasons: Array<'issuer-domain' | 'label-username'>
+  }>
 
   const otherExports: any
   export default otherExports
@@ -229,10 +256,46 @@ declare module '@tetherto/pearpass-lib-vault' {
   export const useRecords: any
   export const useBlindMirrors: any
 
+  export const ACTION_TYPES: {
+    DELETE_VAULT: 'delete-vault'
+    [key: string]: string
+  }
+
+  export function broadcastAction(action: {
+    type: string
+    payload?: unknown
+  }): Promise<{
+    results: Array<{
+      targetDeviceId: string
+      timestamp: string
+      actionId: string
+      key: string
+    }>
+    failures: Array<{ targetDeviceId: string; error: Error }>
+  }>
+
+  export function broadcastDeleteVault(vaultId: string): Promise<{
+    results: Array<{
+      targetDeviceId: string
+      timestamp: string
+      actionId: string
+      key: string
+    }>
+    failures: Array<{ targetDeviceId: string; error: Error }>
+  }>
+
   export function closeAllInstances(): Promise<void>
 
   export function useRecordCountsByType(): {
     data: Record<string, number> | undefined
+    isLoading: boolean
+  }
+
+  export function useFindOtpDuplicates(params?: {
+    secret?: string | null
+    excludeRecordId?: string
+  }): {
+    data: Array<{ id: string; title: string }>
     isLoading: boolean
   }
 }
@@ -293,6 +356,25 @@ declare module '@tetherto/pear-apps-utils-date' {
 declare module '@tetherto/pearpass-lib-vault/src/utils/buffer' {
   export const clearBuffer: (buffer: any) => void
   export const stringToBuffer: (value: string) => any
+}
+
+declare module '@tetherto/pearpass-lib-vault/src/instances' {
+  export const pearpassVaultClient: {
+    on?: (event: string, handler: (...args: any[]) => void) => void
+    off?: (event: string, handler: (...args: any[]) => void) => void
+    decryptBitwardenExport: (params: {
+      password: string
+      salt: string
+      kdfType: number
+      kdfIterations: number
+      kdfMemory?: number
+      kdfParallelism?: number
+      cipherString: string
+    }) => Promise<string>
+    [key: string]: any
+  }
+  export const setPearpassVaultClient: (instance: unknown) => void
+  export const setStoragePath: (path: string) => Promise<void>
 }
 
 declare module '@tetherto/pearpass-lib-constants' {
@@ -383,6 +465,21 @@ declare module '@tetherto/pearpass-lib-data-import' {
     data: unknown,
     fileType: string
   ): Promise<unknown[]>
+  export function decryptBitwardenJson(
+    encryptedData: string,
+    password: string,
+    options?: {
+      decryptViaWorklet?: (params: {
+        password: string
+        salt: string
+        kdfType: number
+        kdfIterations: number
+        kdfMemory?: number
+        kdfParallelism?: number
+        cipherString: string
+      }) => Promise<string>
+    }
+  ): Promise<unknown>
 }
 
 declare module '@tetherto/pear-apps-lib-feedback' {

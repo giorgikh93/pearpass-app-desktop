@@ -4,9 +4,10 @@ import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { Validator } from '@tetherto/pear-apps-utils-validator'
 import { MAX_IMPORT_RECORDS } from '@tetherto/pearpass-lib-constants'
 import {
-  decryptKeePassKdbx,
   parse1PasswordData,
   parseBitwardenData,
+  decryptBitwardenJson,
+  decryptKeePassKdbx,
   parseKeePassData,
   parseLastPassData,
   parseNordPassData,
@@ -15,6 +16,7 @@ import {
 } from '@tetherto/pearpass-lib-data-import'
 import type { UploadedFile } from '@tetherto/pearpass-lib-ui-kit'
 import {
+  AlertMessage,
   Button,
   Link,
   ListItem,
@@ -33,6 +35,7 @@ import {
   decryptExportData,
   useCreateRecord
 } from '@tetherto/pearpass-lib-vault'
+import { pearpassVaultClient } from '@tetherto/pearpass-lib-vault/src/instances'
 
 import { useGlobalLoading } from '../../../../context/LoadingContext'
 import { useToast } from '../../../../context/ToastContext'
@@ -40,38 +43,13 @@ import { useTranslation } from '../../../../hooks/useTranslation'
 import { logger } from '../../../../utils/logger'
 import { readFileContent } from '../../../SettingsView/ImportTab/utils/readFileContent'
 import { createStyles } from './styles'
-
-type ImportState = 'default' | 'upload' | 'inputPassword'
-
-type ImportOption = {
-  title: string
-  type: ImportOptionType
-  description: string
-  testId?: string
-  accepts: string[]
-  supportLink?: string
-  learnMoreUrl?: string
-}
-
-type FileInfo = {
-  fileContent: string | ArrayBuffer
-  fileType: string
-  filename: string
-  size: number
-  isEncrypted: boolean
-}
-
-enum ImportOptionType {
-  OnePassword = '1password',
-  Bitwarden = 'bitwarden',
-  KeePass = 'keepass',
-  KeePassKDBX = 'keepass-kdbx',
-  LastPass = 'lastpass',
-  NordPass = 'nordpass',
-  ProtonPass = 'protonpass',
-  Unencrypted = 'unencrypted',
-  Encrypted = 'encrypted'
-}
+import { ImportOptionType } from './types'
+import type { FileInfo, ImportOption, ImportState } from './types'
+import {
+  detectIsEncrypted,
+  isArgon2BitwardenExport,
+  parseJsonContent
+} from './utils'
 
 const isAllowedType = (fileType: string, accepts: string[]) =>
   accepts.some((accept) => {
@@ -238,12 +216,14 @@ export const ImportItemsContent = () => {
     type,
     fileContent,
     fileType,
+    parsedJson,
     password,
     isEncrypted
   }: {
     type: ImportOptionType
     fileContent: string | ArrayBuffer
     fileType: string
+    parsedJson: Record<string, unknown> | null
     password?: string | null
     isEncrypted?: boolean
   }) => {
@@ -258,7 +238,7 @@ export const ImportItemsContent = () => {
         fileType === 'kdbx'
       ) {
         if (!password) {
-          throw new Error('Password is required for encrypted files')
+          throw new Error(t('Password is required for encrypted files'))
         }
         dataToProcess = await decryptKeePassKdbx(fileContent, password)
         resolvedType = ImportOptionType.KeePassKDBX
@@ -266,15 +246,59 @@ export const ImportItemsContent = () => {
 
       if (resolvedType === ImportOptionType.Encrypted && isEncrypted) {
         if (!password) {
-          throw new Error('Password is required for encrypted files')
+          throw new Error(t('Password is required for encrypted files'))
         }
-        const encryptedData = JSON.parse(fileContent as string)
-        dataToProcess = await decryptExportData(encryptedData, password)
+        if (!parsedJson) {
+          throw new Error(t('Failed to parse file. Please ensure it is valid.'))
+        }
+        dataToProcess = await decryptExportData(parsedJson, password)
       }
-    } catch {
-      throw new Error(
-        'Failed to decrypt file. Please check your password and try again.'
+
+      if (resolvedType === ImportOptionType.Bitwarden && isEncrypted) {
+        if (!password) {
+          throw new Error(t('Password is required for encrypted files'))
+        }
+        dataToProcess = await decryptBitwardenJson(
+          fileContent as string,
+          password,
+          {
+            decryptViaWorklet:
+              pearpassVaultClient.decryptBitwardenExport.bind(
+                pearpassVaultClient
+              )
+          }
+        )
+      }
+    } catch (error) {
+      logger.error(
+        'ImportItemsContent',
+        'Failed to decrypt import file:',
+        error
       )
+
+      // Only a wrong-password failure is recoverable by re-entering the
+      // password. The decrypt helpers signal this with "Incorrect password"
+      // (Bitwarden / KeePass KDBX), an "InvalidKey" error, or "invalid
+      // password" (PearPass export worklet). Everything else — malformed file,
+      // unsupported KDF, a missing-flag/structural error, or a worklet/IPC
+      // failure — is surfaced as-is so it is not misattributed to a bad
+      // password.
+      const message = error instanceof Error ? error.message : ''
+      if (/incorrect password|invalid password|invalid key/i.test(message)) {
+        throw new Error(
+          t(
+            'Failed to decrypt file. Please check your password and try again.'
+          )
+        )
+      }
+
+      throw error instanceof Error
+        ? error
+        : new Error(
+            t(
+              'Failed to decrypt file. Please check your password and try again.'
+            )
+          )
     }
 
     try {
@@ -373,30 +397,21 @@ export const ImportItemsContent = () => {
           fileType,
           filename,
           size: file.size,
-          isEncrypted: true
-        })
-        return
-      }
-
-      if (selectedOption.type === ImportOptionType.Encrypted) {
-        const fileContent = await readFileContent(file)
-        setSelectedFileInfo({
-          fileContent,
-          fileType,
-          filename,
-          size: file.size,
-          isEncrypted: true
+          isEncrypted: true,
+          parsedJson: null
         })
         return
       }
 
       const fileContent = await readFileContent(file)
+      const parsedJson = parseJsonContent(fileContent)
       setSelectedFileInfo({
         fileContent,
         fileType,
         filename,
         size: file.size,
-        isEncrypted: false
+        isEncrypted: detectIsEncrypted(selectedOption.type, fileType, parsedJson),
+        parsedJson
       })
     } catch (error) {
       setToast({ message: t('Failed to read file') })
@@ -415,6 +430,7 @@ export const ImportItemsContent = () => {
         type: selectedOption.type,
         fileContent: selectedFileInfo.fileContent,
         fileType: selectedFileInfo.fileType,
+        parsedJson: selectedFileInfo.parsedJson,
         password: formValues?.password ?? null,
         isEncrypted: selectedFileInfo.isEncrypted
       })
@@ -564,6 +580,17 @@ export const ImportItemsContent = () => {
                   'The uploaded file is encrypted. Enter the password to continue.'
                 )}
               </Text>
+              {isArgon2BitwardenExport(selectedFileInfo?.parsedJson ?? null) && (
+                <AlertMessage
+                  variant="warning"
+                  size="small"
+                  title={t('Decryption may take a few minutes')}
+                  description={t(
+                    "This file uses Argon2 encryption, it will take some time to decrypt it. Keep the app open, we'll let you know when it's done."
+                  )}
+                  testID="import-argon2-warning"
+                />
+              )}
             </div>
           ) : (
             <div style={styles.uploadArea}>

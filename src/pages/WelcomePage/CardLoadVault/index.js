@@ -1,5 +1,3 @@
-import os from 'os'
-
 import { useEffect, useState } from 'react'
 
 import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
@@ -73,7 +71,7 @@ export const CardLoadVault = () => {
 
       await refetchVault(vaultId)
 
-      await addDevice(os.hostname() + ' ' + os.platform() + ' ' + os.release())
+      await addDevice()
 
       navigate('vault', {
         recordType: 'all'

@@ -17,7 +17,6 @@ import { NAVIGATION_ROUTES } from '../../../constants/navigation'
 import { useGlobalLoading } from '../../../context/LoadingContext'
 import { useRouter } from '../../../context/RouterContext'
 import { useTranslation } from '../../../hooks/useTranslation'
-import { getDeviceName } from '../../../utils/getDeviceName'
 import { logger } from '../../../utils/logger'
 import { sortByName } from '../../../utils/sortByName'
 import {
@@ -85,7 +84,7 @@ export const CardUnlockPearPassV2 = (): React.ReactElement => {
         }
       } else {
         await createVault({ name: t('Personal') })
-        await addDevice(getDeviceName())
+        await addDevice()
         navigate('vault', { recordType: 'all' })
       }
     } catch (submitError) {

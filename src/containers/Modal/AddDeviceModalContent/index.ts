@@ -1,5 +1,3 @@
-import os from 'os'
-
 import { useEffect, useState } from 'react'
 import type { ClipboardEvent } from 'react'
 
@@ -141,7 +139,7 @@ export const AddDeviceModalContent = () => {
 
       await refetchVault(vaultId)
 
-      await addDevice(os.hostname() + ' ' + os.platform() + ' ' + os.release())
+      await addDevice()
 
       navigate('vault', {
         recordType: 'all'

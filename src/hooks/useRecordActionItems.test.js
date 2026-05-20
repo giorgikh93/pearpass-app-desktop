@@ -6,8 +6,8 @@ import { useRouter } from '../context/RouterContext'
 import { isV2 } from '../utils/designVersion'
 
 const mockDeleteRecord = jest.fn()
-const mockUpdateRecords = jest.fn().mockResolvedValue(undefined)
 const mockUpdateFavoriteState = jest.fn()
+const mockHandleCreateOrEditRecord = jest.fn()
 
 jest.mock(
   '../containers/Modal/MoveFolderModalContentV2/MoveFolderModalContentV2',
@@ -49,7 +49,6 @@ jest.mock('@tetherto/pearpass-lib-vault', () => ({
   RECORD_TYPES: { LOGIN: 'login', OTP: 'otp' },
   useRecords: () => ({
     deleteRecords: mockDeleteRecord,
-    updateRecords: mockUpdateRecords,
     updateFavoriteState: mockUpdateFavoriteState
   })
 }))
@@ -64,7 +63,7 @@ jest.mock('@lingui/react', () => ({
 
 jest.mock('./useCreateOrEditRecord', () => ({
   useCreateOrEditRecord: () => ({
-    handleCreateOrEditRecord: jest.fn()
+    handleCreateOrEditRecord: mockHandleCreateOrEditRecord
   })
 }))
 
@@ -225,30 +224,36 @@ describe('useRecordActionItems', () => {
     expect(mockCloseModal).toHaveBeenCalled()
   })
 
-  test('strips OTP fields from login record when deleting in authenticator context', async () => {
-    const otpLoginRecord = {
-      id: '123',
-      type: 'login',
-      isFavorite: false,
-      otpPublic: { currentCode: '169462', timeRemaining: 18 },
-      data: {
-        title: 'Test Account',
-        username: 'user@test.com',
-        otpInput: 'JBSWY3DPEHPK3PXP',
-        otp: {
-          secret: 'JBSWY3DPEHPK3PXP',
-          type: 'TOTP',
-          algorithm: 'SHA1',
-          digits: 6,
-          period: 30
-        }
-      }
-    }
+  test('handles edit action — uses record type when no recordType prop given', () => {
+    const loginRecord = { id: '123', type: 'login', isFavorite: false }
+
+    const { result } = renderHook(() =>
+      useRecordActionItems({
+        record: loginRecord,
+        onSelect: mockOnSelect,
+        onClose: mockOnClose
+      })
+    )
+
+    const editAction = result.current.actions.find(
+      (action) => action.type === 'edit'
+    )
+    editAction.click()
+
+    expect(mockHandleCreateOrEditRecord).toHaveBeenCalledWith({
+      recordType: 'login',
+      initialRecord: loginRecord
+    })
+    expect(mockOnClose).toHaveBeenCalled()
+  })
+
+  test('handles edit action — uses OTP type when recordType is otp', () => {
+    const otpLoginRecord = { id: '123', type: 'login', isFavorite: false }
 
     useRouter.mockReturnValue({
-      data: { recordId: '123', recordType: 'otp' },
+      data: { recordType: 'otp' },
       navigate: mockNavigate,
-      currentPage: 'vault'
+      currentPage: 'somePage'
     })
 
     const { result } = renderHook(() =>
@@ -259,28 +264,15 @@ describe('useRecordActionItems', () => {
       })
     )
 
-    const deleteAction = result.current.actions.find(
-      (action) => action.type === 'delete'
+    const editAction = result.current.actions.find(
+      (action) => action.type === 'edit'
     )
-    deleteAction.click()
+    editAction.click()
 
-    const onConfirm = mockSetModal.mock.calls[0][0].props.onConfirm
-    expect(onConfirm).toBeDefined()
-    await onConfirm()
-
-    expect(mockUpdateRecords).toHaveBeenCalledTimes(1)
-    const updatedRecord = mockUpdateRecords.mock.calls[0][0][0]
-    expect(updatedRecord.data.otpInput).toBeUndefined()
-    expect(updatedRecord.data.otp).toBeUndefined()
-    expect(updatedRecord.otpPublic).toBeUndefined()
-    expect(updatedRecord.data.title).toBe('Test Account')
-    expect(updatedRecord.data.username).toBe('user@test.com')
-
-    expect(mockDeleteRecord).not.toHaveBeenCalled()
-    expect(mockNavigate).toHaveBeenCalledWith('vault', {
+    expect(mockHandleCreateOrEditRecord).toHaveBeenCalledWith({
       recordType: 'otp',
-      recordId: undefined
+      initialRecord: otpLoginRecord
     })
-    expect(mockCloseModal).toHaveBeenCalled()
+    expect(mockOnClose).toHaveBeenCalled()
   })
 })

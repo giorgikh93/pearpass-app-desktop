@@ -93,7 +93,7 @@ Off by default. When enabled, logs are written under `<userData>/logs/` — `mai
 
 Three ways to enable:
 
-- **In-app toggle** (Settings → Diagnostics → **Enable logs**). Persists across launches; toggling on/off resets existing log files for a clean session.
+- **In-app toggle** (Settings → Diagnostics → **Enable logs**). Persists across launches; toggling **on** clears any previous log files to start a clean session. Toggling **off** stops writing but preserves the existing files so you can share them.
 - **Launch flag:** pass `--enable-logging` at startup. Forces logging on regardless of the toggle.
 - **Nightly builds** (`PearPass-nightly`): logging is on automatically and the in-app toggle is locked.
 

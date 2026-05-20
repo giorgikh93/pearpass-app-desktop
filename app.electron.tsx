@@ -24,6 +24,7 @@ import { getElectronConfig, getElectronVaultClient } from './src/electron'
 import { createOrGetPearpassClient } from './src/services/createOrGetPearpassClient'
 import { getNativeMessagingEnabled } from './src/services/nativeMessagingPreferences'
 import { startNativeMessagingIPC } from './src/services/nativeMessagingIPCServer'
+import { getDeviceName } from './src/utils/getDeviceName'
 import { logger } from './src/utils/logger'
 import { setFontsAndResetCSS } from './styles'
 import { AutoLockProvider } from './src/hooks/useAutoLockPreferences'
@@ -97,7 +98,7 @@ async function init() {
     debugMode: DEBUG_MODE
   })
 
-  setPearpassVaultClient(client)
+  setPearpassVaultClient(client, { currentDeviceName: getDeviceName() })
   if (getNativeMessagingEnabled()) {
     startNativeMessagingIPC(client as any).catch((err: unknown) => {
       logger.error('INDEX', 'Failed to start IPC server:', err)

@@ -5,6 +5,7 @@
  * and registers secure IPC handlers so the renderer can use runtime and vault services.
  */
 const fs = require('fs')
+const os = require('os')
 const path = require('path')
 
 const {
@@ -19,6 +20,8 @@ const PearRuntime = require('pear-runtime')
 const getPearRuntimeLegacyStorage = require('pear-runtime-legacy-storage')
 const { isLinux, isWindows, isMac } = require('which-runtime')
 
+const { clearStaleVaultsDir } = require('./clearStaleVaultsDir.cjs')
+// eslint-disable-next-line import/order
 const { scheduleClipboardCleanup } = require('./clipboardCleanup.cjs')
 
 let debugMode = false
@@ -38,6 +41,7 @@ const {
   isFlatpakRuntime,
   isSnapRuntime
 } = require('./flatpak-paths.cjs')
+const { refreshNativeHostWrapperIfPresent } = require('./nativeHostWrapper.cjs')
 const runtimeConfig = require('./runtime-config.cjs')
 const devicePreferences = require('../src/utils/devicePreferences.cjs')
 const {
@@ -193,6 +197,55 @@ function getNativeBridgePath() {
   }
 
   return path.join(app.getAppPath(), bundleFile)
+}
+
+function getRuntimeExecPath() {
+  return isWindows && process.windowsStore
+    ? path.join(
+        process.env.LOCALAPPDATA,
+        'Microsoft',
+        'WindowsApps',
+        path.basename(process.execPath)
+      )
+    : process.execPath
+}
+
+// AppImage mounts at a fresh /tmp/.mount_PearPa<random>/ each launch, so the
+// execPath/bridgePath baked into the wrapper at pair time go stale. Rewrite.
+async function refreshNativeHostWrapper() {
+  // Snap mounts the app at a stable path, so wrapper paths don't drift.
+  if (isSnapRuntime()) return
+
+  const platform = os.platform()
+  const executablePath = path.join(
+    getStorageDir(),
+    'native-messaging',
+    platform === 'win32'
+      ? 'pearpass-native-host.cmd'
+      : 'pearpass-native-host.sh'
+  )
+
+  try {
+    const result = await refreshNativeHostWrapperIfPresent({
+      executablePath,
+      electronExecPath: getRuntimeExecPath(),
+      bridgeScriptPath: getNativeBridgePath(),
+      platform,
+      isFlatpak: isFlatpakRuntime()
+    })
+    if (result.refreshed) {
+      logger.info(
+        '[MAIN]',
+        `Refreshed native messaging wrapper at ${executablePath}`
+      )
+    }
+  } catch (err) {
+    logger.warn(
+      '[MAIN]',
+      'Failed to refresh native messaging wrapper:',
+      (err && err.message) || err
+    )
+  }
 }
 
 /**
@@ -357,6 +410,18 @@ async function startRuntime() {
     }
   })
 
+  vaultClient.on('master-update', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('vault:master-update')
+    }
+  })
+
+  vaultClient.on('personal-swarm-envelope', (msg) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('vault:personal-swarm-envelope', msg)
+    }
+  })
+
   pearRuntime.updater.on('updating', () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       logger.info('runtime:updating', 'sending updating event')
@@ -463,6 +528,18 @@ async function startWorkletOnly() {
   vaultClient.on('update', () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('vault:update')
+    }
+  })
+
+  vaultClient.on('master-update', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('vault:master-update')
+    }
+  })
+
+  vaultClient.on('personal-swarm-envelope', (msg) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('vault:personal-swarm-envelope', msg)
     }
   })
 }
@@ -595,15 +672,7 @@ function registerIPC() {
       productName: runtimeConfig.productName,
       applink: runtimeConfig.upgrade || '',
       userDataPath: getStorageDir(),
-      execPath:
-        isWindows && process.windowsStore
-          ? path.join(
-              process.env.LOCALAPPDATA,
-              'Microsoft',
-              'WindowsApps',
-              path.basename(process.execPath)
-            )
-          : process.execPath,
+      execPath: getRuntimeExecPath(),
       bridgePath: getNativeBridgePath()
     }
   })
@@ -669,6 +738,11 @@ function registerIPC() {
     })
   )
 
+  ipcMain.handle('vault:clearStaleVaultsDir', async () => {
+    const storagePath = await resolveRuntimeStorageDir()
+    await clearStaleVaultsDir({ storagePath, logger })
+  })
+
   ipcMain.handle('vault:openLogsFolder', async () => {
     const { logsDir, mainPath } = getLogPaths(getStorageDir())
     fs.mkdirSync(logsDir, { recursive: true })
@@ -711,7 +785,7 @@ function registerIPC() {
       return { enabled: true, forced: false }
     }
 
-    // Toggle OFF: stop worklet writes first, then close main, then delete
+    // Toggle OFF: stop worklet writes first, then close main.
     if (vaultClient) {
       try {
         await vaultClient.setLogOptions({ logFile: null })
@@ -720,7 +794,6 @@ function registerIPC() {
       }
     }
     logger.clearLogPath()
-    removeLogFiles(getStorageDir())
     return { enabled: false, forced: false }
   })
 }
@@ -734,6 +807,7 @@ app.whenReady().then(async () => {
     logger.setLogPath(getStorageDir())
   }
   registerIPC()
+  await refreshNativeHostWrapper()
   try {
     await startRuntime()
   } catch (err) {

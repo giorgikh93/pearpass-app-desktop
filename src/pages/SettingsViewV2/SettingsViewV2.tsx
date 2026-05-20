@@ -45,6 +45,7 @@ import {
   AppVersionContent,
   BlindPeersContent,
   DiagnosticsContent,
+  ExportCodesContent,
   ExportItemsContent,
   ImportCodesContent,
   ImportItemsContent,
@@ -64,6 +65,7 @@ export enum SettingsItemKey {
   ImportItems = 'import-items',
   ExportItems = 'export-items',
   ImportCodes = 'import-codes',
+  ExportCodes = 'export-codes',
   Language = 'language',
   ReportAProblem = 'report-a-problem',
   Diagnostics = 'diagnostics',
@@ -104,6 +106,8 @@ const renderActiveContent = (
       return <ExportItemsContent />
     case SettingsItemKey.ImportCodes:
       return <ImportCodesContent />
+    case SettingsItemKey.ExportCodes:
+      return <ExportCodesContent />
     case SettingsItemKey.ReportAProblem:
       return <ReportAProblemContent currentVersion={currentVersion} />
     case SettingsItemKey.Diagnostics:
@@ -194,6 +198,11 @@ const SettingsViewV2Body = () => {
                   key: SettingsItemKey.ImportCodes,
                   label: t('Import Codes'),
                   icon: Login
+                },
+                {
+                  key: SettingsItemKey.ExportCodes,
+                  label: t('Export Codes'),
+                  icon: Logout
                 }
               ]
             }
