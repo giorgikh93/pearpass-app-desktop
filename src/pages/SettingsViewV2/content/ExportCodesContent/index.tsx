@@ -11,7 +11,21 @@ import {
   useTheme
 } from '@tetherto/pearpass-lib-ui-kit'
 
+import {
+  // @ts-expect-error — JS module without type declarations
+  exportOtpRecords,
+  // @ts-expect-error — JS module without type declarations
+  getMasterEncryption,
+  useVault
+} from '@tetherto/pearpass-lib-vault'
+
+import { AuthenticationModalContentV2 } from '../../../../containers/Modal/AuthenticationModalContentV2'
+import { useModal } from '../../../../context/ModalContext'
+import { useToast } from '../../../../context/ToastContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
+import { handleExportOtpCsv } from '../../../SettingsView/ExportTab/utils/exportOtpCsv'
+import { handleExportOtpJson } from '../../../SettingsView/ExportTab/utils/exportOtpJson'
+import { handleExportOtpQrZip } from '../../../SettingsView/ExportTab/utils/exportOtpQrZip'
 import { createStyles } from './styles'
 
 type FormValues = {
@@ -29,11 +43,15 @@ export const ExportCodesContent = () => {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const styles = createStyles(theme.colors)
+  const { setToast } = useToast()
+  const { setModal, closeModal } = useModal()
+  const { data: currentVault, refetch: refetchVault } = useVault()
 
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(
     ExportFormat.JSON
   )
   const [isPasswordProtected, setIsPasswordProtected] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
 
   const schema = Validator.object({
     password: Validator.string().required(t('Password is required')),
@@ -64,11 +82,72 @@ export const ExportCodesContent = () => {
     }
   }
 
+  const runExport = useCallback(async () => {
+    if (isExporting) return
+
+    try {
+      setIsExporting(true)
+      const vaultId = currentVault?.id
+      const currentEncryption = await getMasterEncryption()
+
+      const otpRecords = (await exportOtpRecords()) ?? []
+      const vaultsToExport = [
+        { name: currentVault?.name ?? '', records: otpRecords }
+      ]
+
+      if (selectedFormat === ExportFormat.JSON) {
+        await handleExportOtpJson(
+          vaultsToExport,
+          isPasswordProtected ? values.password : null
+        )
+      } else if (selectedFormat === ExportFormat.CSV) {
+        await handleExportOtpCsv(vaultsToExport)
+      } else {
+        await handleExportOtpQrZip(vaultsToExport)
+      }
+
+      refetchVault(vaultId, currentEncryption)
+      resetForm()
+      setIsPasswordProtected(false)
+    } catch (error) {
+      setToast({
+        message:
+          error instanceof Error
+            ? error.message
+            : t('An error occurred while exporting your codes')
+      })
+    } finally {
+      setIsExporting(false)
+    }
+  }, [
+    isExporting,
+    selectedFormat,
+    isPasswordProtected,
+    values.password,
+    currentVault,
+    refetchVault,
+    resetForm,
+    setToast,
+    t
+  ])
+
+  const openAuthModal = () => {
+    setModal(
+      <AuthenticationModalContentV2
+        onSuccess={async () => {
+          closeModal()
+          await runExport()
+        }}
+      />
+    )
+  }
+
   const isExportDisabled =
-    isPasswordProtected &&
-    (!values.password ||
-      !values.passwordConfirm ||
-      values.password !== values.passwordConfirm)
+    isExporting ||
+    (isPasswordProtected &&
+      (!values.password ||
+        !values.passwordConfirm ||
+        values.password !== values.passwordConfirm))
 
   const radioOptions = [
     {
@@ -181,6 +260,8 @@ export const ExportCodesContent = () => {
           size="small"
           type="button"
           disabled={isExportDisabled}
+          isLoading={isExporting}
+          onClick={openAuthModal}
           data-testid="export-codes-button"
         >
           {t('Export')}

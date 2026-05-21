@@ -113,6 +113,7 @@ const VAULT_METHODS = [
   'generateOtpCodesByIds',
   'generateHotpNext',
   'addOtpToRecord',
+  'exportOtpRecords',
   'removeOtpFromRecord',
   'findOtpDuplicates',
   'fetchFavicon',
