@@ -371,6 +371,12 @@ declare module '@tetherto/pearpass-lib-vault/src/instances' {
       kdfParallelism?: number
       cipherString: string
     }) => Promise<string>
+    decryptProtonExport: (params: {
+      version: number
+      salt: string
+      content: string
+      password: string
+    }) => Promise<string>
     [key: string]: any
   }
   export const setPearpassVaultClient: (instance: unknown) => void
