@@ -3,31 +3,26 @@ import { renderHook } from '@testing-library/react'
 import { useRecordActionItems } from './useRecordActionItems'
 import { useModal } from '../context/ModalContext'
 import { useRouter } from '../context/RouterContext'
-import { isV2 } from '../utils/designVersion'
 
 const mockDeleteRecord = jest.fn()
 const mockUpdateFavoriteState = jest.fn()
 const mockHandleCreateOrEditRecord = jest.fn()
 
 jest.mock(
-  '../containers/Modal/MoveFolderModalContentV2/MoveFolderModalContentV2',
+  '../containers/Modal/MoveFolderModalContent/MoveFolderModalContent',
   () => ({
-    MoveFolderModalContentV2: () => null
+    MoveFolderModalContent: () => null
   })
 )
 
-jest.mock('../containers/Modal/DeleteRecordsModalContentV2', () => ({
-  DeleteRecordsModalContentV2: () => null
-}))
-
-jest.mock('../utils/designVersion', () => ({
-  isV2: jest.fn().mockReturnValue(true)
+jest.mock('../containers/Modal/DeleteRecordsModalContent', () => ({
+  DeleteRecordsModalContent: () => null
 }))
 
 jest.mock(
-  '../containers/Modal/CreateFolderModalContentV2/CreateFolderModalContentV2',
+  '../containers/Modal/CreateFolderModalContent/CreateFolderModalContent',
   () => ({
-    CreateFolderModalContentV2: function MockCreateFolderModalContentV2() {
+    CreateFolderModalContent: function MockCreateFolderModalContent() {
       return null
     }
   })
@@ -78,7 +73,6 @@ describe('useRecordActionItems', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    isV2.mockReturnValue(true)
 
     useModal.mockReturnValue({
       setModal: mockSetModal,
@@ -188,40 +182,6 @@ describe('useRecordActionItems', () => {
     deleteAction.click()
     expect(mockSetModal).toHaveBeenCalled()
     expect(mockOnClose).toHaveBeenCalled()
-  })
-
-  test('handles delete confirmation', () => {
-    isV2.mockReturnValue(false)
-
-    useRouter.mockReturnValue({
-      data: { recordId: '123' },
-      navigate: mockNavigate,
-      currentPage: 'somePage'
-    })
-
-    const { result } = renderHook(() =>
-      useRecordActionItems({
-        record: mockRecord,
-        onSelect: mockOnSelect,
-        onClose: mockOnClose
-      })
-    )
-
-    const deleteAction = result.current.actions.find(
-      (action) => action.type === 'delete'
-    )
-    deleteAction.click()
-
-    const confirmationAction =
-      mockSetModal.mock.calls[0][0].props.secondaryAction
-
-    confirmationAction()
-
-    expect(mockNavigate).toHaveBeenCalledWith('somePage', {
-      recordId: undefined
-    })
-    expect(mockDeleteRecord).toHaveBeenCalledWith(['123'])
-    expect(mockCloseModal).toHaveBeenCalled()
   })
 
   test('handles edit action — uses record type when no recordType prop given', () => {

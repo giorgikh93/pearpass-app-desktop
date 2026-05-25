@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { render, screen, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-kit'
 
 import { RadioSelect } from './index'
 import '@testing-library/jest-dom'
@@ -14,14 +14,6 @@ jest.mock('./styles', () => ({
   RadioOption: ({ children, onClick }) => (
     <div data-testid="radio-option" onClick={onClick}>
       {children}
-    </div>
-  )
-}))
-
-jest.mock('../../lib-react-components', () => ({
-  ButtonRadio: ({ isActive }) => (
-    <div data-testid="button-radio" data-active={isActive ? 'true' : 'false'}>
-      {isActive ? 'Active' : 'Inactive'}
     </div>
   )
 }))
@@ -60,12 +52,12 @@ describe('RadioSelect', () => {
   })
 
   test('correctly marks the selected option', () => {
-    renderComponent({ selectedOption: 'option2' })
-    const radioButtons = screen.getAllByTestId('button-radio')
+    const { container } = renderComponent({ selectedOption: 'option2' })
+    const radios = container.querySelectorAll('input[type="radio"]')
 
-    expect(radioButtons[0]).toHaveAttribute('data-active', 'false')
-    expect(radioButtons[1]).toHaveAttribute('data-active', 'true')
-    expect(radioButtons[2]).toHaveAttribute('data-active', 'false')
+    expect(radios[0]).not.toBeChecked()
+    expect(radios[1]).toBeChecked()
+    expect(radios[2]).not.toBeChecked()
   })
 
   test('calls onChange when an option is clicked', () => {
@@ -92,12 +84,11 @@ describe('RadioSelect', () => {
   })
 
   test('maintains selection state between renders', () => {
-    const { rerender } = renderComponent({ selectedOption: 'option1' })
+    const { container, rerender } = renderComponent({
+      selectedOption: 'option1'
+    })
 
-    expect(screen.getAllByTestId('button-radio')[0]).toHaveAttribute(
-      'data-active',
-      'true'
-    )
+    expect(container.querySelectorAll('input[type="radio"]')[0]).toBeChecked()
 
     rerender(
       <ThemeProvider>
@@ -110,9 +101,6 @@ describe('RadioSelect', () => {
       </ThemeProvider>
     )
 
-    expect(screen.getAllByTestId('button-radio')[2]).toHaveAttribute(
-      'data-active',
-      'true'
-    )
+    expect(container.querySelectorAll('input[type="radio"]')[2]).toBeChecked()
   })
 })

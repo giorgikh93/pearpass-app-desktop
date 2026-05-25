@@ -1,5 +1,4 @@
 import React from 'react'
-import { colors } from '@tetherto/pearpass-lib-ui-theme-provider'
 
 import {
   AvatarAlt,
@@ -9,7 +8,8 @@ import {
   FavoriteIcon,
   SelectedAvatarContainer
 } from './styles'
-import { CheckIcon, StarIcon } from '../../lib-react-components'
+import { useTheme } from '@tetherto/pearpass-lib-ui-kit'
+import { Check, StarFilled } from '@tetherto/pearpass-lib-ui-kit/icons'
 import { useFavicon } from '@tetherto/pearpass-lib-vault'
 
 interface Props {
@@ -24,13 +24,14 @@ interface Props {
 
 export const RecordAvatar = (props: Props): React.ReactElement => {
   const { websiteDomain, initials, size, isSelected, isFavorite, color, testId } = props
+  const { theme } = useTheme()
 
   const { faviconSrc, isLoading } = useFavicon({ url: websiteDomain })
 
   if (isSelected) {
     return (
       <SelectedAvatarContainer data-testid={`${testId}-selected`}>
-        <CheckIcon size="21" color={colors.black.mode1} />
+        <Check width="21" height="21" fill={theme.colors.colorTextPrimary} />
       </SelectedAvatarContainer>
     )
   }
@@ -49,7 +50,7 @@ export const RecordAvatar = (props: Props): React.ReactElement => {
 
       {isFavorite && (
         <FavoriteIcon data-testid={`avatar-favorite-${initials}`}>
-          <StarIcon size="18" fill={true} color={colors.primary400.mode1} />
+          <StarFilled width="18" height="18" fill={theme.colors.colorPrimary} />
         </FavoriteIcon>
       )}
     </AvatarContainer>

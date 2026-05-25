@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { render } from '@testing-library/react'
-import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-kit'
 
 import { Toasts } from './index'
 import '@testing-library/jest-dom'
@@ -21,11 +21,8 @@ const mockSnackbar = jest.fn(({ text, icon }) => (
 ))
 
 jest.mock('@tetherto/pearpass-lib-ui-kit', () => ({
-  Snackbar: (props) => mockSnackbar(props)
-}))
-
-jest.mock('../../utils/designVersion', () => ({
-  isV2: () => true
+  Snackbar: (props) => mockSnackbar(props),
+  ThemeProvider: ({ children }) => children
 }))
 
 describe('Toasts Component', () => {

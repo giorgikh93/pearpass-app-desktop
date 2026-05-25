@@ -1,13 +1,11 @@
 import React from 'react'
 
 import { render, fireEvent } from '@testing-library/react'
-import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-kit'
+import { ExpandMore as DummyIcon } from '@tetherto/pearpass-lib-ui-kit/icons'
 
 import { InputField } from './index'
-import { ArrowDownIcon } from '../../icons/ArrowDownIcon'
 import '@testing-library/jest-dom'
-
-const DummyIcon = ArrowDownIcon
 
 describe('InputField Component', () => {
   test('renders label, placeholder, and error message', () => {
@@ -57,7 +55,7 @@ describe('InputField Component', () => {
 
   test('calls onClick when outer element is clicked and focuses input', () => {
     const handleClick = jest.fn()
-    const { container, getByPlaceholderText } = render(
+    const { getByPlaceholderText } = render(
       <ThemeProvider>
         <InputField
           value="click test"
@@ -66,10 +64,10 @@ describe('InputField Component', () => {
         />
       </ThemeProvider>
     )
-    const outerElement = container.firstChild
+    const input = getByPlaceholderText('Enter text')
+    const outerElement = input.closest('div')
     fireEvent.click(outerElement)
     expect(handleClick).toHaveBeenCalledWith('click test')
-    const input = getByPlaceholderText('Enter text')
     expect(document.activeElement).toBe(input)
   })
 

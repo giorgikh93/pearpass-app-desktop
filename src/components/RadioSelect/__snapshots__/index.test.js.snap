@@ -3,45 +3,42 @@
 exports[`RadioSelect renders the component with title and options 1`] = `
 <div>
   <div
-    data-testid="radio-select-wrapper"
+    class="html-div x1ghz6dp x1717udv x1aw8gp0 xzu4p3z x78zum5 xdt5ytf x1us19tq x5yr21d xh8yej3"
+    data-theme="dark"
   >
     <div
-      data-testid="title"
-    >
-      Select an option
-    </div>
-    <div
-      data-testid="radio-option"
+      data-testid="radio-select-wrapper"
     >
       <div
-        data-active="true"
-        data-testid="button-radio"
+        data-testid="title"
       >
-        Active
+        Select an option
       </div>
-      Option 1
-    </div>
-    <div
-      data-testid="radio-option"
-    >
       <div
-        data-active="false"
-        data-testid="button-radio"
+        data-testid="radio-option"
       >
-        Inactive
+        <input
+          checked=""
+          type="radio"
+        />
+        Option 1
       </div>
-      Option 2
-    </div>
-    <div
-      data-testid="radio-option"
-    >
       <div
-        data-active="false"
-        data-testid="button-radio"
+        data-testid="radio-option"
       >
-        Inactive
+        <input
+          type="radio"
+        />
+        Option 2
       </div>
-      Option 3
+      <div
+        data-testid="radio-option"
+      >
+        <input
+          type="radio"
+        />
+        Option 3
+      </div>
     </div>
   </div>
 </div>

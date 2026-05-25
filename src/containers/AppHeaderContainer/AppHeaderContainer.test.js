@@ -11,10 +11,6 @@ jest.mock('@tetherto/pearpass-lib-constants', () => ({
   }
 }))
 
-jest.mock('../../utils/designVersion', () => ({
-  isV2: jest.fn()
-}))
-
 const mockNavigate = jest.fn()
 const mockSetModal = jest.fn()
 
@@ -42,23 +38,13 @@ jest.mock('../../hooks/useCreateOrEditRecord', () => ({
   useCreateOrEditRecord: jest.fn()
 }))
 
-jest.mock('../../components/PopupMenu', () => ({
-  PopupMenu: ({ children }) => <div data-testid="popup-menu">{children}</div>
-}))
-
-jest.mock('../../components/CreateNewCategoryPopupContent', () => ({
-  CreateNewCategoryPopupContent: () => (
-    <div data-testid="create-new-category-popup" />
-  )
-}))
-
-jest.mock('../../components/AppHeaderV2', () => {
+jest.mock('../../components/AppHeader', () => {
   const React = require('react')
   return {
-    AppHeaderV2: jest.fn((props) =>
+    AppHeader: jest.fn((props) =>
       React.createElement(
         'div',
-        { 'data-testid': 'app-header-v2-mock' },
+        { 'data-testid': 'app-header-mock' },
         React.createElement('input', {
           'data-testid': 'mock-search',
           value: props.searchValue,
@@ -85,17 +71,16 @@ jest.mock('../../components/AppHeaderV2', () => {
   }
 })
 
-jest.mock('../Modal/ImportItemOrVaultModalContentV2', () => ({
-  ImportItemOrVaultModalContentV2: () => null
+jest.mock('../Modal/ImportItemOrVaultModalContent', () => ({
+  ImportItemOrVaultModalContent: () => null
 }))
 
 import { AppHeaderContainer } from './AppHeaderContainer'
-import { AppHeaderV2 } from '../../components/AppHeaderV2'
+import { AppHeader } from '../../components/AppHeader'
 import { AppHeaderContextProvider } from '../../context/AppHeaderContext'
 import { useRouter } from '../../context/RouterContext'
 import { useCreateOrEditRecord } from '../../hooks/useCreateOrEditRecord'
 import { useRecordMenuItems } from '../../hooks/useRecordMenuItems'
-import { isV2 } from '../../utils/designVersion'
 
 const renderWithHeaderContext = (ui) =>
   render(<AppHeaderContextProvider>{ui}</AppHeaderContextProvider>)
@@ -104,7 +89,6 @@ describe('AppHeaderContainer', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockAuthenticatorEnabled = false
-    isV2.mockReturnValue(true)
     mockNavigate.mockReset()
     mockSetModal.mockReset()
     useRouter.mockReturnValue({
@@ -122,15 +106,6 @@ describe('AppHeaderContainer', () => {
     })
   })
 
-  it('returns null when design is not v2', () => {
-    isV2.mockReturnValue(false)
-
-    const { container } = renderWithHeaderContext(<AppHeaderContainer />)
-
-    expect(container.firstChild).toBeNull()
-    expect(AppHeaderV2).not.toHaveBeenCalled()
-  })
-
   it('returns null when current page is not vault', () => {
     useRouter.mockReturnValue({
       currentPage: 'settings',
@@ -141,10 +116,10 @@ describe('AppHeaderContainer', () => {
     const { container } = renderWithHeaderContext(<AppHeaderContainer />)
 
     expect(container.firstChild).toBeNull()
-    expect(AppHeaderV2).not.toHaveBeenCalled()
+    expect(AppHeader).not.toHaveBeenCalled()
   })
 
-  it('renders AppHeaderV2 on authenticator vault when AUTHENTICATOR_ENABLED', () => {
+  it('renders AppHeader on authenticator vault when AUTHENTICATOR_ENABLED', () => {
     mockAuthenticatorEnabled = true
     useRouter.mockReturnValue({
       currentPage: 'vault',
@@ -154,15 +129,15 @@ describe('AppHeaderContainer', () => {
 
     renderWithHeaderContext(<AppHeaderContainer />)
 
-    expect(screen.getByTestId('app-header-v2-mock')).toBeInTheDocument()
-    expect(AppHeaderV2).toHaveBeenCalled()
+    expect(screen.getByTestId('app-header-mock')).toBeInTheDocument()
+    expect(AppHeader).toHaveBeenCalled()
   })
 
-  it('renders AppHeaderV2 on vault when v2 and not blocked', () => {
+  it('renders AppHeader on vault when not blocked', () => {
     renderWithHeaderContext(<AppHeaderContainer />)
 
-    expect(screen.getByTestId('app-header-v2-mock')).toBeInTheDocument()
-    expect(AppHeaderV2).toHaveBeenCalled()
+    expect(screen.getByTestId('app-header-mock')).toBeInTheDocument()
+    expect(AppHeader).toHaveBeenCalled()
   })
 
   it('opens import modal on import', () => {

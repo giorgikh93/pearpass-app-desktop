@@ -1,15 +1,10 @@
 import React from 'react'
 
 import { render } from '@testing-library/react'
-import { ThemeProvider } from '@tetherto/pearpass-lib-ui-theme-provider'
+import { ThemeProvider } from '@tetherto/pearpass-lib-ui-kit'
 
 import { RecordAvatar } from './index'
 import '@testing-library/jest-dom'
-
-jest.mock('../../lib-react-components', () => ({
-  CheckIcon: (props) => <svg data-testid="check-icon" {...props} />,
-  StarIcon: (props) => <svg data-testid="star-icon" {...props} />
-}))
 
 const mockUseFavicon = jest.fn()
 jest.mock('@tetherto/pearpass-lib-vault', () => ({
@@ -81,14 +76,21 @@ describe('RecordAvatar Component', () => {
     expect(getByText('AB')).toBeInTheDocument()
   })
 
-  test('renders check icon instead of favorite when both isSelected and isFavorite are true', () => {
+  test('renders selected container instead of favorite when both isSelected and isFavorite are true', () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider>
-        <RecordAvatar {...defaultProps} isSelected={true} isFavorite={true} />
+        <RecordAvatar
+          {...defaultProps}
+          testId="record-avatar"
+          isSelected={true}
+          isFavorite={true}
+        />
       </ThemeProvider>
     )
 
-    expect(getByTestId('check-icon')).toBeInTheDocument()
-    expect(queryByTestId('star-icon')).not.toBeInTheDocument()
+    expect(getByTestId('record-avatar-selected')).toBeInTheDocument()
+    expect(
+      queryByTestId(`avatar-favorite-${defaultProps.initials}`)
+    ).not.toBeInTheDocument()
   })
 })
