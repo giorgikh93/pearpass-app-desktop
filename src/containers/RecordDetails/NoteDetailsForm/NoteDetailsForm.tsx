@@ -3,10 +3,10 @@ import { useEffect, useMemo } from 'react'
 import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import {
   AttachmentField,
-  InputField,
   MultiSlotInput,
   PasswordField,
   Text,
+  TextArea,
   useTheme
 } from '@tetherto/pearpass-lib-ui-kit'
 import { html } from 'htm/react'
@@ -122,7 +122,7 @@ export const NoteDetailsForm = ({
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
-  
+
   return (
     <div style={styles.container}>
       {hasNote && (
@@ -132,13 +132,12 @@ export const NoteDetailsForm = ({
           </Text>
 
           <MultiSlotInput testID="note-multi-slot-input">
-            <InputField
+            <TextArea
               label={t('Note')}
               placeholder={t('Enter Note')}
               readOnly
               copyable
               onCopy={copyToClipboard}
-              isGrouped
               testID="note-multi-slot-input-slot-0"
               {...toReadOnlyFieldProps(register('note'))}
             />

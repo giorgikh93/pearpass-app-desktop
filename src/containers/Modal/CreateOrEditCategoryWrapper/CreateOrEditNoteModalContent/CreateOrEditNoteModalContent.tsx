@@ -11,6 +11,7 @@ import {
   MultiSlotInput,
   PasswordField,
   Text,
+  TextArea,
   useTheme
 } from '@tetherto/pearpass-lib-ui-kit'
 import { RECORD_TYPES } from '@tetherto/pearpass-lib-vault'
@@ -226,11 +227,11 @@ export const CreateOrEditNoteModalContent = ({
           </Text>
         </div>
 
-        <InputField
+        <TextArea
           label={t('Note')}
           placeholder={t('Enter Note')}
           value={noteField.value}
-          onChange={(e) => noteField.onChange(e.target.value)}
+          onChange={(value) => noteField.onChange(value)}
           error={noteField.error || undefined}
           testID="createoredit-note-input-note"
         />
@@ -265,47 +266,47 @@ export const CreateOrEditNoteModalContent = ({
         >
           {values.attachments.length > 0
             ? values.attachments.map(
-              (
-                attachment: {
-                  id?: string
-                  tempId?: string
-                  name: string
-                },
-                index: number
-              ) => (
-                <UiKitAttachmentField
-                  key={attachment.id || attachment.tempId}
-                  label={t('Attachment')}
-                  value={attachment.name}
-                  testID={`createoredit-note-attachment-${index}`}
-                  rightSlot={
-                    <Button
-                      variant="tertiary"
-                      size="small"
-                      type="button"
-                      aria-label={t('Delete File')}
-                      iconBefore={
-                        <TrashOutlined
-                          width={16}
-                          height={16}
-                          color={theme.colors.colorTextPrimary}
-                        />
-                      }
-                      onClick={() =>
-                        setValue(
-                          ATTACHMENTS_FIELD_KEY,
-                          getFilteredAttachmentsById(
-                            values.attachments,
-                            attachment
+                (
+                  attachment: {
+                    id?: string
+                    tempId?: string
+                    name: string
+                  },
+                  index: number
+                ) => (
+                  <UiKitAttachmentField
+                    key={attachment.id || attachment.tempId}
+                    label={t('Attachment')}
+                    value={attachment.name}
+                    testID={`createoredit-note-attachment-${index}`}
+                    rightSlot={
+                      <Button
+                        variant="tertiary"
+                        size="small"
+                        type="button"
+                        aria-label={t('Delete File')}
+                        iconBefore={
+                          <TrashOutlined
+                            width={16}
+                            height={16}
+                            color={theme.colors.colorTextPrimary}
+                          />
+                        }
+                        onClick={() =>
+                          setValue(
+                            ATTACHMENTS_FIELD_KEY,
+                            getFilteredAttachmentsById(
+                              values.attachments,
+                              attachment
+                            )
                           )
-                        )
-                      }
-                      data-testid={`createoredit-note-button-deleteattachment-${index}`}
-                    />
-                  }
-                />
+                        }
+                        data-testid={`createoredit-note-button-deleteattachment-${index}`}
+                      />
+                    }
+                  />
+                )
               )
-            )
             : null}
           <UiKitAttachmentField
             label={t('Attachment')}
