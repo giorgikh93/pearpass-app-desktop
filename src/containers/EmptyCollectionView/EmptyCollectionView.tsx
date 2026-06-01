@@ -3,12 +3,10 @@ import React, { useMemo } from 'react'
 import { Button, Text, Title, useTheme } from '@tetherto/pearpass-lib-ui-kit'
 import { Add, ImportExport } from '@tetherto/pearpass-lib-ui-kit/icons'
 
-import {
-  ILLUSTRATION_HEIGHT,
-  createStyles
-} from './EmptyCollectionView.styles'
+import { ILLUSTRATION_HEIGHT, createStyles } from './EmptyCollectionView.styles'
 import { useAppHeaderContext } from '../../context/AppHeaderContext'
 import { useRouter } from '../../context/RouterContext'
+import { useCreateOrEditRecord } from '../../hooks/useCreateOrEditRecord'
 import { useRecordMenuItems } from '../../hooks/useRecordMenuItems'
 import { useTranslation } from '../../hooks/useTranslation'
 import { SettingsItemKey } from '../../pages/SettingsView/SettingsView'
@@ -29,11 +27,20 @@ export const EmptyCollectionView = ({
   const { theme } = useTheme()
   const { navigate } = useRouter()
   const { setIsAddMenuOpen } = useAppHeaderContext()
+  const { handleCreateOrEditRecord } = useCreateOrEditRecord()
   const { categoriesItems } = useRecordMenuItems()
   const styles = createStyles()
 
   const handleAddItem = () => {
-    setIsAddMenuOpen(true)
+    if (recordType !== 'all') {
+      handleCreateOrEditRecord({
+        recordType,
+        selectedFolder,
+        isFavorite: isFavoritesView ? true : undefined
+      })
+    } else {
+      setIsAddMenuOpen(true)
+    }
   }
 
   const handleImport = () => {
