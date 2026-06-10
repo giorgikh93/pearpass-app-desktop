@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { Validator } from '@tetherto/pear-apps-utils-validator'
 import {
+  AttachmentField as UiKitAttachmentField,
   Button,
   Dialog,
   Form,
@@ -17,15 +18,22 @@ import { useCreateRecord, useRecords } from '@tetherto/pearpass-lib-vault'
 import {
   Add,
   SyncLock,
-  TrashOutlined
+  TrashOutlined,
+  UploadFileFilled
 } from '@tetherto/pearpass-lib-ui-kit/icons'
+import { html } from 'htm/react'
 
 import { createStyles } from './CreateOrEditWifiModalContent.styles'
+import { ATTACHMENTS_FIELD_KEY } from '../../../../constants/formFields'
 import { useGlobalLoading } from '../../../../context/LoadingContext'
 import { useModal } from '../../../../context/ModalContext'
 import { useToast } from '../../../../context/ToastContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
 import { useCreateOrEditRecord } from '../../../../hooks/useCreateOrEditRecord'
+import { useGetMultipleFiles } from '../../../../hooks/useGetMultipleFiles'
+import { getFilteredAttachmentsById } from '../../../../utils/getFilteredAttachmentsById'
+import { handleFileSelect } from '../../../../utils/handleFileSelect'
+import { UploadFilesModalContent } from '../../UploadFilesModalContent'
 import { PasswordFieldStrengthIndicator } from '../../../../components/PasswordFieldStrengthIndicator'
 import { PassType } from '../../../../shared/types'
 import { FolderDropdown } from '../../../../components/FolderDropdown/FolderDropdown'
@@ -37,10 +45,12 @@ export type CreateOrEditWifiModalContentProps = {
       password: string
       note: string
       customFields: { type: string; name: string }[]
+      attachments: { id: string; name: string }[]
       [key: string]: unknown
     }
     folder?: string
     isFavorite?: boolean
+    attachments?: { id: string; name: string }[]
     [key: string]: unknown
   }
   selectedFolder?: string
@@ -55,7 +65,7 @@ export const CreateOrEditWifiModalContent = ({
   onTypeChange: _onTypeChange
 }: CreateOrEditWifiModalContentProps) => {
   const { t } = useTranslation()
-  const { closeModal } = useModal()
+  const { closeModal, setModal } = useModal()
   const { handleCreateOrEditRecord } = useCreateOrEditRecord()
   const [passwordType, setPasswordType] = useState<PassType>(PassType.Password)
 
@@ -93,7 +103,13 @@ export const CreateOrEditWifiModalContent = ({
         note: Validator.string()
       })
     ),
-    folder: Validator.string()
+    folder: Validator.string(),
+    attachments: Validator.array().items(
+      Validator.object({
+        id: Validator.string(),
+        name: Validator.string().required()
+      })
+    )
   })
 
   const { register, handleSubmit, registerArray, setValue, values } = useForm({
@@ -104,7 +120,8 @@ export const CreateOrEditWifiModalContent = ({
       customFields: initialRecord?.data?.customFields?.length
         ? initialRecord.data.customFields
         : [{ type: 'note', note: '' }],
-      folder: selectedFolder ?? initialRecord?.folder
+      folder: selectedFolder ?? initialRecord?.folder,
+      attachments: initialRecord?.attachments ?? []
     },
     validate: (formValues: Record<string, unknown>) =>
       schema.validate(formValues)
@@ -116,6 +133,12 @@ export const CreateOrEditWifiModalContent = ({
     registerItem: registerCustomFieldItem,
     removeItem: removeCustomFieldItem
   } = registerArray('customFields')
+
+  useGetMultipleFiles({
+    fieldNames: [ATTACHMENTS_FIELD_KEY],
+    updateValues: setValue,
+    initialRecord
+  })
 
   const onSubmit = (formValues: Record<string, unknown>) => {
     const data = {
@@ -130,7 +153,8 @@ export const CreateOrEditWifiModalContent = ({
         customFields: (
           (formValues.customFields as Array<{ type: string; note?: string }>) ??
           []
-        ).filter((f) => f.note?.trim().length)
+        ).filter((f) => f.note?.trim().length),
+        attachments: formValues.attachments
       }
     }
 
@@ -139,6 +163,21 @@ export const CreateOrEditWifiModalContent = ({
     } else {
       createRecord(data, onError)
     }
+  }
+
+  const handleFileLoad = () => {
+    setModal(
+      html`<${UploadFilesModalContent}
+        type=${'file'}
+        onFilesSelected=${(files: File[]) =>
+          handleFileSelect({
+            files: files as unknown as FileList,
+            fieldName: ATTACHMENTS_FIELD_KEY,
+            setValue,
+            values
+          })}
+      />`
+    )
   }
 
   const isEdit = !!initialRecord
@@ -240,6 +279,80 @@ export const CreateOrEditWifiModalContent = ({
             setValue('folder', name === values.folder ? '' : name)
           }
         />
+
+        <MultiSlotInput
+          testID="createoredit-wifi-attachments-slot"
+          actions={
+            <Button
+              variant="tertiaryAccent"
+              size="small"
+              type="button"
+              iconBefore={<Add width={16} height={16} />}
+              onClick={handleFileLoad}
+              data-testid="createoredit-wifi-button-addattachment"
+            >
+              {t('Add Another Attachment')}
+            </Button>
+          }
+        >
+          {values.attachments.length > 0
+            ? values.attachments.map(
+                (
+                  attachment: {
+                    id?: string
+                    tempId?: string
+                    name: string
+                  },
+                  index: number
+                ) => (
+                  <UiKitAttachmentField
+                    key={attachment.id || attachment.tempId}
+                    label={t('Attachment')}
+                    value={attachment.name}
+                    testID={`createoredit-wifi-attachment-${index}`}
+                    rightSlot={
+                      <Button
+                        variant="tertiary"
+                        size="small"
+                        type="button"
+                        aria-label={t('Delete File')}
+                        iconBefore={
+                          <TrashOutlined
+                            width={16}
+                            height={16}
+                            color={theme.colors.colorTextPrimary}
+                          />
+                        }
+                        onClick={() =>
+                          setValue(
+                            ATTACHMENTS_FIELD_KEY,
+                            getFilteredAttachmentsById(
+                              values.attachments,
+                              attachment
+                            )
+                          )
+                        }
+                        data-testid={`createoredit-wifi-button-deleteattachment-${index}`}
+                      />
+                    }
+                  />
+                )
+              )
+            : null}
+          <UiKitAttachmentField
+            label={t('Attachment')}
+            placeholder={t('Add or Drop File / Photos')}
+            onClick={handleFileLoad}
+            testID="createoredit-wifi-attachment-upload"
+            rightSlot={
+              <UploadFileFilled
+                width={16}
+                height={16}
+                color={theme.colors.colorTextPrimary}
+              />
+            }
+          />
+        </MultiSlotInput>
 
         <InputField
           label={t('Comment')}

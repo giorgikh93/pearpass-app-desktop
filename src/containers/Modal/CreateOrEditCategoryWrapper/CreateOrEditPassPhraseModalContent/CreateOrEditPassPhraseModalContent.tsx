@@ -4,6 +4,7 @@ import { useForm } from '@tetherto/pear-apps-lib-ui-react-hooks'
 import { Validator } from '@tetherto/pear-apps-utils-validator'
 import { VALID_WORD_COUNTS } from '@tetherto/pearpass-lib-constants'
 import {
+  AttachmentField as UiKitAttachmentField,
   Button,
   Dialog,
   Form,
@@ -17,15 +18,22 @@ import { RECORD_TYPES } from '@tetherto/pearpass-lib-vault'
 import { useCreateRecord, useRecords } from '@tetherto/pearpass-lib-vault'
 import {
   Add,
-  TrashOutlined
+  TrashOutlined,
+  UploadFileFilled
 } from '@tetherto/pearpass-lib-ui-kit/icons'
+import { html } from 'htm/react'
 
 import { createStyles } from './CreateOrEditPassPhraseModalContent.styles'
+import { ATTACHMENTS_FIELD_KEY } from '../../../../constants/formFields'
 import { PassPhrase } from '../../../PassPhrase/PassPhrase'
 import { useGlobalLoading } from '../../../../context/LoadingContext'
 import { useModal } from '../../../../context/ModalContext'
 import { useToast } from '../../../../context/ToastContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
+import { useGetMultipleFiles } from '../../../../hooks/useGetMultipleFiles'
+import { getFilteredAttachmentsById } from '../../../../utils/getFilteredAttachmentsById'
+import { handleFileSelect } from '../../../../utils/handleFileSelect'
+import { UploadFilesModalContent } from '../../UploadFilesModalContent'
 import { FolderDropdown } from '../../../../components/FolderDropdown/FolderDropdown'
 
 export type CreateOrEditPassPhraseModalContentProps = {
@@ -35,10 +43,12 @@ export type CreateOrEditPassPhraseModalContentProps = {
       passPhrase: string
       note: string
       customFields: { type: string; name: string }[]
+      attachments: { id: string; name: string }[]
       [key: string]: unknown
     }
     folder?: string
     isFavorite?: boolean
+    attachments?: { id: string; name: string }[]
     [key: string]: unknown
   }
   selectedFolder?: string
@@ -60,7 +70,7 @@ export const CreateOrEditPassPhraseModalContent = ({
   onTypeChange: _onTypeChange
 }: CreateOrEditPassPhraseModalContentProps) => {
   const { t } = useTranslation()
-  const { closeModal } = useModal()
+  const { closeModal, setModal } = useModal()
   const { setToast } = useToast()
   const { theme } = useTheme()
   const styles = createStyles()
@@ -95,7 +105,13 @@ export const CreateOrEditPassPhraseModalContent = ({
         note: Validator.string()
       })
     ),
-    folder: Validator.string()
+    folder: Validator.string(),
+    attachments: Validator.array().items(
+      Validator.object({
+        id: Validator.string(),
+        name: Validator.string().required()
+      })
+    )
   })
 
   const { register, handleSubmit, registerArray, setValue, values } = useForm({
@@ -106,7 +122,8 @@ export const CreateOrEditPassPhraseModalContent = ({
       customFields: initialRecord?.data?.customFields?.length
         ? initialRecord.data.customFields
         : [{ type: 'note', note: '' }],
-      folder: selectedFolder ?? initialRecord?.folder
+      folder: selectedFolder ?? initialRecord?.folder,
+      attachments: initialRecord?.attachments ?? []
     },
     validate: (formValues: Record<string, unknown>) => {
       const validationErrors =
@@ -132,6 +149,12 @@ export const CreateOrEditPassPhraseModalContent = ({
     removeItem: removeCustomFieldItem
   } = registerArray('customFields')
 
+  useGetMultipleFiles({
+    fieldNames: [ATTACHMENTS_FIELD_KEY],
+    updateValues: setValue,
+    initialRecord
+  })
+
   const onSubmit = (formValues: Record<string, unknown>) => {
     const data = {
       type: RECORD_TYPES.PASS_PHRASE,
@@ -145,7 +168,8 @@ export const CreateOrEditPassPhraseModalContent = ({
         customFields: (
           (formValues.customFields as Array<{ type: string; note?: string }>) ??
           []
-        ).filter((f) => f.note?.trim().length)
+        ).filter((f) => f.note?.trim().length),
+        attachments: formValues.attachments
       }
     }
 
@@ -154,6 +178,21 @@ export const CreateOrEditPassPhraseModalContent = ({
     } else {
       createRecord(data, onError)
     }
+  }
+
+  const handleFileLoad = () => {
+    setModal(
+      html`<${UploadFilesModalContent}
+        type=${'file'}
+        onFilesSelected=${(files: File[]) =>
+          handleFileSelect({
+            files: files as unknown as FileList,
+            fieldName: ATTACHMENTS_FIELD_KEY,
+            setValue,
+            values
+          })}
+      />`
+    )
   }
 
   const isEdit = !!initialRecord
@@ -232,6 +271,80 @@ export const CreateOrEditPassPhraseModalContent = ({
             setValue('folder', name === values.folder ? '' : name)
           }
         />
+
+        <MultiSlotInput
+          testID="createoredit-passphrase-attachments-slot"
+          actions={
+            <Button
+              variant="tertiaryAccent"
+              size="small"
+              type="button"
+              iconBefore={<Add width={16} height={16} />}
+              onClick={handleFileLoad}
+              data-testid="createoredit-passphrase-button-addattachment"
+            >
+              {t('Add Another Attachment')}
+            </Button>
+          }
+        >
+          {values.attachments.length > 0
+            ? values.attachments.map(
+                (
+                  attachment: {
+                    id?: string
+                    tempId?: string
+                    name: string
+                  },
+                  index: number
+                ) => (
+                  <UiKitAttachmentField
+                    key={attachment.id || attachment.tempId}
+                    label={t('Attachment')}
+                    value={attachment.name}
+                    testID={`createoredit-passphrase-attachment-${index}`}
+                    rightSlot={
+                      <Button
+                        variant="tertiary"
+                        size="small"
+                        type="button"
+                        aria-label={t('Delete File')}
+                        iconBefore={
+                          <TrashOutlined
+                            width={16}
+                            height={16}
+                            color={theme.colors.colorTextPrimary}
+                          />
+                        }
+                        onClick={() =>
+                          setValue(
+                            ATTACHMENTS_FIELD_KEY,
+                            getFilteredAttachmentsById(
+                              values.attachments,
+                              attachment
+                            )
+                          )
+                        }
+                        data-testid={`createoredit-passphrase-button-deleteattachment-${index}`}
+                      />
+                    }
+                  />
+                )
+              )
+            : null}
+          <UiKitAttachmentField
+            label={t('Attachment')}
+            placeholder={t('Add or Drop File / Photos')}
+            onClick={handleFileLoad}
+            testID="createoredit-passphrase-attachment-upload"
+            rightSlot={
+              <UploadFileFilled
+                width={16}
+                height={16}
+                color={theme.colors.colorTextPrimary}
+              />
+            }
+          />
+        </MultiSlotInput>
 
         <MultiSlotInput testID="createoredit-passphrase-comments-slot">
           <InputField
