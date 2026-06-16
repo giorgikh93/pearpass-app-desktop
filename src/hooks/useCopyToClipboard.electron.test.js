@@ -108,6 +108,31 @@ describe('useCopyToClipboard.electron', () => {
     )
   })
 
+  it('resets isCopied to false after 2 seconds', async () => {
+    jest.useFakeTimers()
+    const { result } = renderHook(() => useCopyToClipboard())
+
+    await waitFor(() => {
+      expect(result.current.isCopyToClipboardDisabled).toBe(false)
+    })
+
+    await act(async () => {
+      result.current.copyToClipboard('secret')
+      await Promise.resolve()
+    })
+
+    await waitFor(() => {
+      expect(result.current.isCopied).toBe(true)
+    })
+
+    act(() => {
+      jest.advanceTimersByTime(2000)
+    })
+
+    expect(result.current.isCopied).toBe(false)
+    jest.useRealTimers()
+  })
+
   it('logs and returns false when text is invalid', async () => {
     const { result } = renderHook(() => useCopyToClipboard())
 

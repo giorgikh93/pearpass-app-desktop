@@ -52,6 +52,7 @@ export const useCopyToClipboard = ({ onCopy } = {}) => {
     navigator.clipboard.writeText(text).then(
       () => {
         setIsCopied(true)
+        setTimeout(() => setIsCopied(false), 2000)
         if (onCopy) {
           onCopy()
         } else {
