@@ -29,6 +29,7 @@ import { useGlobalLoading } from '../../../../context/LoadingContext'
 import { useModal } from '../../../../context/ModalContext'
 import { useToast } from '../../../../context/ToastContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
+import { useScrollToFirstError } from '../../../../hooks/useScrollToFirstError'
 import { useGetMultipleFiles } from '../../../../hooks/useGetMultipleFiles'
 import { getFilteredAttachmentsById } from '../../../../utils/getFilteredAttachmentsById'
 import { handleFileSelect } from '../../../../utils/handleFileSelect'
@@ -105,7 +106,7 @@ export const CreateOrEditNoteModalContent = ({
     )
   })
 
-  const { register, handleSubmit, registerArray, values, setValue } = useForm({
+  const { register, handleSubmit, registerArray, values, setValue, errors } = useForm({
     initialValues: {
       title: initialRecord?.data?.title ?? '',
       note: initialRecord?.data?.note ?? '',
@@ -118,6 +119,8 @@ export const CreateOrEditNoteModalContent = ({
     validate: (formValues: Record<string, unknown>) =>
       schema.validate(formValues)
   })
+
+  useScrollToFirstError(errors)
 
   const {
     value: customFieldsList,

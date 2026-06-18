@@ -29,6 +29,7 @@ import { useGlobalLoading } from '../../../../context/LoadingContext'
 import { useModal } from '../../../../context/ModalContext'
 import { useToast } from '../../../../context/ToastContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
+import { useScrollToFirstError } from '../../../../hooks/useScrollToFirstError'
 import { useCreateOrEditRecord } from '../../../../hooks/useCreateOrEditRecord'
 import { useGetMultipleFiles } from '../../../../hooks/useGetMultipleFiles'
 import { getFilteredAttachmentsById } from '../../../../utils/getFilteredAttachmentsById'
@@ -112,7 +113,7 @@ export const CreateOrEditWifiModalContent = ({
     )
   })
 
-  const { register, handleSubmit, registerArray, setValue, values } = useForm({
+  const { register, handleSubmit, registerArray, setValue, values, errors } = useForm({
     initialValues: {
       title: initialRecord?.data?.title ?? '',
       password: initialRecord?.data?.password ?? '',
@@ -126,6 +127,8 @@ export const CreateOrEditWifiModalContent = ({
     validate: (formValues: Record<string, unknown>) =>
       schema.validate(formValues)
   })
+
+  useScrollToFirstError(errors)
 
   const {
     value: customFieldsList,

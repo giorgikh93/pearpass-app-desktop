@@ -26,6 +26,7 @@ import { useGlobalLoading } from '../../../../context/LoadingContext'
 import { useModal } from '../../../../context/ModalContext'
 import { useToast } from '../../../../context/ToastContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
+import { useScrollToFirstError } from '../../../../hooks/useScrollToFirstError'
 import { RecordItemIcon } from '../../../../components/RecordItemIcon/RecordItemIcon'
 
 export type CreateOrEditAuthenticatorModalContentProps = {
@@ -78,7 +79,7 @@ export const CreateOrEditAuthenticatorModalContent = ({
     [t]
   )
 
-  const { register, handleSubmit, values, setValue } = useForm({
+  const { register, handleSubmit, values, setValue, errors } = useForm({
     initialValues: {
       title: '',
       otpSecret: '',
@@ -87,6 +88,8 @@ export const CreateOrEditAuthenticatorModalContent = ({
     validate: (formValues: Record<string, unknown>) =>
       schema.validate(formValues)
   })
+
+  useScrollToFirstError(errors)
 
   const parsedOtp = useMemo(
     () => parseOtpInput(values.otpSecret),

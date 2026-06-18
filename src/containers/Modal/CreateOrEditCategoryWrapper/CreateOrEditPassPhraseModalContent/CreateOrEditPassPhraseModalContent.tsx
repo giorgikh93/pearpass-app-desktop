@@ -30,6 +30,7 @@ import { useGlobalLoading } from '../../../../context/LoadingContext'
 import { useModal } from '../../../../context/ModalContext'
 import { useToast } from '../../../../context/ToastContext'
 import { useTranslation } from '../../../../hooks/useTranslation'
+import { useScrollToFirstError } from '../../../../hooks/useScrollToFirstError'
 import { useGetMultipleFiles } from '../../../../hooks/useGetMultipleFiles'
 import { getFilteredAttachmentsById } from '../../../../utils/getFilteredAttachmentsById'
 import { handleFileSelect } from '../../../../utils/handleFileSelect'
@@ -114,7 +115,7 @@ export const CreateOrEditPassPhraseModalContent = ({
     )
   })
 
-  const { register, handleSubmit, registerArray, setValue, values } = useForm({
+  const { register, handleSubmit, registerArray, setValue, values, errors } = useForm({
     initialValues: {
       title: initialRecord?.data?.title ?? '',
       passPhrase: initialRecord?.data?.passPhrase ?? '',
@@ -141,6 +142,8 @@ export const CreateOrEditPassPhraseModalContent = ({
       return validationErrors
     }
   })
+
+  useScrollToFirstError(errors)
 
   const {
     value: customFieldsList,
